@@ -1,6 +1,7 @@
 import { Heart, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface ListingCardProps {
   image: string;
@@ -9,20 +10,41 @@ interface ListingCardProps {
   price: string;
   rating: number;
   delay?: number;
+  type?: "stay" | "bike" | "car" | "experience";
+  id?: string;
 }
 
-const ListingCard = ({ image, title, location, price, rating, delay = 0 }: ListingCardProps) => {
+const ListingCard = ({ 
+  image, 
+  title, 
+  location, 
+  price, 
+  rating, 
+  delay = 0,
+  type = "stay",
+  id = "1"
+}: ListingCardProps) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
 
+  const getDetailPath = () => {
+    switch(type) {
+      case "bike": return `/bikes/${id}`;
+      case "car": return `/cars/${id}`;
+      case "experience": return `/experiences/${id}`;
+      default: return `/stays/${id}`;
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      className="group cursor-pointer"
-    >
-      {/* Image Container */}
-      <div className="relative overflow-hidden rounded-2xl mb-3 aspect-square">
+    <Link to={getDetailPath()}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay }}
+        className="group cursor-pointer"
+      >
+        {/* Image Container */}
+        <div className="relative overflow-hidden rounded-2xl mb-3 aspect-square">
         <img
           src={image}
           alt={title}
@@ -60,10 +82,13 @@ const ListingCard = ({ image, title, location, price, rating, delay = 0 }: Listi
         </div>
         <p className="text-sm">
           <span className="font-semibold text-foreground">{price}</span>
-          <span className="text-muted-foreground"> / night</span>
+          <span className="text-muted-foreground">
+            / {type === "experience" ? "person" : type === "stay" ? "night" : "day"}
+          </span>
         </p>
       </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   );
 };
 

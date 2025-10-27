@@ -81,7 +81,7 @@ const Cars = () => {
       <section className="container mx-auto px-4 py-16 flex-grow">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {listings.map((listing, index) => (
-            <ListingCard key={index} {...listing} delay={index * 0.1} />
+            <ListingCard key={index} {...listing} type="car" id={`${index + 1}`} delay={index * 0.1} />
           ))}
         </div>
       </section>
