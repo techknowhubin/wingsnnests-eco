@@ -29,25 +29,25 @@ const Header = () => {
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             <Link
-              to="/"
+              to="/stays"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Stays
             </Link>
             <Link
-              to="/"
+              to="/experiences"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Experiences
             </Link>
             <Link
-              to="/"
+              to="/bikes"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Bikes
             </Link>
             <Link
-              to="/"
+              to="/cars"
               className="text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               Cars

@@ -1,5 +1,7 @@
 import { Home, Bike, Car, Compass } from "lucide-react";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Marquee from "@/components/Marquee";
 import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import ListingCard from "@/components/ListingCard";
@@ -36,29 +38,30 @@ const Index = () => {
   const featuredListings = [
     {
       image: homestayImage,
-      title: "Mountain View Cabin",
-      location: "Swiss Alps",
-      price: "$120",
+      title: "Mountain View Homestay",
+      location: "Manali, Himachal Pradesh",
+      price: "₹3,500",
       rating: 4.9,
     },
     {
       image: bikeImage,
-      title: "Adventure Touring Bike",
-      location: "Available in Himalaya",
-      price: "$45",
+      title: "Royal Enfield Himalayan",
+      location: "Leh, Ladakh",
+      price: "₹1,500",
       rating: 4.8,
     },
     {
       image: experienceImage,
-      title: "Traditional Cooking Class",
-      location: "Bali, Indonesia",
-      price: "$65",
+      title: "Traditional Kerala Cooking Class",
+      location: "Kochi, Kerala",
+      price: "₹2,000",
       rating: 5.0,
     },
   ];
 
   return (
     <div className="min-h-screen">
+      <Marquee />
       <Header />
 
       {/* Hero Section */}
@@ -159,6 +162,8 @@ const Index = () => {
           </motion.button>
         </motion.div>
       </section>
+
+      <Footer />
     </div>
   );
 };
