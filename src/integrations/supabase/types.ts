@@ -14,16 +14,838 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bikes: {
+        Row: {
+          availability_status: boolean | null
+          booking_count: number | null
+          brand: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          discounts: Json | null
+          engine_capacity: number | null
+          featured: boolean | null
+          helmet_included: boolean | null
+          host_id: string
+          id: string
+          images: string[] | null
+          is_verified: boolean | null
+          last_booked_at: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          mileage_limit: number | null
+          model: string | null
+          price_per_day: number
+          rating: number | null
+          slug: string | null
+          tags: string[] | null
+          title: string
+          total_reviews: number | null
+          updated_at: string
+          vehicle_type: string | null
+          verified_by: string | null
+          views_count: number | null
+          year: number | null
+        }
+        Insert: {
+          availability_status?: boolean | null
+          booking_count?: number | null
+          brand?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          engine_capacity?: number | null
+          featured?: boolean | null
+          helmet_included?: boolean | null
+          host_id: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          mileage_limit?: number | null
+          model?: string | null
+          price_per_day: number
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title: string
+          total_reviews?: number | null
+          updated_at?: string
+          vehicle_type?: string | null
+          verified_by?: string | null
+          views_count?: number | null
+          year?: number | null
+        }
+        Update: {
+          availability_status?: boolean | null
+          booking_count?: number | null
+          brand?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          engine_capacity?: number | null
+          featured?: boolean | null
+          helmet_included?: boolean | null
+          host_id?: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          mileage_limit?: number | null
+          model?: string | null
+          price_per_day?: number
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title?: string
+          total_reviews?: number | null
+          updated_at?: string
+          vehicle_type?: string | null
+          verified_by?: string | null
+          views_count?: number | null
+          year?: number | null
+        }
+        Relationships: []
+      }
+      blog_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author_id: string
+          category_id: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published_at: string | null
+          reading_time: number | null
+          slug: string
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views_count: number | null
+        }
+        Insert: {
+          author_id: string
+          category_id?: string | null
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          slug: string
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views_count?: number | null
+        }
+        Update: {
+          author_id?: string
+          category_id?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          reading_time?: number | null
+          slug?: string
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "blog_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookings: {
+        Row: {
+          booking_status: Database["public"]["Enums"]["booking_status"] | null
+          cancellation_reason: string | null
+          created_at: string
+          currency: string | null
+          end_date: string
+          guests_count: number | null
+          host_id: string
+          id: string
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          notes: string | null
+          payment_method: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"] | null
+          reviewed: boolean | null
+          start_date: string
+          total_price: number
+          transaction_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_status?: Database["public"]["Enums"]["booking_status"] | null
+          cancellation_reason?: string | null
+          created_at?: string
+          currency?: string | null
+          end_date: string
+          guests_count?: number | null
+          host_id: string
+          id?: string
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          notes?: string | null
+          payment_method?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          reviewed?: boolean | null
+          start_date: string
+          total_price: number
+          transaction_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_status?: Database["public"]["Enums"]["booking_status"] | null
+          cancellation_reason?: string | null
+          created_at?: string
+          currency?: string | null
+          end_date?: string
+          guests_count?: number | null
+          host_id?: string
+          id?: string
+          listing_id?: string
+          listing_type?: Database["public"]["Enums"]["listing_type"]
+          notes?: string | null
+          payment_method?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          reviewed?: boolean | null
+          start_date?: string
+          total_price?: number
+          transaction_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cars: {
+        Row: {
+          amenities: Json | null
+          availability_status: boolean | null
+          booking_count: number | null
+          brand: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          discounts: Json | null
+          featured: boolean | null
+          fuel_type: string | null
+          host_id: string
+          id: string
+          images: string[] | null
+          is_verified: boolean | null
+          last_booked_at: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          mileage_limit: number | null
+          model: string | null
+          price_per_day: number
+          rating: number | null
+          seating_capacity: number | null
+          slug: string | null
+          tags: string[] | null
+          title: string
+          total_reviews: number | null
+          transmission: string | null
+          updated_at: string
+          vehicle_type: string | null
+          verified_by: string | null
+          views_count: number | null
+          year: number | null
+        }
+        Insert: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          booking_count?: number | null
+          brand?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          featured?: boolean | null
+          fuel_type?: string | null
+          host_id: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          mileage_limit?: number | null
+          model?: string | null
+          price_per_day: number
+          rating?: number | null
+          seating_capacity?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title: string
+          total_reviews?: number | null
+          transmission?: string | null
+          updated_at?: string
+          vehicle_type?: string | null
+          verified_by?: string | null
+          views_count?: number | null
+          year?: number | null
+        }
+        Update: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          booking_count?: number | null
+          brand?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          featured?: boolean | null
+          fuel_type?: string | null
+          host_id?: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          mileage_limit?: number | null
+          model?: string | null
+          price_per_day?: number
+          rating?: number | null
+          seating_capacity?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title?: string
+          total_reviews?: number | null
+          transmission?: string | null
+          updated_at?: string
+          vehicle_type?: string | null
+          verified_by?: string | null
+          views_count?: number | null
+          year?: number | null
+        }
+        Relationships: []
+      }
+      experiences: {
+        Row: {
+          availability_status: boolean | null
+          booking_count: number | null
+          category: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          discounts: Json | null
+          duration: string | null
+          exclusions: string[] | null
+          featured: boolean | null
+          group_size: number | null
+          host_id: string
+          id: string
+          images: string[] | null
+          inclusions: string[] | null
+          is_verified: boolean | null
+          itinerary: Json | null
+          last_booked_at: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          price_per_person: number
+          rating: number | null
+          slug: string | null
+          tags: string[] | null
+          title: string
+          total_reviews: number | null
+          updated_at: string
+          verified_by: string | null
+          views_count: number | null
+        }
+        Insert: {
+          availability_status?: boolean | null
+          booking_count?: number | null
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          duration?: string | null
+          exclusions?: string[] | null
+          featured?: boolean | null
+          group_size?: number | null
+          host_id: string
+          id?: string
+          images?: string[] | null
+          inclusions?: string[] | null
+          is_verified?: boolean | null
+          itinerary?: Json | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          price_per_person: number
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title: string
+          total_reviews?: number | null
+          updated_at?: string
+          verified_by?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          availability_status?: boolean | null
+          booking_count?: number | null
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          duration?: string | null
+          exclusions?: string[] | null
+          featured?: boolean | null
+          group_size?: number | null
+          host_id?: string
+          id?: string
+          images?: string[] | null
+          inclusions?: string[] | null
+          is_verified?: boolean | null
+          itinerary?: Json | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          price_per_person?: number
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title?: string
+          total_reviews?: number | null
+          updated_at?: string
+          verified_by?: string | null
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      listing_questions: {
+        Row: {
+          created_at: string
+          id: string
+          is_answered: boolean | null
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          question: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_answered?: boolean | null
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          question: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_answered?: boolean | null
+          listing_id?: string
+          listing_type?: Database["public"]["Enums"]["listing_type"]
+          question?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          link: string | null
+          message: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          bio: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          date_of_birth: string | null
+          full_name: string | null
+          gender: string | null
+          id: string
+          last_login: string | null
+          phone: string | null
+          postal_code: string | null
+          profile_image: string | null
+          state: string | null
+          total_bookings: number | null
+          updated_at: string
+          wallet_balance: number | null
+        }
+        Insert: {
+          address?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id: string
+          last_login?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          profile_image?: string | null
+          state?: string | null
+          total_bookings?: number | null
+          updated_at?: string
+          wallet_balance?: number | null
+        }
+        Update: {
+          address?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          gender?: string | null
+          id?: string
+          last_login?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          profile_image?: string | null
+          state?: string | null
+          total_bookings?: number | null
+          updated_at?: string
+          wallet_balance?: number | null
+        }
+        Relationships: []
+      }
+      question_answers: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          question_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          question_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          question_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "listing_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          images: string[] | null
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          rating: number
+          reply_from_host: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          images?: string[] | null
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          rating: number
+          reply_from_host?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          images?: string[] | null
+          listing_id?: string
+          listing_type?: Database["public"]["Enums"]["listing_type"]
+          rating?: number
+          reply_from_host?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stays: {
+        Row: {
+          amenities: Json | null
+          availability_status: boolean | null
+          bathrooms: number | null
+          bedrooms: number | null
+          booking_count: number | null
+          cancellation_policy: string | null
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          discounts: Json | null
+          featured: boolean | null
+          host_id: string
+          id: string
+          images: string[] | null
+          is_verified: boolean | null
+          last_booked_at: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          max_guests: number
+          price_per_night: number
+          property_type: string | null
+          rating: number | null
+          slug: string | null
+          tags: string[] | null
+          title: string
+          total_reviews: number | null
+          updated_at: string
+          verified_by: string | null
+          views_count: number | null
+        }
+        Insert: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          booking_count?: number | null
+          cancellation_policy?: string | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          featured?: boolean | null
+          host_id: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          max_guests: number
+          price_per_night: number
+          property_type?: string | null
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title: string
+          total_reviews?: number | null
+          updated_at?: string
+          verified_by?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          booking_count?: number | null
+          cancellation_policy?: string | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          discounts?: Json | null
+          featured?: boolean | null
+          host_id?: string
+          id?: string
+          images?: string[] | null
+          is_verified?: boolean | null
+          last_booked_at?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          max_guests?: number
+          price_per_night?: number
+          property_type?: string | null
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          title?: string
+          total_reviews?: number | null
+          updated_at?: string
+          verified_by?: string | null
+          views_count?: number | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          listing_type?: Database["public"]["Enums"]["listing_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user" | "host"
+      booking_status: "pending" | "confirmed" | "cancelled" | "completed"
+      listing_type: "stay" | "car" | "bike" | "experience"
+      payment_status: "pending" | "completed" | "failed" | "refunded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +972,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user", "host"],
+      booking_status: ["pending", "confirmed", "cancelled", "completed"],
+      listing_type: ["stay", "car", "bike", "experience"],
+      payment_status: ["pending", "completed", "failed", "refunded"],
+    },
   },
 } as const
