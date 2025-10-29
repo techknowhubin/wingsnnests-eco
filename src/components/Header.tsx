@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import MegaMenu from "./MegaMenu";
 
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
@@ -27,28 +28,29 @@ const Header = () => {
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-2">
+            <MegaMenu />
             <Link
               to="/stays"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
             >
               Stays
             </Link>
             <Link
               to="/experiences"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
             >
               Experiences
             </Link>
             <Link
               to="/bikes"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
             >
               Bikes
             </Link>
             <Link
               to="/cars"
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
             >
               Cars
             </Link>

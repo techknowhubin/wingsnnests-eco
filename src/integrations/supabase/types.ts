@@ -693,7 +693,7 @@ export type Database = {
           description: string | null
           discounts: Json | null
           featured: boolean | null
-          host_id: string
+          host_id: string | null
           id: string
           images: string[] | null
           is_verified: boolean | null
@@ -727,7 +727,7 @@ export type Database = {
           description?: string | null
           discounts?: Json | null
           featured?: boolean | null
-          host_id: string
+          host_id?: string | null
           id?: string
           images?: string[] | null
           is_verified?: boolean | null
@@ -761,7 +761,7 @@ export type Database = {
           description?: string | null
           discounts?: Json | null
           featured?: boolean | null
-          host_id?: string
+          host_id?: string | null
           id?: string
           images?: string[] | null
           is_verified?: boolean | null

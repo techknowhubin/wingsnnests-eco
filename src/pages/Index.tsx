@@ -1,4 +1,3 @@
-import { Home, Bike, Car, Compass } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Marquee from "@/components/Marquee";
@@ -10,28 +9,36 @@ import heroImage from "@/assets/hero-travel.jpg";
 import homestayImage from "@/assets/homestay-featured.jpg";
 import bikeImage from "@/assets/bike-featured.jpg";
 import experienceImage from "@/assets/experience-featured.jpg";
+import homestaysImage from "@/assets/categories/homestays.jpg";
+import bikesImage from "@/assets/categories/bikes.jpg";
+import carsImage from "@/assets/categories/cars.jpg";
+import experiencesImage from "@/assets/categories/experiences.jpg";
 
 const Index = () => {
   const categories = [
     {
-      icon: Home,
+      image: homestaysImage,
       title: "Homestays",
-      description: "Cozy accommodations with local charm",
+      description: "Experience authentic local hospitality",
+      link: "/stays",
     },
     {
-      icon: Bike,
+      image: bikesImage,
       title: "Bike Rentals",
       description: "Explore on two wheels",
+      link: "/bikes",
     },
     {
-      icon: Car,
+      image: carsImage,
       title: "Car Rentals",
-      description: "Freedom to roam",
+      description: "Drive your adventure",
+      link: "/cars",
     },
     {
-      icon: Compass,
+      image: experiencesImage,
       title: "Experiences",
-      description: "Unique local adventures",
+      description: "Unforgettable moments",
+      link: "/experiences",
     },
   ];
 
@@ -107,9 +114,10 @@ const Index = () => {
             {categories.map((category, index) => (
               <CategoryCard
                 key={category.title}
-                icon={category.icon}
+                image={category.image}
                 title={category.title}
                 description={category.description}
+                link={category.link}
                 delay={index * 0.1}
               />
             ))}
