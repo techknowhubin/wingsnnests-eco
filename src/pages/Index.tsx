@@ -5,16 +5,126 @@ import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import ListingCard from "@/components/ListingCard";
 import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
-import homestayImage from "@/assets/homestay-featured.jpg";
-import bikeImage from "@/assets/bike-featured.jpg";
-import experienceImage from "@/assets/experience-featured.jpg";
 import homestaysImage from "@/assets/categories/homestays.jpg";
 import bikesImage from "@/assets/categories/bikes.jpg";
 import carsImage from "@/assets/categories/cars.jpg";
 import experiencesImage from "@/assets/categories/experiences.jpg";
 
 const Index = () => {
+  const [stays, setStays] = useState<any[]>([]);
+  const [bikes, setBikes] = useState<any[]>([]);
+  const [cars, setCars] = useState<any[]>([]);
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [staysPage, setStaysPage] = useState(0);
+  const [bikesPage, setBikesPage] = useState(0);
+  const [carsPage, setCarsPage] = useState(0);
+  const [experiencesPage, setExperiencesPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const observerRef = useRef<HTMLDivElement>(null);
+  const ITEMS_PER_PAGE = 12;
+
+  const fetchStays = async (page: number) => {
+    const { data } = await supabase
+      .from("stays")
+      .select("*")
+      .eq("availability_status", true)
+      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+    return data || [];
+  };
+
+  const fetchBikes = async (page: number) => {
+    const { data } = await supabase
+      .from("bikes")
+      .select("*")
+      .eq("availability_status", true)
+      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+    return data || [];
+  };
+
+  const fetchCars = async (page: number) => {
+    const { data } = await supabase
+      .from("cars")
+      .select("*")
+      .eq("availability_status", true)
+      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+    return data || [];
+  };
+
+  const fetchExperiences = async (page: number) => {
+    const { data } = await supabase
+      .from("experiences")
+      .select("*")
+      .eq("availability_status", true)
+      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+    return data || [];
+  };
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setLoading(true);
+      const [staysData, bikesData, carsData, experiencesData] = await Promise.all([
+        fetchStays(0),
+        fetchBikes(0),
+        fetchCars(0),
+        fetchExperiences(0),
+      ]);
+      setStays(staysData);
+      setBikes(bikesData);
+      setCars(carsData);
+      setExperiences(experiencesData);
+      setLoading(false);
+    };
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          setLoading(true);
+          const newStaysPage = staysPage + 1;
+          const newBikesPage = bikesPage + 1;
+          const newCarsPage = carsPage + 1;
+          const newExperiencesPage = experiencesPage + 1;
+
+          const [staysData, bikesData, carsData, experiencesData] = await Promise.all([
+            fetchStays(newStaysPage),
+            fetchBikes(newBikesPage),
+            fetchCars(newCarsPage),
+            fetchExperiences(newExperiencesPage),
+          ]);
+
+          if (staysData.length > 0) {
+            setStays((prev) => [...prev, ...staysData]);
+            setStaysPage(newStaysPage);
+          }
+          if (bikesData.length > 0) {
+            setBikes((prev) => [...prev, ...bikesData]);
+            setBikesPage(newBikesPage);
+          }
+          if (carsData.length > 0) {
+            setCars((prev) => [...prev, ...carsData]);
+            setCarsPage(newCarsPage);
+          }
+          if (experiencesData.length > 0) {
+            setExperiences((prev) => [...prev, ...experiencesData]);
+            setExperiencesPage(newExperiencesPage);
+          }
+          setLoading(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loading, staysPage, bikesPage, carsPage, experiencesPage]);
   const categories = [
     {
       image: homestaysImage,
@@ -39,30 +149,6 @@ const Index = () => {
       title: "Experiences",
       description: "Unforgettable moments",
       link: "/experiences",
-    },
-  ];
-
-  const featuredListings = [
-    {
-      image: homestayImage,
-      title: "Mountain View Homestay",
-      location: "Manali, Himachal Pradesh",
-      price: "₹3,500",
-      rating: 4.9,
-    },
-    {
-      image: bikeImage,
-      title: "Royal Enfield Himalayan",
-      location: "Leh, Ladakh",
-      price: "₹1,500",
-      rating: 4.8,
-    },
-    {
-      image: experienceImage,
-      title: "Traditional Kerala Cooking Class",
-      location: "Kochi, Kerala",
-      price: "₹2,000",
-      rating: 5.0,
     },
   ];
 
@@ -125,26 +211,128 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* Featured Listings */}
-      <section className="container mx-auto px-4 py-16">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-3xl font-bold text-foreground mb-8">Featured for You</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredListings.map((listing, index) => (
-              <ListingCard
-                key={listing.title}
-                {...listing}
-                delay={index * 0.1}
-              />
-            ))}
-          </div>
-        </motion.div>
-      </section>
+      {/* Homestays Section */}
+      {stays.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold text-foreground mb-8">Featured Homestays</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {stays.map((stay, index) => (
+                <ListingCard
+                  key={stay.id}
+                  id={stay.id}
+                  image={stay.images?.[0] || ""}
+                  title={stay.title}
+                  location={stay.location}
+                  price={`₹${stay.price_per_night}`}
+                  rating={Number(stay.rating) || 0}
+                  type="stay"
+                  delay={index * 0.05}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
+      {/* Bikes Section */}
+      {bikes.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold text-foreground mb-8">Bike Rentals</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {bikes.map((bike, index) => (
+                <ListingCard
+                  key={bike.id}
+                  id={bike.id}
+                  image={bike.images?.[0] || ""}
+                  title={bike.title}
+                  location={bike.location}
+                  price={`₹${bike.price_per_day}`}
+                  rating={Number(bike.rating) || 0}
+                  type="bike"
+                  delay={index * 0.05}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
+      {/* Cars Section */}
+      {cars.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold text-foreground mb-8">Car Rentals</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {cars.map((car, index) => (
+                <ListingCard
+                  key={car.id}
+                  id={car.id}
+                  image={car.images?.[0] || ""}
+                  title={car.title}
+                  location={car.location}
+                  price={`₹${car.price_per_day}`}
+                  rating={Number(car.rating) || 0}
+                  type="car"
+                  delay={index * 0.05}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
+      {/* Experiences Section */}
+      {experiences.length > 0 && (
+        <section className="container mx-auto px-4 py-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold text-foreground mb-8">Experiences</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+              {experiences.map((experience, index) => (
+                <ListingCard
+                  key={experience.id}
+                  id={experience.id}
+                  image={experience.images?.[0] || ""}
+                  title={experience.title}
+                  location={experience.location}
+                  price={`₹${experience.price_per_person}`}
+                  rating={Number(experience.rating) || 0}
+                  type="experience"
+                  delay={index * 0.05}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
+      {/* Load More Trigger */}
+      <div ref={observerRef} className="h-20 flex items-center justify-center">
+        {loading && (
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        )}
+      </div>
 
       {/* Footer CTA */}
       <section className="container mx-auto px-4 py-24">

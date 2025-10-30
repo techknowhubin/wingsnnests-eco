@@ -84,7 +84,7 @@ const MegaMenu = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[800px] glass-effect rounded-2xl shadow-2xl p-6 border"
+            className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[80vw] bg-background/90 backdrop-blur-md rounded-2xl shadow-2xl p-6 border z-50"
           >
             <div className="grid grid-cols-2 gap-6">
               {/* Main Categories */}
