@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Marquee from "@/components/Marquee";
-import { Star, MapPin, Wifi, Car, Check, Shield, X, Users, BedDouble, Bath, Calendar as CalendarIcon } from "lucide-react";
+import { Star, MapPin, Wifi, Car, Check, Shield, X, Users, BedDouble, Bath, Tv, Coffee, Wind, Utensils, Snowflake, Dumbbell, ParkingCircle, Camera, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,8 @@ import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
 import munnarImage from "@/assets/stays/munnar-tea-cottage.jpg";
 import udaipurImage from "@/assets/stays/udaipur-lakeside-palace.jpg";
 import kasolImage from "@/assets/stays/kasol-valley-home.jpg";
+import royalEnfieldImage from "@/assets/vehicles/royal-enfield-classic.jpg";
+import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
 
 const imageMap: Record<string, string> = {
   "manali-mountain-homestay.jpg": manaliImage,
@@ -22,6 +24,23 @@ const imageMap: Record<string, string> = {
   "munnar-tea-cottage.jpg": munnarImage,
   "udaipur-lakeside-palace.jpg": udaipurImage,
   "kasol-valley-home.jpg": kasolImage,
+};
+
+// Helper function to get appropriate icon for amenity
+const getAmenityIcon = (amenity: string): LucideIcon => {
+  const amenityLower = amenity.toLowerCase();
+  
+  if (amenityLower.includes('wifi') || amenityLower.includes('internet')) return Wifi;
+  if (amenityLower.includes('tv') || amenityLower.includes('television')) return Tv;
+  if (amenityLower.includes('coffee') || amenityLower.includes('kitchen')) return Coffee;
+  if (amenityLower.includes('air') || amenityLower.includes('ac')) return Wind;
+  if (amenityLower.includes('breakfast') || amenityLower.includes('meal')) return Utensils;
+  if (amenityLower.includes('refrigerator') || amenityLower.includes('fridge')) return Snowflake;
+  if (amenityLower.includes('gym') || amenityLower.includes('fitness')) return Dumbbell;
+  if (amenityLower.includes('parking')) return ParkingCircle;
+  if (amenityLower.includes('security') || amenityLower.includes('camera')) return Camera;
+  
+  return Wifi; // default icon
 };
 
 interface Stay {
@@ -237,12 +256,15 @@ const StayDetail = () => {
             <div className="pb-8 border-b border-border">
               <h2 className="text-2xl font-semibold text-foreground mb-6">What this place offers</h2>
               <div className="grid grid-cols-2 gap-4">
-                {amenitiesList.map((amenity: string, index: number) => (
-                  <div key={index} className="flex items-center gap-3 text-foreground">
-                    <Wifi className="h-5 w-5" />
-                    <span>{amenity}</span>
-                  </div>
-                ))}
+                {amenitiesList.map((amenity: string, index: number) => {
+                  const IconComponent = getAmenityIcon(amenity);
+                  return (
+                    <div key={index} className="flex items-center gap-3 text-foreground">
+                      <IconComponent className="h-5 w-5" />
+                      <span>{amenity}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -251,12 +273,16 @@ const StayDetail = () => {
               <h2 className="text-2xl font-semibold text-foreground mb-6">Rent a vehicle</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
-                  { name: "Royal Enfield Classic", rating: 4.8, price: 1200, km: 100 },
-                  { name: "Honda City", rating: 4.9, price: 2500, km: 150 },
+                  { name: "Royal Enfield Classic", rating: 4.8, price: 1200, km: 100, image: royalEnfieldImage },
+                  { name: "Honda City", rating: 4.9, price: 2500, km: 150, image: hondaCityImage },
                 ].map((vehicle, i) => (
                   <Card key={i} className="border-border overflow-hidden">
-                    <div className="aspect-video bg-muted flex items-center justify-center">
-                      <Car className="h-12 w-12 text-muted-foreground" />
+                    <div className="aspect-video overflow-hidden">
+                      <img 
+                        src={vehicle.image} 
+                        alt={vehicle.name}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
                     <div className="p-4">
                       <h3 className="font-semibold text-foreground mb-1">{vehicle.name}</h3>
