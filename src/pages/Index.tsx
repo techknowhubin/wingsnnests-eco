@@ -5,7 +5,7 @@ import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import ListingCard from "@/components/ListingCard";
 import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
 import homestaysImage from "@/assets/categories/homestays.jpg";
@@ -45,47 +45,45 @@ const Index = () => {
   const [bikes, setBikes] = useState<any[]>([]);
   const [cars, setCars] = useState<any[]>([]);
   const [experiences, setExperiences] = useState<any[]>([]);
-  const [staysPage, setStaysPage] = useState(0);
-  const [bikesPage, setBikesPage] = useState(0);
-  const [carsPage, setCarsPage] = useState(0);
-  const [experiencesPage, setExperiencesPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const observerRef = useRef<HTMLDivElement>(null);
-  const ITEMS_PER_PAGE = 12;
 
-  const fetchStays = async (page: number) => {
+  const fetchStays = async () => {
     const { data } = await supabase
       .from("stays")
       .select("*")
       .eq("availability_status", true)
-      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+      .order("featured", { ascending: false })
+      .order("created_at", { ascending: false });
     return data || [];
   };
 
-  const fetchBikes = async (page: number) => {
+  const fetchBikes = async () => {
     const { data } = await supabase
       .from("bikes")
       .select("*")
       .eq("availability_status", true)
-      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+      .order("featured", { ascending: false })
+      .order("created_at", { ascending: false });
     return data || [];
   };
 
-  const fetchCars = async (page: number) => {
+  const fetchCars = async () => {
     const { data } = await supabase
       .from("cars")
       .select("*")
       .eq("availability_status", true)
-      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+      .order("featured", { ascending: false })
+      .order("created_at", { ascending: false });
     return data || [];
   };
 
-  const fetchExperiences = async (page: number) => {
+  const fetchExperiences = async () => {
     const { data } = await supabase
       .from("experiences")
       .select("*")
       .eq("availability_status", true)
-      .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1);
+      .order("featured", { ascending: false })
+      .order("created_at", { ascending: false });
     return data || [];
   };
 
@@ -93,10 +91,10 @@ const Index = () => {
     const loadInitialData = async () => {
       setLoading(true);
       const [staysData, bikesData, carsData, experiencesData] = await Promise.all([
-        fetchStays(0),
-        fetchBikes(0),
-        fetchCars(0),
-        fetchExperiences(0),
+        fetchStays(),
+        fetchBikes(),
+        fetchCars(),
+        fetchExperiences(),
       ]);
       setStays(staysData);
       setBikes(bikesData);
@@ -106,52 +104,6 @@ const Index = () => {
     };
     loadInitialData();
   }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      async (entries) => {
-        if (entries[0].isIntersecting && !loading) {
-          setLoading(true);
-          const newStaysPage = staysPage + 1;
-          const newBikesPage = bikesPage + 1;
-          const newCarsPage = carsPage + 1;
-          const newExperiencesPage = experiencesPage + 1;
-
-          const [staysData, bikesData, carsData, experiencesData] = await Promise.all([
-            fetchStays(newStaysPage),
-            fetchBikes(newBikesPage),
-            fetchCars(newCarsPage),
-            fetchExperiences(newExperiencesPage),
-          ]);
-
-          if (staysData.length > 0) {
-            setStays((prev) => [...prev, ...staysData]);
-            setStaysPage(newStaysPage);
-          }
-          if (bikesData.length > 0) {
-            setBikes((prev) => [...prev, ...bikesData]);
-            setBikesPage(newBikesPage);
-          }
-          if (carsData.length > 0) {
-            setCars((prev) => [...prev, ...carsData]);
-            setCarsPage(newCarsPage);
-          }
-          if (experiencesData.length > 0) {
-            setExperiences((prev) => [...prev, ...experiencesData]);
-            setExperiencesPage(newExperiencesPage);
-          }
-          setLoading(false);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [loading, staysPage, bikesPage, carsPage, experiencesPage]);
   const categories = [
     {
       image: homestaysImage,
@@ -353,15 +305,6 @@ const Index = () => {
           </motion.div>
         </section>
       )}
-
-      {/* Load More Trigger */}
-      <div ref={observerRef} className="container mx-auto px-4 py-8">
-        {loading && (
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        )}
-      </div>
 
       {/* Footer CTA */}
       <section className="container mx-auto px-4 py-24">
