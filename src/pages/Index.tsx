@@ -12,6 +12,33 @@ import homestaysImage from "@/assets/categories/homestays.jpg";
 import bikesImage from "@/assets/categories/bikes.jpg";
 import carsImage from "@/assets/categories/cars.jpg";
 import experiencesImage from "@/assets/categories/experiences.jpg";
+import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
+import goaImage from "@/assets/stays/goa-beach-villa.jpg";
+import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
+import munnarImage from "@/assets/stays/munnar-tea-cottage.jpg";
+import udaipurImage from "@/assets/stays/udaipur-lakeside-palace.jpg";
+import kasolImage from "@/assets/stays/kasol-valley-home.jpg";
+import royalEnfieldImage from "@/assets/vehicles/royal-enfield-classic.jpg";
+import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
+import bikeImage from "@/assets/bike-featured.jpg";
+import experienceImage from "@/assets/experience-featured.jpg";
+
+const stayImageMap: Record<string, string> = {
+  "manali-mountain-homestay.jpg": manaliImage,
+  "goa-beach-villa.jpg": goaImage,
+  "jaipur-heritage-haveli.jpg": jaipurImage,
+  "munnar-tea-cottage.jpg": munnarImage,
+  "udaipur-lakeside-palace.jpg": udaipurImage,
+  "kasol-valley-home.jpg": kasolImage,
+};
+
+const bikeImageMap: Record<string, string> = {
+  "royal-enfield-classic.jpg": royalEnfieldImage,
+};
+
+const carImageMap: Record<string, string> = {
+  "honda-city.jpg": hondaCityImage,
+};
 
 const Index = () => {
   const [stays, setStays] = useState<any[]>([]);
@@ -226,7 +253,7 @@ const Index = () => {
                 <ListingCard
                   key={stay.id}
                   id={stay.id}
-                  image={stay.images?.[0] || ""}
+                  image={stayImageMap[stay.images?.[0]] || manaliImage}
                   title={stay.title}
                   location={stay.location}
                   price={`₹${stay.price_per_night}`}
@@ -255,7 +282,7 @@ const Index = () => {
                 <ListingCard
                   key={bike.id}
                   id={bike.id}
-                  image={bike.images?.[0] || ""}
+                  image={bikeImageMap[bike.images?.[0]] || bikeImage}
                   title={bike.title}
                   location={bike.location}
                   price={`₹${bike.price_per_day}`}
@@ -284,7 +311,7 @@ const Index = () => {
                 <ListingCard
                   key={car.id}
                   id={car.id}
-                  image={car.images?.[0] || ""}
+                  image={carImageMap[car.images?.[0]] || hondaCityImage}
                   title={car.title}
                   location={car.location}
                   price={`₹${car.price_per_day}`}
@@ -313,7 +340,7 @@ const Index = () => {
                 <ListingCard
                   key={experience.id}
                   id={experience.id}
-                  image={experience.images?.[0] || ""}
+                  image={experienceImage}
                   title={experience.title}
                   location={experience.location}
                   price={`₹${experience.price_per_person}`}
@@ -328,9 +355,11 @@ const Index = () => {
       )}
 
       {/* Load More Trigger */}
-      <div ref={observerRef} className="h-20 flex items-center justify-center">
+      <div ref={observerRef} className="container mx-auto px-4 py-8">
         {loading && (
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
         )}
       </div>
 

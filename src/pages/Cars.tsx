@@ -4,53 +4,89 @@ import Marquee from "@/components/Marquee";
 import SearchBar from "@/components/SearchBar";
 import ListingCard from "@/components/ListingCard";
 import { motion } from "framer-motion";
-import bikeImage from "@/assets/bike-featured.jpg";
+import { useEffect, useState, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
+
+const carImageMap: Record<string, string> = {
+  "honda-city.jpg": hondaCityImage,
+};
+
+interface Car {
+  id: string;
+  title: string;
+  location: string;
+  price_per_day: number;
+  currency: string;
+  rating: number;
+  images: string[];
+}
 
 const Cars = () => {
-  const listings = [
-    {
-      image: bikeImage,
-      title: "Mahindra Thar",
-      location: "Ladakh Region",
-      price: "₹4,500",
-      rating: 4.9,
-    },
-    {
-      image: bikeImage,
-      title: "Toyota Innova Crysta",
-      location: "Mumbai, Maharashtra",
-      price: "₹3,500",
-      rating: 4.8,
-    },
-    {
-      image: bikeImage,
-      title: "Maruti Swift Dzire",
-      location: "Delhi NCR",
-      price: "₹2,000",
-      rating: 4.7,
-    },
-    {
-      image: bikeImage,
-      title: "Hyundai Creta",
-      location: "Bangalore, Karnataka",
-      price: "₹3,200",
-      rating: 4.8,
-    },
-    {
-      image: bikeImage,
-      title: "Honda City",
-      location: "Pune, Maharashtra",
-      price: "₹2,500",
-      rating: 4.7,
-    },
-    {
-      image: bikeImage,
-      title: "Force Gurkha",
-      location: "Manali, Himachal Pradesh",
-      price: "₹5,000",
-      rating: 5.0,
-    },
-  ];
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const { toast } = useToast();
+  const observerRef = useRef<HTMLDivElement>(null);
+  const ITEMS_PER_PAGE = 12;
+
+  const fetchCars = async (pageNum: number) => {
+    try {
+      const { data, error } = await supabase
+        .from("cars")
+        .select("id, title, location, price_per_day, currency, rating, images")
+        .eq("availability_status", true)
+        .order("featured", { ascending: false })
+        .order("created_at", { ascending: false })
+        .range(pageNum * ITEMS_PER_PAGE, (pageNum + 1) * ITEMS_PER_PAGE - 1);
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error("Error fetching cars:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load cars. Please try again.",
+        variant: "destructive",
+      });
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setLoading(true);
+      const data = await fetchCars(0);
+      setCars(data);
+      setLoading(false);
+    };
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (entries[0].isIntersecting && !loading && cars.length >= ITEMS_PER_PAGE) {
+          setLoading(true);
+          const newPage = page + 1;
+          const newData = await fetchCars(newPage);
+          if (newData.length > 0) {
+            setCars((prev) => [...prev, ...newData]);
+            setPage(newPage);
+          }
+          setLoading(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loading, page, cars.length]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -79,12 +115,37 @@ const Cars = () => {
 
       {/* Listings Section */}
       <section className="container mx-auto px-4 py-16 flex-grow">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {listings.map((listing, index) => (
-            <ListingCard key={index} {...listing} type="car" id={`${index + 1}`} delay={index * 0.1} />
-          ))}
-        </div>
+        {!loading && cars.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground text-lg">No cars available at the moment.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            {cars.map((car, index) => (
+              <ListingCard
+                key={car.id}
+                id={car.id}
+                image={carImageMap[car.images?.[0]] || hondaCityImage}
+                title={car.title}
+                location={car.location}
+                price={`${car.currency === 'INR' ? '₹' : '$'}${car.price_per_day.toLocaleString()}`}
+                rating={Number(car.rating)}
+                type="car"
+                delay={index * 0.05}
+              />
+            ))}
+          </div>
+        )}
       </section>
+
+      {/* Load More Trigger */}
+      <div ref={observerRef} className="container mx-auto px-4 py-8">
+        {loading && (
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        )}
+      </div>
 
       <Footer />
     </div>
