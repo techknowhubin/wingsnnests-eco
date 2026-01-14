@@ -78,7 +78,7 @@ const Careers = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-4xl mx-auto mb-12"
         >
-          <h2 className="text-3xl font-bold text-foreground mb-6">Why Xplowing?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-6">Why Xplorwing?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass-effect rounded-2xl p-6">
               <h3 className="text-xl font-bold text-foreground mb-2">Impact</h3>

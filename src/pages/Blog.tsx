@@ -74,7 +74,7 @@ const Blog = () => {
             className="text-center max-w-3xl mx-auto"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Xplowing Travel Blog
+              Xplorwing Travel Blog
             </h1>
             <p className="text-lg text-muted-foreground">
               Stories, guides, and inspiration for your next Indian adventure
