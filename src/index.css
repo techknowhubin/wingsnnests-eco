@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Xplowing Light Mode - Light Ivory & Dark Forest Green */
+    /* Xplorwing Light Mode - Light Ivory & Dark Forest Green */
     --background: 48 100% 99%;
     --foreground: 158 100% 10%;
 
@@ -53,7 +53,7 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Xplowing Dark Mode - Forest at Night */
+    /* Xplorwing Dark Mode - Forest at Night */
     --background: 158 40% 8%;
     --foreground: 48 100% 96%;
 

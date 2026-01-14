@@ -43,7 +43,7 @@ const AboutUs = () => {
             className="text-center max-w-3xl mx-auto"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              About Xplowing
+              About Xplorwing
             </h1>
             <p className="text-lg text-muted-foreground">
               Your trusted companion for exploring India with freedom and authenticity
@@ -63,7 +63,7 @@ const AboutUs = () => {
           <h2 className="text-3xl font-bold text-foreground mb-6">Our Story</h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
-              Xplowing was born from a simple idea: travel in India should be as free and
+              Xplorwing was born from a simple idea: travel in India should be as free and
               effortless as a bird soaring through the sky. We saw travelers struggling with
               fragmented booking systems, unclear pricing, and a lack of authentic local
               experiences.
@@ -76,7 +76,7 @@ const AboutUs = () => {
             </p>
             <p>
               From the snow-capped peaks of Ladakh to the beaches of Goa, from the heritage
-              cities of Rajasthan to the backwaters of Kerala - Xplowing is your gateway to
+              cities of Rajasthan to the backwaters of Kerala - Xplorwing is your gateway to
               discovering incredible India.
             </p>
           </div>

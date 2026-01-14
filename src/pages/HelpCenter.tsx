@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 const HelpCenter = () => {
   const faqs = [
     {
-      question: "How do I book a homestay on Xplowing?",
+      question: "How do I book a homestay on Xplorwing?",
       answer: "Browse our homestay listings, select your preferred property, choose your dates, and click 'Book Now'. You'll be guided through a secure payment process. Once confirmed, you'll receive booking details via email and in your account dashboard.",
     },
     {
@@ -21,7 +21,7 @@ const HelpCenter = () => {
     },
     {
       question: "How does the Digital ID/KYC work?",
-      answer: "Complete your KYC verification once by uploading your documents. Once verified, you'll receive a Digital ID with a QR code that can be used for all future bookings on Xplowing, making the process seamless and paperless.",
+      answer: "Complete your KYC verification once by uploading your documents. Once verified, you'll receive a Digital ID with a QR code that can be used for all future bookings on Xplorwing, making the process seamless and paperless.",
     },
     {
       question: "Is my payment information secure?",
@@ -29,10 +29,10 @@ const HelpCenter = () => {
     },
     {
       question: "What if I face issues during my stay or rental?",
-      answer: "Contact our 24/7 support team via phone, email, or in-app chat. We're here to resolve any issues quickly. You can also reach out to your host or rental provider directly through the Xplowing messaging system.",
+      answer: "Contact our 24/7 support team via phone, email, or in-app chat. We're here to resolve any issues quickly. You can also reach out to your host or rental provider directly through the Xplorwing messaging system.",
     },
     {
-      question: "How do Xplowing Experiences work?",
+      question: "How do Xplorwing Experiences work?",
       answer: "Browse unique local experiences, select your preferred date and group size, and book instantly. Your experience host will receive your booking and confirm details. You'll get a confirmation with meeting point and what to bring.",
     },
     {
@@ -51,7 +51,7 @@ const HelpCenter = () => {
     {
       icon: Mail,
       title: "Email Us",
-      detail: "support@xplowing.com",
+      detail: "support@xplorwing.com",
       description: "We'll respond within 24 hours",
     },
     {

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Home, Bike, Car, Compass, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -8,7 +9,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div>
-            <h3 className="text-2xl font-bold text-primary mb-4">Xplowing</h3>
+            <Link to="/">
+              <img src={logo} alt="Xplorwing" className="h-12 w-auto mb-4" />
+            </Link>
             <p className="text-muted-foreground mb-4">
               Your trusted travel companion for exploring incredible India. Discover stays, experiences, and adventures.
             </p>
@@ -78,7 +81,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex gap-2 text-muted-foreground">
                 <Mail className="h-4 w-4 mt-0.5" />
-                <span className="text-sm">support@xplowing.in</span>
+                <span className="text-sm">support@xplorwing.in</span>
               </li>
               <li className="flex gap-2 text-muted-foreground">
                 <Phone className="h-4 w-4 mt-0.5" />
@@ -91,7 +94,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Xplowing. All rights reserved.
+            © {new Date().getFullYear()} Xplorwing. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">

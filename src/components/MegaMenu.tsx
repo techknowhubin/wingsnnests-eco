@@ -156,7 +156,7 @@ const MegaMenu = () => {
 
                 <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 border">
                   <h4 className="font-semibold text-foreground mb-2">
-                    New to Xplowing?
+                    New to Xplorwing?
                   </h4>
                   <p className="text-sm text-muted-foreground mb-3">
                     Discover unique stays, adventures, and rentals across India

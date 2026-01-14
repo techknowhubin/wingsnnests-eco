@@ -90,7 +90,7 @@ const Login = () => {
         </div>
         <div className="relative z-10 flex flex-col justify-center items-start p-16 text-primary-foreground">
           <Link to="/">
-            <h1 className="text-5xl font-bold mb-6">Xplowing</h1>
+            <h1 className="text-5xl font-bold mb-6">Xplorwing</h1>
           </Link>
           <p className="text-2xl font-light mb-4">Welcome back to adventure</p>
           <p className="text-lg opacity-90">
