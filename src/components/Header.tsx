@@ -4,6 +4,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import MegaMenu from "./MegaMenu";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
@@ -23,7 +24,7 @@ const Header = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <h1 className="text-2xl font-bold text-primary">Xplowing</h1>
+              <img src={logo} alt="Xplorwing" className="h-10 w-auto" />
             </motion.div>
           </Link>
 
