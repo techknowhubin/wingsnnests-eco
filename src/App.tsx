@@ -22,6 +22,17 @@ import Blog from "./pages/Blog";
 import HelpCenter from "./pages/HelpCenter";
 import NotFound from "./pages/NotFound";
 
+// Host Dashboard Pages
+import HostDashboard from "./pages/HostDashboard";
+import HostStays from "./pages/HostStays";
+import HostCars from "./pages/HostCars";
+import HostBikes from "./pages/HostBikes";
+import HostExperiences from "./pages/HostExperiences";
+import HostBookings from "./pages/HostBookings";
+import HostEarnings from "./pages/HostEarnings";
+import HostLinkInBio from "./pages/HostLinkInBio";
+import HostSettings from "./pages/HostSettings";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -48,6 +59,18 @@ const App = () => (
             <Route path="/careers" element={<Careers />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/help" element={<HelpCenter />} />
+            
+            {/* Host Dashboard Routes */}
+            <Route path="/host" element={<HostDashboard />} />
+            <Route path="/host/stays" element={<HostStays />} />
+            <Route path="/host/cars" element={<HostCars />} />
+            <Route path="/host/bikes" element={<HostBikes />} />
+            <Route path="/host/experiences" element={<HostExperiences />} />
+            <Route path="/host/bookings" element={<HostBookings />} />
+            <Route path="/host/earnings" element={<HostEarnings />} />
+            <Route path="/host/link" element={<HostLinkInBio />} />
+            <Route path="/host/settings" element={<HostSettings />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
