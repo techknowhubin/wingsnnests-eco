@@ -1,0 +1,342 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreVertical,
+  Eye,
+  Edit,
+  Trash2,
+  Star,
+  MapPin,
+  CheckCircle,
+  XCircle,
+  ExternalLink,
+} from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { formatPrice } from '@/lib/supabase-helpers';
+import type { Stay, Car, Bike, Experience, ListingType } from '@/types/database';
+import { format } from 'date-fns';
+
+interface ListingsManagerProps {
+  title: string;
+  description: string;
+  listingType: ListingType;
+  listings: (Stay | Car | Bike | Experience)[];
+  isLoading: boolean;
+  priceKey: 'price_per_night' | 'price_per_day' | 'price_per_person';
+  priceLabel: string;
+  emptyIcon: React.ReactNode;
+}
+
+export function ListingsManager({
+  title,
+  description,
+  listingType,
+  listings,
+  isLoading,
+  priceKey,
+  priceLabel,
+  emptyIcon,
+}: ListingsManagerProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [view, setView] = useState<'grid' | 'table'>('grid');
+
+  const filteredListings = listings.filter((listing) =>
+    listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    listing.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const getPrice = (listing: Stay | Car | Bike | Experience) => {
+    if (priceKey === 'price_per_night') return (listing as Stay).price_per_night;
+    if (priceKey === 'price_per_day') return (listing as Car | Bike).price_per_day;
+    return (listing as Experience).price_per_person;
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">{title}</h1>
+          <p className="text-muted-foreground mt-1">{description}</p>
+        </div>
+        <Button className="w-full lg:w-auto">
+          <Plus className="h-4 w-4 mr-2" />
+          Add New {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
+        </Button>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by title or location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon">
+                <Filter className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={view === 'grid' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setView('grid')}
+              >
+                Grid
+              </Button>
+              <Button
+                variant={view === 'table' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setView('table')}
+              >
+                Table
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Listings */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <div className="h-48 bg-secondary rounded-t-lg" />
+              <CardContent className="p-4">
+                <div className="h-4 bg-secondary rounded w-3/4 mb-2" />
+                <div className="h-3 bg-secondary rounded w-1/2" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : filteredListings.length === 0 ? (
+        <Card className="py-16">
+          <div className="text-center">
+            <div className="mx-auto w-16 h-16 mb-4 text-muted-foreground/50">
+              {emptyIcon}
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No {title.toLowerCase()} yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Start by adding your first {listingType} listing
+            </p>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Your First {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
+            </Button>
+          </div>
+        </Card>
+      ) : view === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredListings.map((listing) => (
+            <Card key={listing.id} className="overflow-hidden hover-lift group">
+              <div className="relative h-48 bg-secondary">
+                {listing.images && listing.images[0] ? (
+                  <img
+                    src={listing.images[0]}
+                    alt={listing.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    No image
+                  </div>
+                )}
+                <div className="absolute top-3 left-3 flex gap-2">
+                  {listing.is_verified && (
+                    <Badge className="bg-green-500">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Verified
+                    </Badge>
+                  )}
+                  {listing.featured && (
+                    <Badge variant="secondary">Featured</Badge>
+                  )}
+                </div>
+                <div className="absolute top-3 right-3">
+                  <Badge variant={listing.availability_status ? 'default' : 'secondary'}>
+                    {listing.availability_status ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold truncate">{listing.title}</h3>
+                    <div className="flex items-center text-sm text-muted-foreground mt-1">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span className="truncate">{listing.location}</span>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="shrink-0">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Preview
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                  <div>
+                    <p className="text-lg font-bold text-primary">
+                      {formatPrice(getPrice(listing))}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{priceLabel}</p>
+                  </div>
+                  <div className="text-right">
+                    {listing.rating && (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-medium">{listing.rating.toFixed(1)}</span>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {listing.views_count || 0} views
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Listing</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Views</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredListings.map((listing) => (
+                <TableRow key={listing.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-lg bg-secondary overflow-hidden shrink-0">
+                        {listing.images?.[0] && (
+                          <img
+                            src={listing.images[0]}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{listing.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(listing.created_at), 'MMM d, yyyy')}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center text-sm">
+                      <MapPin className="h-3 w-3 mr-1 text-muted-foreground" />
+                      {listing.location}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <p className="font-medium">{formatPrice(getPrice(listing))}</p>
+                    <p className="text-xs text-muted-foreground">{priceLabel}</p>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={listing.availability_status ? 'default' : 'secondary'}>
+                      {listing.availability_status ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{listing.views_count || 0}</TableCell>
+                  <TableCell>
+                    {listing.rating ? (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        {listing.rating.toFixed(1)}
+                      </div>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Eye className="h-4 w-4 mr-2" />
+                          View
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      )}
+    </motion.div>
+  );
+}
