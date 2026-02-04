@@ -19,11 +19,11 @@ const CategoryCard = ({ image, title, description, link, delay = 0 }: CategoryCa
         whileHover={{ scale: 1.02 }}
         className="card-gradient rounded-2xl overflow-hidden hover-lift cursor-pointer group"
       >
-        <div className="aspect-video relative overflow-hidden">
+        <div className="aspect-video relative overflow-hidden bg-muted/30">
           <img 
             src={image} 
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
           />
         </div>
         <div className="p-6">
