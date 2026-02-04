@@ -23,6 +23,7 @@ const Header = () => {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="dark:bg-white/90 dark:rounded-lg dark:px-2 dark:py-1 dark:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300"
             >
               <img src={logo} alt="Xplorwing" className="h-10 w-auto" />
             </motion.div>
