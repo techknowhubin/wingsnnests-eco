@@ -86,10 +86,15 @@ All colors MUST be HSL.
     --glass-bg: 158 35% 12% / 0.7;
     --glass-border: 158 25% 20% / 0.3;
     
-    /* Dark mode shadows */
-    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.3);
-    --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.4);
-    --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.5);
+    /* Dark mode shadows with glow */
+    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.3), 0 0 20px hsl(158 60% 45% / 0.1);
+    --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.4), 0 0 30px hsl(158 60% 45% / 0.15);
+    --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.5), 0 0 40px hsl(158 60% 45% / 0.2);
+    
+    /* Element glow */
+    --glow-subtle: 0 0 15px hsl(158 60% 45% / 0.15);
+    --glow-medium: 0 0 25px hsl(158 60% 45% / 0.2);
+    --glow-strong: 0 0 40px hsl(158 60% 45% / 0.3);
   }
 }
 
@@ -126,4 +131,38 @@ All colors MUST be HSL.
   .card-gradient {
     background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
   }
+  
+  /* Dark mode glow effects */
+  .dark .glow-element {
+    box-shadow: var(--glow-subtle);
+  }
+  
+  .dark .glow-element:hover {
+    box-shadow: var(--glow-medium);
+  }
+}
+
+/* Dark mode automatic glow on cards and interactive elements */
+.dark [data-slot="card"],
+.dark .rounded-2xl,
+.dark .rounded-xl,
+.dark .rounded-lg {
+  box-shadow: 0 0 20px hsl(158 60% 45% / 0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+.dark [data-slot="card"]:hover,
+.dark .hover-lift:hover {
+  box-shadow: 0 0 30px hsl(158 60% 45% / 0.15), 0 4px 16px hsl(0 0% 0% / 0.4);
+}
+
+/* Buttons glow in dark mode */
+.dark button[class*="bg-primary"],
+.dark .bg-primary {
+  box-shadow: 0 0 20px hsl(158 60% 45% / 0.25);
+}
+
+.dark button[class*="bg-primary"]:hover,
+.dark .bg-primary:hover {
+  box-shadow: 0 0 30px hsl(158 60% 45% / 0.4);
 }
