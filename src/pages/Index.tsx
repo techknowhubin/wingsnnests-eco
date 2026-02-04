@@ -152,12 +152,12 @@ const Index = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-8"
           >
-            <h2 className="text-5xl md:text-6xl font-bold text-primary-foreground mb-4 drop-shadow-lg">
+            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-[0_4px_24px_rgba(255,255,255,0.3)] [text-shadow:_0_2px_20px_rgba(0,0,0,0.8)]">
               Your Next Adventure
               <br />
               Starts Here
             </h2>
-            <p className="text-xl text-primary-foreground/90 drop-shadow-md">
+            <p className="text-xl text-white/95 drop-shadow-md [text-shadow:_0_2px_12px_rgba(0,0,0,0.7)]">
               Discover unique stays, experiences, and rentals worldwide
             </p>
           </motion.div>
