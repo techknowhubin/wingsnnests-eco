@@ -25,11 +25,7 @@ const Header = () => {
               whileTap={{ scale: 0.95 }}
               className="transition-all duration-300"
             >
-              <img 
-                src={logo} 
-                alt="Xplorwing" 
-                className="h-10 w-auto dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] dark:brightness-110" 
-              />
+              <img src={logo} alt="Xplorwing" className="h-10 w-auto" />
             </motion.div>
           </Link>
 
