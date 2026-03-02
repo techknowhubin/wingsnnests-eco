@@ -11,6 +11,7 @@ import {
   getUserNotifications, getUnreadNotificationCount, markNotificationAsRead,
   getHostStays, getHostCars, getHostBikes, getHostExperiences,
   isAdmin, isHost, isModerator,
+  createStay, createCar, createBike, createExperience,
 } from '@/lib/supabase-helpers';
 import type { ListingType, BookingStatus } from '@/types/database';
 
@@ -337,5 +338,51 @@ export function useIsModerator(userId: string | undefined) {
     queryKey: ['role', 'moderator', userId],
     queryFn: () => isModerator(userId!),
     enabled: !!userId,
+  });
+}
+
+// ============ Create Listing Hooks ============
+
+export function useCreateStay() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createStay,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['host', 'stays'] });
+      queryClient.invalidateQueries({ queryKey: ['stays'] });
+    },
+  });
+}
+
+export function useCreateCar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createCar,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['host', 'cars'] });
+      queryClient.invalidateQueries({ queryKey: ['cars'] });
+    },
+  });
+}
+
+export function useCreateBike() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createBike,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['host', 'bikes'] });
+      queryClient.invalidateQueries({ queryKey: ['bikes'] });
+    },
+  });
+}
+
+export function useCreateExperience() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createExperience,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['host', 'experiences'] });
+      queryClient.invalidateQueries({ queryKey: ['experiences'] });
+    },
   });
 }

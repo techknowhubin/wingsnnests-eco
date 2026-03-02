@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -57,6 +58,7 @@ export function ListingsManager({
   priceLabel,
   emptyIcon,
 }: ListingsManagerProps) {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<'grid' | 'table'>('grid');
 
@@ -83,7 +85,7 @@ export function ListingsManager({
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">{title}</h1>
           <p className="text-muted-foreground mt-1">{description}</p>
         </div>
-        <Button className="w-full lg:w-auto">
+        <Button className="w-full lg:w-auto" onClick={() => navigate(`/host/${listingType === 'experience' ? 'experiences' : listingType + 's'}/add`)}>
           <Plus className="h-4 w-4 mr-2" />
           Add New {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
         </Button>
@@ -148,7 +150,7 @@ export function ListingsManager({
             <p className="text-muted-foreground mb-4">
               Start by adding your first {listingType} listing
             </p>
-            <Button>
+            <Button onClick={() => navigate(`/host/${listingType === 'experience' ? 'experiences' : listingType + 's'}/add`)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Your First {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
             </Button>
