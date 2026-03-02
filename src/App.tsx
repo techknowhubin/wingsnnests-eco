@@ -32,6 +32,10 @@ import HostBookings from "./pages/HostBookings";
 import HostEarnings from "./pages/HostEarnings";
 import HostLinkInBio from "./pages/HostLinkInBio";
 import HostSettings from "./pages/HostSettings";
+import HostAddStay from "./pages/HostAddStay";
+import HostAddCar from "./pages/HostAddCar";
+import HostAddBike from "./pages/HostAddBike";
+import HostAddExperience from "./pages/HostAddExperience";
 
 const queryClient = new QueryClient();
 
@@ -63,9 +67,13 @@ const App = () => (
             {/* Host Dashboard Routes */}
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/host/stays" element={<HostStays />} />
+            <Route path="/host/stays/add" element={<HostAddStay />} />
             <Route path="/host/cars" element={<HostCars />} />
+            <Route path="/host/cars/add" element={<HostAddCar />} />
             <Route path="/host/bikes" element={<HostBikes />} />
+            <Route path="/host/bikes/add" element={<HostAddBike />} />
             <Route path="/host/experiences" element={<HostExperiences />} />
+            <Route path="/host/experiences/add" element={<HostAddExperience />} />
             <Route path="/host/bookings" element={<HostBookings />} />
             <Route path="/host/earnings" element={<HostEarnings />} />
             <Route path="/host/link" element={<HostLinkInBio />} />

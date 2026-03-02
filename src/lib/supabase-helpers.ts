@@ -430,6 +430,52 @@ export async function getHostExperiences(hostId: string) {
   return data;
 }
 
+// ============ Create Listing Helpers ============
+
+export async function createStay(stay: Omit<Stay, 'id' | 'created_at' | 'updated_at' | 'rating' | 'total_reviews' | 'views_count' | 'booking_count' | 'last_booked_at' | 'is_verified' | 'verified_by' | 'featured'>) {
+  const slug = generateSlug(stay.title);
+  const { data, error } = await supabase
+    .from('stays')
+    .insert({ ...stay, slug })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function createCar(car: Omit<Car, 'id' | 'created_at' | 'updated_at' | 'rating' | 'total_reviews' | 'views_count' | 'booking_count' | 'last_booked_at' | 'is_verified' | 'verified_by' | 'featured'>) {
+  const slug = generateSlug(car.title);
+  const { data, error } = await supabase
+    .from('cars')
+    .insert({ ...car, slug })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function createBike(bike: Omit<Bike, 'id' | 'created_at' | 'updated_at' | 'rating' | 'total_reviews' | 'views_count' | 'booking_count' | 'last_booked_at' | 'is_verified' | 'verified_by' | 'featured'>) {
+  const slug = generateSlug(bike.title);
+  const { data, error } = await supabase
+    .from('bikes')
+    .insert({ ...bike, slug })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function createExperience(experience: Omit<Experience, 'id' | 'created_at' | 'updated_at' | 'rating' | 'total_reviews' | 'views_count' | 'booking_count' | 'last_booked_at' | 'is_verified' | 'verified_by' | 'featured'>) {
+  const slug = generateSlug(experience.title);
+  const { data, error } = await supabase
+    .from('experiences')
+    .insert({ ...experience, slug })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 // ============ Utility Functions ============
 
 export function generateSlug(text: string): string {
