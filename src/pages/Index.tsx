@@ -159,21 +159,32 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Categories Section - Horizontal scrollable colorful cards */}
+      {/* Categories Section */}
       <section className="container mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
-          <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x snap-mandatory">
+          <div className="flex flex-wrap justify-center gap-4">
             {categories.map((cat, index) => (
-              <div key={cat.title} className="snap-start flex-shrink-0">
-                <CategoryCard
-                  image={cat.image}
-                  title={cat.title}
-                  subtitle={cat.subtitle}
-                  link={cat.link}
-                  bgColor={cat.bgColor}
-                  delay={index * 0.08}
-                />
-              </div>
+              <CategoryCard
+                key={cat.title}
+                image={cat.image}
+                title={cat.title}
+                subtitle={cat.subtitle}
+                link={cat.link}
+                bgColor={cat.bgColor}
+                delay={index * 0.08}
+              />
+            ))}
+          </div>
+          {/* Dot navigation */}
+          <div className="flex justify-center gap-2 mt-6">
+            {categories.map((cat, i) => (
+              <motion.div
+                key={cat.title}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3 + i * 0.08 }}
+                className={`w-2 h-2 rounded-full ${i === 0 ? "bg-primary w-6" : "bg-muted-foreground/30"} transition-all duration-300`}
+              />
             ))}
           </div>
         </motion.div>
