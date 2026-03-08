@@ -3,6 +3,19 @@
 
 import type { Stay, Car, Bike, Experience, Booking, Profile } from '@/types/database';
 
+// Demo listing images
+import mistyValleyCottage from '@/assets/demo/misty-valley-cottage.jpg';
+import hilltopHeritageBungalow from '@/assets/demo/hilltop-heritage-bungalow.jpg';
+import pineForestTreehouse from '@/assets/demo/pine-forest-treehouse.jpg';
+import swiftDzire from '@/assets/demo/swift-dzire.jpg';
+import mahindraThar from '@/assets/demo/mahindra-thar.jpg';
+import royalEnfieldClassic from '@/assets/demo/royal-enfield-classic.jpg';
+import hondaActiva from '@/assets/demo/honda-activa.jpg';
+import ktmDuke from '@/assets/demo/ktm-duke.jpg';
+import sunriseTrek from '@/assets/demo/sunrise-trek.jpg';
+import lakeCycling from '@/assets/demo/lake-cycling.jpg';
+import stargazing from '@/assets/demo/stargazing.jpg';
+
 const DEMO_HOST_ID = 'demo-host-kodaikanal';
 const now = new Date().toISOString();
 const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString();
@@ -35,7 +48,7 @@ export const DEMO_STAYS: Stay[] = [
     bathrooms: 2,
     property_type: 'Cottage',
     amenities: ['Wi-Fi', 'Fireplace', 'Kitchen', 'Parking', 'Garden', 'Hot Water', 'Mountain View'],
-    images: ['/placeholder.svg'],
+    images: [mistyValleyCottage],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -69,7 +82,7 @@ export const DEMO_STAYS: Stay[] = [
     bathrooms: 3,
     property_type: 'Bungalow',
     amenities: ['Wi-Fi', 'Fireplace', 'Kitchen', 'Parking', 'Caretaker', 'BBQ', 'Lake View', 'Antique Décor'],
-    images: ['/placeholder.svg'],
+    images: [hilltopHeritageBungalow],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -103,7 +116,7 @@ export const DEMO_STAYS: Stay[] = [
     bathrooms: 1,
     property_type: 'Treehouse',
     amenities: ['Stargazing Roof', 'Deck', 'Hot Water', 'Nature Trail', 'Breakfast Included'],
-    images: ['/placeholder.svg'],
+    images: [pineForestTreehouse],
     availability_status: true,
     is_verified: false,
     verified_by: null,
@@ -144,7 +157,7 @@ export const DEMO_CARS: Car[] = [
     vehicle_type: 'Sedan',
     mileage_limit: 200,
     amenities: ['GPS', 'Bluetooth', 'AC', 'USB Charging', 'First Aid Kit'],
-    images: ['/placeholder.svg'],
+    images: [swiftDzire],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -179,7 +192,7 @@ export const DEMO_CARS: Car[] = [
     vehicle_type: 'SUV',
     mileage_limit: 150,
     amenities: ['4x4', 'Bluetooth', 'AC', 'Off-road Tyres', 'Roof Rack'],
-    images: ['/placeholder.svg'],
+    images: [mahindraThar],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -215,7 +228,7 @@ export const DEMO_BIKES: Bike[] = [
     vehicle_type: 'Cruiser',
     mileage_limit: 150,
     helmet_included: true,
-    images: ['/placeholder.svg'],
+    images: [royalEnfieldClassic],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -248,7 +261,7 @@ export const DEMO_BIKES: Bike[] = [
     vehicle_type: 'Scooter',
     mileage_limit: 100,
     helmet_included: true,
-    images: ['/placeholder.svg'],
+    images: [hondaActiva],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -281,7 +294,7 @@ export const DEMO_BIKES: Bike[] = [
     vehicle_type: 'Sport',
     mileage_limit: 120,
     helmet_included: true,
-    images: ['/placeholder.svg'],
+    images: [ktmDuke],
     availability_status: false,
     is_verified: true,
     verified_by: null,
@@ -322,7 +335,7 @@ export const DEMO_EXPERIENCES: Experience[] = [
       { time: '7:30 AM', activity: 'Chai break & photo session' },
       { time: '9:00 AM', activity: 'Return to base' },
     ],
-    images: ['/placeholder.svg'],
+    images: [sunriseTrek],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -360,7 +373,7 @@ export const DEMO_EXPERIENCES: Experience[] = [
       { time: '11:15 AM', activity: 'Ice cream & photo stop at Bryant Park entrance' },
       { time: '12:00 PM', activity: 'Return bicycles' },
     ],
-    images: ['/placeholder.svg'],
+    images: [lakeCycling],
     availability_status: true,
     is_verified: true,
     verified_by: null,
@@ -398,7 +411,7 @@ export const DEMO_EXPERIENCES: Experience[] = [
       { time: '9:30 PM', activity: 'Deep sky object viewing' },
       { time: '10:30 PM', activity: 'Wrap up & departure' },
     ],
-    images: ['/placeholder.svg'],
+    images: [stargazing],
     availability_status: true,
     is_verified: false,
     verified_by: null,
