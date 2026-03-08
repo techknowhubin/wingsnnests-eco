@@ -45,7 +45,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
   const total = subtotal - discount + serviceFee;
 
   return (
-    <Card className="border-border shadow-strong sticky top-24 p-6 rounded-2xl">
+    <Card className="border-border shadow-strong sticky top-24 p-6 rounded-2xl bg-white dark:bg-card">
       {/* Price */}
       <div className="mb-4">
         <span className="text-3xl font-bold text-foreground">{currencySymbol}{pricePerNight}</span>
