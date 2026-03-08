@@ -95,8 +95,8 @@ const Header = () => {
               </Button>
 
               <Link to="/login">
-                <Button variant="ghost" className="gap-2 rounded-full p-1 pr-3 glass-effect hover:bg-white/20 dark:hover:bg-white/10">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-border/50 flex items-center justify-center overflow-hidden">
+                <Button variant="ghost" className="gap-2 rounded-full p-1 pr-3 hover:bg-muted/60">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden">
                     <User className="h-4 w-4 text-primary" />
                   </div>
                   <span className="hidden md:inline text-sm font-medium text-foreground">Login</span>
