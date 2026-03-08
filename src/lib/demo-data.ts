@@ -157,7 +157,7 @@ export const DEMO_CARS: Car[] = [
     vehicle_type: 'Sedan',
     mileage_limit: 200,
     amenities: ['GPS', 'Bluetooth', 'AC', 'USB Charging', 'First Aid Kit'],
-    images: ['/placeholder.svg'],
+    images: [swiftDzire],
     availability_status: true,
     is_verified: true,
     verified_by: null,
