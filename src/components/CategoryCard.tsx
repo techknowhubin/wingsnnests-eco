@@ -8,9 +8,11 @@ interface CategoryCardProps {
   link: string;
   bgColor: string;
   delay?: number;
+  iconScale?: number;
 }
 
-const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0 }: CategoryCardProps) => {
+const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0, iconScale = 1 }: CategoryCardProps) => {
+  const size = 120 * iconScale;
   return (
     <Link to={link} className="block">
       <motion.div
