@@ -69,7 +69,7 @@ const ListingCard = ({
       </div>
 
       {/* Arrow icon */}
-      <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
         <ArrowUpRight className="h-4 w-4 text-foreground" />
       </div>
 
