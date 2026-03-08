@@ -1,4 +1,4 @@
-import { Heart, Star } from "lucide-react";
+import { Heart, Star, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link } from "react-router-dom";
