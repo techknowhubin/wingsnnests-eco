@@ -66,6 +66,7 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/link-in-bio" element={<LinkInBioLanding />} />
+            <Route path="/destinations" element={<Destinations />} />
             
             {/* Host Dashboard Routes */}
             <Route path="/host" element={<HostDashboard />} />
