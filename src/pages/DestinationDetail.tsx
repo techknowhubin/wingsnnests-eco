@@ -300,7 +300,7 @@ const DestinationDetail = () => {
               <Button
                 variant={showMap ? "default" : "outline"}
                 size="sm"
-                className="h-8 gap-1.5 text-xs"
+                className="h-8 gap-1.5 text-xs hidden lg:flex"
                 onClick={() => setShowMap(!showMap)}
               >
                 <MapPin className="h-3.5 w-3.5" />
