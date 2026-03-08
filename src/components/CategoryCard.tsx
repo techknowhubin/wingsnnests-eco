@@ -33,6 +33,7 @@ const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0 }: Cate
               className="w-[112px] h-[112px] object-cover"
             />
           </div>
+        </div>
       </motion.div>
     </Link>
   );
