@@ -228,7 +228,7 @@ export const DEMO_BIKES: Bike[] = [
     vehicle_type: 'Cruiser',
     mileage_limit: 150,
     helmet_included: true,
-    images: ['/placeholder.svg'],
+    images: [royalEnfieldClassic],
     availability_status: true,
     is_verified: true,
     verified_by: null,
