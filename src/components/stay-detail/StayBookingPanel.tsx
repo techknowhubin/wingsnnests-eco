@@ -72,7 +72,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-9 rounded-lg border-border px-2 text-xs",
+                  "w-full justify-start text-left font-normal h-9 rounded-full border-border px-3 text-xs",
                   !checkIn && "text-muted-foreground"
                 )}
               >
@@ -99,7 +99,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-9 rounded-lg border-border px-2 text-xs",
+                  "w-full justify-start text-left font-normal h-9 rounded-full border-border px-3 text-xs",
                   !checkOut && "text-muted-foreground"
                 )}
               >
@@ -121,7 +121,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
         </div>
         <div>
           <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-0.5">Guests</label>
-          <div className="flex items-center justify-between h-9 border border-border rounded-lg px-1.5">
+          <div className="flex items-center justify-between h-9 border border-border rounded-full px-2">
             <button
               onClick={() => setGuests(Math.max(1, guests - 1))}
               disabled={guests <= 1}
@@ -187,7 +187,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
 
       {/* Book Now */}
       <Button
-        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-10 rounded-xl text-sm font-semibold"
+        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-10 rounded-full text-sm font-semibold"
         size="lg"
       >
         Book Now
