@@ -27,19 +27,7 @@ import {
 import { formatPrice, calculateCommission } from '@/lib/supabase-helpers';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-};
+import { StaggerContainer, StaggerItem, LayoutCard, ModuleSkeleton } from './DashboardTransitions';
 
 export function DashboardOverview() {
   const { user } = useAuth();
