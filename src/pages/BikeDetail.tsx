@@ -11,8 +11,6 @@ import VehicleBookingPanel from "@/components/vehicle-detail/VehicleBookingPanel
 
 const BikeDetail = () => {
   const { id } = useParams();
-  const [pickupDate, setPickupDate] = useState<Date>();
-  const [dropoffDate, setDropoffDate] = useState<Date>();
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const specs = [
