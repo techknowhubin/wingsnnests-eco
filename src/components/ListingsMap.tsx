@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Home, Car, Bike, Compass } from "lucide-react";
-import { renderToStaticMarkup } from "react-dom/server";
 
 export interface MapMarker {
   lat: number;
