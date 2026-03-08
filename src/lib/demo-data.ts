@@ -373,7 +373,7 @@ export const DEMO_EXPERIENCES: Experience[] = [
       { time: '11:15 AM', activity: 'Ice cream & photo stop at Bryant Park entrance' },
       { time: '12:00 PM', activity: 'Return bicycles' },
     ],
-    images: ['/placeholder.svg'],
+    images: [lakeCycling],
     availability_status: true,
     is_verified: true,
     verified_by: null,
