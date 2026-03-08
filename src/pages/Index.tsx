@@ -64,6 +64,7 @@ const categories = [
     subtitle: "Explore on two wheels",
     link: "/bikes",
     bgColor: "bg-green-100 dark:bg-green-950/40",
+    iconScale: 1.5,
   },
   {
     image: carsIcon,
@@ -71,6 +72,7 @@ const categories = [
     subtitle: "Drive your adventure",
     link: "/cars",
     bgColor: "bg-cyan-100 dark:bg-cyan-950/40",
+    iconScale: 1.5,
   },
   {
     image: cabsIcon,
@@ -238,6 +240,7 @@ const Index = () => {
                     link={cat.link}
                     bgColor={cat.bgColor}
                     delay={index * 0.08}
+                    iconScale={cat.iconScale}
                   />
                 ))}
               </motion.div>
