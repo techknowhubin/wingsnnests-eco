@@ -415,7 +415,7 @@ const DestinationDetail = () => {
         </div>
 
         {/* Mobile floating toggle button */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden flex items-center gap-2">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1100] lg:hidden flex items-center gap-2">
           {!mobileShowMap && (
             <div className="flex items-center border border-border rounded-full overflow-hidden bg-card shadow-lg">
               <Button
