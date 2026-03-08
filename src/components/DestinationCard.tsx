@@ -8,13 +8,14 @@ interface DestinationCardProps {
   subtitle: string;
   rating: number;
   priceRange: string;
-  link: string;
+  link?: string;
   delay?: number;
 }
 
 const DestinationCard = ({ image, title, subtitle, rating, priceRange, link, delay = 0 }: DestinationCardProps) => {
+  const destinationLink = `/destinations/${encodeURIComponent(title.toLowerCase().replace(/\s+/g, "-"))}`;
   return (
-    <Link to={link}>
+    <Link to={destinationLink}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

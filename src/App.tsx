@@ -69,6 +69,7 @@ const App = () => (
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/link-in-bio" element={<LinkInBioLanding />} />
             <Route path="/destinations" element={<Destinations />} />
+            <Route path="/destinations/:name" element={<DestinationDetail />} />
             
             {/* Host Dashboard — shared layout, only content transitions */}
             <Route path="/host" element={<HostLayout />}>
