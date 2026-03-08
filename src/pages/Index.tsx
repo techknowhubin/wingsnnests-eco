@@ -129,6 +129,15 @@ const Index = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [getCardsPerPage]);
 
+  // Auto-slide for mobile/tablet
+  useEffect(() => {
+    if (!isMobileOrTablet) return;
+    const interval = setInterval(() => {
+      setCategoryPage(p => (p + 1) % totalPages);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isMobileOrTablet, totalPages]);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -234,15 +243,15 @@ const Index = () => {
               </motion.div>
             </AnimatePresence>
           </div>
-          {/* Dot navigation - hidden on desktop */}
+          {/* Dot navigation - hidden on desktop, transparent bg */}
           {isMobileOrTablet && (
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-2 mt-4">
               {Array.from({ length: totalPages }).map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCategoryPage(i)}
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    i === categoryPage ? "bg-primary w-6" : "bg-muted-foreground/30 w-2"
+                    i === categoryPage ? "bg-primary/80 w-6" : "bg-primary/20 w-2"
                   }`}
                 />
               ))}
