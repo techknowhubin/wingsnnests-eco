@@ -7,7 +7,7 @@ import DestinationCard from "@/components/DestinationCard";
 import ListingCard from "@/components/ListingCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
@@ -255,6 +255,21 @@ const Index = () => {
               style={{ backgroundImage: `url(${img})` }}
             />
           ))}
+          {/* Navigation Arrows */}
+          <button
+            onClick={() => setHeroSlide((heroSlide - 1 + heroImages.length) % heroImages.length)}
+            aria-label="Previous slide"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 backdrop-blur-sm transition-all duration-200"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          <button
+            onClick={() => setHeroSlide((heroSlide + 1) % heroImages.length)}
+            aria-label="Next slide"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 backdrop-blur-sm transition-all duration-200"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
           {/* Slide indicators */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
             {heroImages.map((_, i) => (
