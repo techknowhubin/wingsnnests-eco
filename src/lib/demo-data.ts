@@ -294,7 +294,7 @@ export const DEMO_BIKES: Bike[] = [
     vehicle_type: 'Sport',
     mileage_limit: 120,
     helmet_included: true,
-    images: ['/placeholder.svg'],
+    images: [ktmDuke],
     availability_status: false,
     is_verified: true,
     verified_by: null,
