@@ -57,7 +57,8 @@ const categories = [
     subtitle: "Unique homestays",
     link: "/stays",
     bgColor: "bg-pink-100 dark:bg-pink-950/40",
-    iconOffsetX: 10,
+    iconOffsetX: 15,
+    iconOffsetY: 5,
   },
   {
     image: bikesIcon,
@@ -65,7 +66,9 @@ const categories = [
     subtitle: "Explore on two wheels",
     link: "/bikes",
     bgColor: "bg-green-100 dark:bg-green-950/40",
-    iconScale: 1.5,
+    iconScale: 1.25,
+    iconOffsetX: 10,
+    iconOffsetY: -5,
   },
   {
     image: carsIcon,
