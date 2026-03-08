@@ -5,9 +5,9 @@ import Marquee from "@/components/Marquee";
 import { motion } from "framer-motion";
 import { Star, MapPin, Heart, Share2, Gauge, Fuel, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import bikeImage from "@/assets/bike-featured.jpg";
+import VehicleBookingPanel from "@/components/vehicle-detail/VehicleBookingPanel";
 
 const BikeDetail = () => {
   const { id } = useParams();
