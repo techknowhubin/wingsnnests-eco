@@ -48,7 +48,7 @@ export const DEMO_STAYS: Stay[] = [
     bathrooms: 2,
     property_type: 'Cottage',
     amenities: ['Wi-Fi', 'Fireplace', 'Kitchen', 'Parking', 'Garden', 'Hot Water', 'Mountain View'],
-    images: ['/placeholder.svg'],
+    images: [mistyValleyCottage],
     availability_status: true,
     is_verified: true,
     verified_by: null,
