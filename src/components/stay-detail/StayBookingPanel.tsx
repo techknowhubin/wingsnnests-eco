@@ -187,7 +187,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
 
       {/* Book Now */}
       <Button
-        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-10 rounded-xl text-sm font-semibold"
+        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-10 rounded-full text-sm font-semibold"
         size="lg"
       >
         Book Now
