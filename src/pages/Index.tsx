@@ -112,7 +112,8 @@ const categories = [
     link: "/stays",
     bgColor: "bg-blue-100 dark:bg-blue-950/40",
     iconOffsetX: 10,
-    iconOffsetY: -5,
+    iconOffsetY: 5,
+    iconScale: 0.9,
   },
   {
     image: resortsIcon,
