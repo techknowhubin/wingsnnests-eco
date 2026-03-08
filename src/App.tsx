@@ -23,6 +23,7 @@ import HelpCenter from "./pages/HelpCenter";
 import NotFound from "./pages/NotFound";
 import LinkInBioLanding from "./pages/LinkInBioLanding";
 import Destinations from "./pages/Destinations";
+import DestinationDetail from "./pages/DestinationDetail";
 
 // Host Dashboard
 import HostLayout from "./pages/HostLayout";
