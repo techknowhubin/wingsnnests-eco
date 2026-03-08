@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
 import heroXplorwing from "@/assets/hero-xplorwing.jpg";
 import heroTajmahal from "@/assets/hero-tajmahal.jpg";
-import heroMysorePalace from "@/assets/hero-mysore-palace.jpg";
+
 import heroOutstationCabs from "@/assets/hero-outstation-cabs.jpg";
 import homestaysIcon from "@/assets/categories/homestays-icon.png";
 import bikesIcon from "@/assets/categories/bikes-icon.png";
@@ -120,7 +120,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [categoryPage, setCategoryPage] = useState(0);
   const [heroSlide, setHeroSlide] = useState(0);
-  const heroImages = [heroImage, heroXplorwing, heroTajmahal, heroMysorePalace, heroOutstationCabs];
+  const heroImages = [heroImage, heroXplorwing, heroTajmahal, heroOutstationCabs];
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
