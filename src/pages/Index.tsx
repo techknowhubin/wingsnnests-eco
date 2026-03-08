@@ -216,30 +216,31 @@ const Index = () => {
       <Header />
 
       {/* Hero Section with Slider */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={heroSlide}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${heroImages[heroSlide]})` }}
-          />
-        </AnimatePresence>
-        {/* Slide indicators */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-          {heroImages.map((_, i) => (
-            <button
+      <section className="container mx-auto px-4 pt-4">
+        <div className="relative h-[70vh] rounded-3xl overflow-hidden">
+          {heroImages.map((img, i) => (
+            <motion.div
               key={i}
-              onClick={() => setHeroSlide(i)}
-              aria-label={`Go to slide ${i + 1}`}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === heroSlide ? "w-6 bg-white" : "w-2 bg-white/50"
-              }`}
+              initial={false}
+              animate={{ opacity: i === heroSlide ? 1 : 0 }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${img})` }}
             />
           ))}
+          {/* Slide indicators */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            {heroImages.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setHeroSlide(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  i === heroSlide ? "w-6 bg-white" : "w-2 bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
