@@ -22,6 +22,7 @@ import Blog from "./pages/Blog";
 import HelpCenter from "./pages/HelpCenter";
 import NotFound from "./pages/NotFound";
 import LinkInBioLanding from "./pages/LinkInBioLanding";
+import Destinations from "./pages/Destinations";
 
 // Host Dashboard Pages
 import HostDashboard from "./pages/HostDashboard";
