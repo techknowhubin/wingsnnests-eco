@@ -20,6 +20,8 @@ import bikesIcon from "@/assets/categories/bikes-icon.png";
 import carsIcon from "@/assets/categories/cars-icon.png";
 import cabsIcon from "@/assets/categories/cabs-icon.png";
 import experiencesIcon from "@/assets/categories/experiences-icon.png";
+import hotelsIcon from "@/assets/categories/hotels-icon.png";
+import resortsIcon from "@/assets/categories/resorts-icon.png";
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
 import goaImage from "@/assets/stays/goa-beach-villa.jpg";
 import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
@@ -100,6 +102,25 @@ const categories = [
     link: "/experiences",
     bgColor: "bg-amber-100 dark:bg-amber-950/40",
     iconOffsetX: 10,
+  },
+  {
+    image: hotelsIcon,
+    title: "Hotels",
+    subtitle: "Comfortable stays",
+    link: "/stays",
+    bgColor: "bg-blue-100 dark:bg-blue-950/40",
+    iconOffsetX: 10,
+    iconOffsetY: -5,
+  },
+  {
+    image: resortsIcon,
+    title: "Resorts",
+    subtitle: "Luxury getaways",
+    link: "/stays",
+    bgColor: "bg-teal-100 dark:bg-teal-950/40",
+    iconScale: 1.25,
+    iconOffsetX: 10,
+    iconOffsetY: -5,
   },
 ];
 
