@@ -36,6 +36,7 @@ function createMarkerIcon(type: string) {
   const color = serviceColors[type] || "#013220";
   const iconSvg = serviceIconSvgs[type] || serviceIconSvgs.stay;
 
+  return L.divIcon({
     className: "custom-map-marker",
     html: `<div style="
       background: ${color};
