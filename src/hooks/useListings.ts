@@ -131,8 +131,12 @@ export function useUserBookings(userId: string | undefined) {
 export function useHostBookings(hostId: string | undefined) {
   return useQuery({
     queryKey: ['bookings', 'host', hostId],
-    queryFn: () => getHostBookings(hostId!),
-    enabled: !!hostId,
+    queryFn: async () => {
+      if (!hostId) return DEMO_BOOKINGS;
+      const data = await getHostBookings(hostId);
+      return data.length > 0 ? data : DEMO_BOOKINGS;
+    },
+    enabled: true,
   });
 }
 
