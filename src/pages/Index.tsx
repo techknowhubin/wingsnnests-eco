@@ -7,7 +7,7 @@ import DestinationCard from "@/components/DestinationCard";
 import ListingCard from "@/components/ListingCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, Calendar, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
@@ -32,6 +32,7 @@ import royalEnfieldImage from "@/assets/vehicles/royal-enfield-classic.jpg";
 import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
 import bikeImage from "@/assets/bike-featured.jpg";
 import experienceImage from "@/assets/experience-featured.jpg";
+import homestayImage from "@/assets/homestay-featured.jpg";
 import goaDestImage from "@/assets/destinations/goa.jpg";
 import manaliDestImage from "@/assets/destinations/manali.jpg";
 import jaipurDestImage from "@/assets/destinations/jaipur.jpg";
@@ -430,6 +431,49 @@ const Index = () => {
           </motion.div>
         </section>
       )}
+
+      {/* Blog Section */}
+      <section className="container mx-auto px-4 py-16">
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-foreground">From Our Blog</h2>
+            <Link to="/blog" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              Read more <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { image: homestayImage, title: "10 Hidden Gems: Homestays in Himachal Pradesh", excerpt: "Discover authentic mountain living in these carefully curated homestays across Himachal.", author: "Priya Sharma", date: "March 15, 2025", category: "Stays" },
+              { image: bikeImage, title: "The Ultimate Leh-Ladakh Bike Trip Guide", excerpt: "Everything you need to know for your dream motorcycle journey through the Himalayas.", author: "Rahul Mehta", date: "March 12, 2025", category: "Bikes" },
+              { image: experienceImage, title: "5 Unique Cultural Experiences in Rajasthan", excerpt: "Immerse yourself in Rajasthani culture through these authentic local experiences.", author: "Anjali Verma", date: "March 10, 2025", category: "Experiences" },
+            ].map((post, index) => (
+              <motion.article
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="glass-effect rounded-2xl overflow-hidden hover-lift cursor-pointer group"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">{post.category}</span>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">{post.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{post.excerpt}</p>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{post.author}</span>
+                    <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{post.date}</span>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </motion.div>
+      </section>
 
       {/* Footer CTA */}
       <section className="container mx-auto px-4 py-24">
