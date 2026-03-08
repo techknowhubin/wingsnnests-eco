@@ -3,8 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarDays, Users, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import { format, differenceInDays } from "date-fns";
+import { useState, useEffect, useMemo } from "react";
+import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface StayBookingPanelProps {
@@ -17,14 +17,28 @@ interface StayBookingPanelProps {
 const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: StayBookingPanelProps) => {
   const [guests, setGuests] = useState(1);
   const [pricingOption, setPricingOption] = useState<"daily" | "weekly" | "monthly">("weekly");
-  const [checkIn, setCheckIn] = useState<Date>();
-  const [checkOut, setCheckOut] = useState<Date>();
   const [guestOpen, setGuestOpen] = useState(false);
+
+  const tomorrow = useMemo(() => addDays(new Date(), 1), []);
+
+  const getDurationDays = (option: "daily" | "weekly" | "monthly") => {
+    if (option === "daily") return 1;
+    if (option === "weekly") return 7;
+    return 30;
+  };
+
+  const [checkIn, setCheckIn] = useState<Date>(tomorrow);
+  const [checkOut, setCheckOut] = useState<Date>(addDays(tomorrow, getDurationDays("weekly")));
+
+  // Update checkout when pricing option changes
+  useEffect(() => {
+    setCheckOut(addDays(checkIn, getDurationDays(pricingOption)));
+  }, [pricingOption, checkIn]);
 
   const weeklyPrice = pricePerNight * 7 * 0.85;
   const monthlyPrice = pricePerNight * 30 * 0.7;
 
-  const nights = checkIn && checkOut ? Math.max(differenceInDays(checkOut, checkIn), 1) : 3;
+  const nights = Math.max(differenceInDays(checkOut, checkIn), 1);
   const subtotal = pricePerNight * nights;
   const discount = Math.round(subtotal * 0.1);
   const serviceFee = 0;
