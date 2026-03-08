@@ -24,7 +24,8 @@ import NotFound from "./pages/NotFound";
 import LinkInBioLanding from "./pages/LinkInBioLanding";
 import Destinations from "./pages/Destinations";
 
-// Host Dashboard Pages
+// Host Dashboard
+import HostLayout from "./pages/HostLayout";
 import HostDashboard from "./pages/HostDashboard";
 import HostStays from "./pages/HostStays";
 import HostCars from "./pages/HostCars";
@@ -68,20 +69,22 @@ const App = () => (
             <Route path="/link-in-bio" element={<LinkInBioLanding />} />
             <Route path="/destinations" element={<Destinations />} />
             
-            {/* Host Dashboard Routes */}
-            <Route path="/host" element={<HostDashboard />} />
-            <Route path="/host/stays" element={<HostStays />} />
-            <Route path="/host/stays/add" element={<HostAddStay />} />
-            <Route path="/host/cars" element={<HostCars />} />
-            <Route path="/host/cars/add" element={<HostAddCar />} />
-            <Route path="/host/bikes" element={<HostBikes />} />
-            <Route path="/host/bikes/add" element={<HostAddBike />} />
-            <Route path="/host/experiences" element={<HostExperiences />} />
-            <Route path="/host/experiences/add" element={<HostAddExperience />} />
-            <Route path="/host/bookings" element={<HostBookings />} />
-            <Route path="/host/earnings" element={<HostEarnings />} />
-            <Route path="/host/link" element={<HostLinkInBio />} />
-            <Route path="/host/settings" element={<HostSettings />} />
+            {/* Host Dashboard — shared layout, only content transitions */}
+            <Route path="/host" element={<HostLayout />}>
+              <Route index element={<HostDashboard />} />
+              <Route path="stays" element={<HostStays />} />
+              <Route path="stays/add" element={<HostAddStay />} />
+              <Route path="cars" element={<HostCars />} />
+              <Route path="cars/add" element={<HostAddCar />} />
+              <Route path="bikes" element={<HostBikes />} />
+              <Route path="bikes/add" element={<HostAddBike />} />
+              <Route path="experiences" element={<HostExperiences />} />
+              <Route path="experiences/add" element={<HostAddExperience />} />
+              <Route path="bookings" element={<HostBookings />} />
+              <Route path="earnings" element={<HostEarnings />} />
+              <Route path="link" element={<HostLinkInBio />} />
+              <Route path="settings" element={<HostSettings />} />
+            </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
