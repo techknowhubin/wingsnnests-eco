@@ -78,6 +78,7 @@ const categories = [
     bgColor: "bg-cyan-100 dark:bg-cyan-950/40",
     iconScale: 1.5,
     iconOffsetX: 10,
+    iconOffsetY: -5,
   },
   {
     image: cabsIcon,
@@ -85,6 +86,8 @@ const categories = [
     subtitle: "Intercity travel",
     link: "/cars",
     bgColor: "bg-purple-100 dark:bg-purple-950/40",
+    iconScale: 1.25,
+    iconOffsetX: 10,
   },
   {
     image: experiencesIcon,
