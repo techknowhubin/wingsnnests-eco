@@ -60,6 +60,8 @@ const generalMenuItems = [
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isListingRoute = ['/host/stays', '/host/cars', '/host/bikes', '/host/experiences'].some(p => location.pathname.startsWith(p));
+  const [listingsOpen, setListingsOpen] = useState(isListingRoute);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
