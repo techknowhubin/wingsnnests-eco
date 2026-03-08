@@ -160,6 +160,7 @@ export const DEMO_CARS: Car[] = [
     discounts: { weekly: 15 },
     last_booked_at: daysAgo(1),
     created_at: daysAgo(250),
+    updated_at: daysAgo(2),
   },
   {
     id: 'demo-car-2',
