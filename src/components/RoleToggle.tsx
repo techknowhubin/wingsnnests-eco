@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, Home } from "lucide-react";
+import { Plane, Building2 } from "lucide-react";
 
 interface RoleToggleProps {
   role: "user" | "host";
@@ -7,39 +7,39 @@ interface RoleToggleProps {
 }
 
 const RoleToggle = ({ role, onChange }: RoleToggleProps) => {
+  const options = [
+    { key: "user" as const, label: "Traveller", icon: Plane, emoji: "✈️" },
+    { key: "host" as const, label: "Host", icon: Building2, emoji: "🏡" },
+  ];
+
   return (
-    <div className="flex items-center justify-center mb-6">
-      <div className="relative flex items-center bg-muted/60 rounded-full p-1 border border-border">
-        {/* Sliding indicator */}
+    <div className="flex items-center justify-center mb-8">
+      <div className="relative flex items-center w-full max-w-xs bg-muted/40 backdrop-blur-sm rounded-2xl p-1.5 border border-border/60 shadow-sm">
+        {/* Animated sliding pill */}
         <motion.div
-          layout
-          className="absolute top-1 bottom-1 rounded-full bg-primary shadow-md"
-          style={{ width: "calc(50% - 4px)" }}
-          animate={{ x: role === "user" ? 0 : "calc(100% + 4px)" }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          className="absolute top-1.5 bottom-1.5 rounded-xl bg-primary shadow-lg"
+          style={{ width: "calc(50% - 6px)" }}
+          animate={{
+            x: role === "user" ? 0 : "calc(100% + 6px)",
+          }}
+          transition={{ type: "spring", stiffness: 500, damping: 35 }}
         />
 
-        <button
-          type="button"
-          onClick={() => onChange("user")}
-          className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${
-            role === "user" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <User className="h-4 w-4" />
-          Traveller
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onChange("host")}
-          className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ${
-            role === "host" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Home className="h-4 w-4" />
-          Host
-        </button>
+        {options.map((opt) => (
+          <button
+            key={opt.key}
+            type="button"
+            onClick={() => onChange(opt.key)}
+            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 ${
+              role === opt.key
+                ? "text-primary-foreground scale-[1.02]"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <span className="text-base">{opt.emoji}</span>
+            {opt.label}
+          </button>
+        ))}
       </div>
     </div>
   );
