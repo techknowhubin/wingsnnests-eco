@@ -103,6 +103,25 @@ const categories = [
     bgColor: "bg-amber-100 dark:bg-amber-950/40",
     iconOffsetX: 10,
   },
+  {
+    image: hotelsIcon,
+    title: "Hotels",
+    subtitle: "Comfortable stays",
+    link: "/stays",
+    bgColor: "bg-blue-100 dark:bg-blue-950/40",
+    iconOffsetX: 10,
+    iconOffsetY: -5,
+  },
+  {
+    image: resortsIcon,
+    title: "Resorts",
+    subtitle: "Luxury getaways",
+    link: "/stays",
+    bgColor: "bg-teal-100 dark:bg-teal-950/40",
+    iconScale: 1.25,
+    iconOffsetX: 10,
+    iconOffsetY: -5,
+  },
 ];
 
 const destinations = [
