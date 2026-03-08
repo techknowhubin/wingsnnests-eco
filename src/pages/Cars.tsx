@@ -76,7 +76,7 @@ const Cars = () => {
               Drive through India with comfort and freedom
             </p>
           </motion.div>
-          <SearchBar />
+          <SearchBar defaultCategory="cars" />
         </div>
       </section>
 
