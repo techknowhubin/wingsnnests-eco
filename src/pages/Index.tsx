@@ -244,6 +244,7 @@ const Index = () => {
                     bgColor={cat.bgColor}
                     delay={index * 0.08}
                     iconScale={cat.iconScale}
+                    iconOffsetX={cat.iconOffsetX}
                   />
                 ))}
               </motion.div>
