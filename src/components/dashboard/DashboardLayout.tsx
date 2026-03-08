@@ -131,6 +131,55 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2">
         {renderNavGroup(mainMenuItems, 'Menu')}
+
+        {/* Listings Accordion */}
+        <div className="mb-2">
+          <p className="px-4 mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">Listings</p>
+          <Collapsible open={listingsOpen} onOpenChange={setListingsOpen}>
+            <CollapsibleTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm transition-all duration-200 w-[calc(100%-16px)] relative",
+                  isListingRoute
+                    ? "text-primary font-medium bg-primary/8"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}
+              >
+                <Package className="h-[18px] w-[18px] shrink-0" />
+                <span>Listings</span>
+                <ChevronDown className={cn(
+                  "h-4 w-4 ml-auto shrink-0 transition-transform duration-200",
+                  listingsOpen && "rotate-180"
+                )} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+              <ul className="space-y-0.5 mt-0.5 ml-3">
+                {listingMenuItems.map((item) => {
+                  const isActive = isActivePath(item.path);
+                  return (
+                    <li key={item.label}>
+                      <Link
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 px-4 py-2 mx-2 rounded-xl text-sm transition-all duration-200 relative",
+                          isActive
+                            ? "bg-primary text-primary-foreground font-medium shadow-md"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        )}
+                      >
+                        <item.icon className="h-[16px] w-[16px] shrink-0" />
+                        <span>{item.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+
         {renderNavGroup(generalMenuItems, 'General')}
       </nav>
 
