@@ -73,8 +73,8 @@ const categories = [
     link: "/bikes",
     bgColor: "bg-green-100 dark:bg-green-950/40",
     iconScale: 1.05,
-    iconOffsetX: 20,
-    iconOffsetY: -5,
+    iconOffsetX: 25,
+    iconOffsetY: 0,
   },
   {
     image: carsIcon,
