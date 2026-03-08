@@ -72,8 +72,8 @@ const categories = [
     subtitle: "Explore on two wheels",
     link: "/bikes",
     bgColor: "bg-green-100 dark:bg-green-950/40",
-    iconScale: 1.25,
-    iconOffsetX: 10,
+    iconScale: 1.05,
+    iconOffsetX: 20,
     iconOffsetY: -5,
   },
   {
