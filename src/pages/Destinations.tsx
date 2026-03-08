@@ -7,13 +7,45 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-// Destination images
+// Destination images - existing
 import goaImg from "@/assets/destinations/goa.jpg";
 import manaliImg from "@/assets/destinations/manali.jpg";
 import jaipurImg from "@/assets/destinations/jaipur.jpg";
 import udaipurImg from "@/assets/destinations/udaipur.jpg";
 import munnarImg from "@/assets/destinations/munnar.jpg";
 import rishikeshImg from "@/assets/destinations/rishikesh.jpg";
+
+// New destination images
+import jodhpurImg from "@/assets/destinations/jodhpur.jpg";
+import jaisalmerImg from "@/assets/destinations/jaisalmer.jpg";
+import pushkarImg from "@/assets/destinations/pushkar.jpg";
+import shimlaImg from "@/assets/destinations/shimla.jpg";
+import dharamshalaImg from "@/assets/destinations/dharamshala.jpg";
+import kasolImg from "@/assets/destinations/kasol.jpg";
+import spitiImg from "@/assets/destinations/spiti.jpg";
+import alleppeyImg from "@/assets/destinations/alleppey.jpg";
+import wayanadImg from "@/assets/destinations/wayanad.jpg";
+import kochiImg from "@/assets/destinations/kochi.jpg";
+import mussoorieImg from "@/assets/destinations/mussoorie.jpg";
+import nainitalImg from "@/assets/destinations/nainital.jpg";
+import auliImg from "@/assets/destinations/auli.jpg";
+import coorgImg from "@/assets/destinations/coorg.jpg";
+import hampiImg from "@/assets/destinations/hampi.jpg";
+import gokarnaImg from "@/assets/destinations/gokarna.jpg";
+import srinagarImg from "@/assets/destinations/srinagar.jpg";
+import gulmargImg from "@/assets/destinations/gulmarg.jpg";
+import pahalgamImg from "@/assets/destinations/pahalgam.jpg";
+import ootyImg from "@/assets/destinations/ooty.jpg";
+import kodaikanalImg from "@/assets/destinations/kodaikanal.jpg";
+import pondicherryImg from "@/assets/destinations/pondicherry.jpg";
+import shillongImg from "@/assets/destinations/shillong.jpg";
+import cherrapunjiImg from "@/assets/destinations/cherrapunji.jpg";
+import lonavalaImg from "@/assets/destinations/lonavala.jpg";
+import mahabaleshwarImg from "@/assets/destinations/mahabaleshwar.jpg";
+import gangtokImg from "@/assets/destinations/gangtok.jpg";
+import pellingImg from "@/assets/destinations/pelling.jpg";
+import lehImg from "@/assets/destinations/leh.jpg";
+import nubraImg from "@/assets/destinations/nubra.jpg";
 
 const allDestinations = [
   // Goa
@@ -22,49 +54,49 @@ const allDestinations = [
   // Rajasthan
   { image: jaipurImg, title: "Jaipur", subtitle: "The Pink City", rating: 4.9, priceRange: "Starting ₹1,000/night", state: "Rajasthan", link: "/stays" },
   { image: udaipurImg, title: "Udaipur", subtitle: "City of Lakes", rating: 4.8, priceRange: "Starting ₹1,800/night", state: "Rajasthan", link: "/stays" },
-  { image: jaipurImg, title: "Jodhpur", subtitle: "The Blue City", rating: 4.7, priceRange: "Starting ₹900/night", state: "Rajasthan", link: "/stays" },
-  { image: udaipurImg, title: "Jaisalmer", subtitle: "The Golden City", rating: 4.6, priceRange: "Starting ₹1,200/night", state: "Rajasthan", link: "/stays" },
-  { image: jaipurImg, title: "Pushkar", subtitle: "Sacred lake town", rating: 4.5, priceRange: "Starting ₹800/night", state: "Rajasthan", link: "/stays" },
+  { image: jodhpurImg, title: "Jodhpur", subtitle: "The Blue City", rating: 4.7, priceRange: "Starting ₹900/night", state: "Rajasthan", link: "/stays" },
+  { image: jaisalmerImg, title: "Jaisalmer", subtitle: "The Golden City", rating: 4.6, priceRange: "Starting ₹1,200/night", state: "Rajasthan", link: "/stays" },
+  { image: pushkarImg, title: "Pushkar", subtitle: "Sacred lake town", rating: 4.5, priceRange: "Starting ₹800/night", state: "Rajasthan", link: "/stays" },
   // Himachal Pradesh
   { image: manaliImg, title: "Manali", subtitle: "Mountain paradise", rating: 4.7, priceRange: "Starting ₹1,200/night", state: "Himachal Pradesh", link: "/stays" },
-  { image: manaliImg, title: "Shimla", subtitle: "Queen of Hills", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Himachal Pradesh", link: "/stays" },
-  { image: manaliImg, title: "Dharamshala", subtitle: "Home of Dalai Lama", rating: 4.7, priceRange: "Starting ₹900/night", state: "Himachal Pradesh", link: "/stays" },
-  { image: manaliImg, title: "Kasol", subtitle: "Mini Israel of India", rating: 4.5, priceRange: "Starting ₹800/night", state: "Himachal Pradesh", link: "/stays" },
-  { image: manaliImg, title: "Spiti Valley", subtitle: "Cold desert wonderland", rating: 4.9, priceRange: "Starting ₹1,500/night", state: "Himachal Pradesh", link: "/stays" },
+  { image: shimlaImg, title: "Shimla", subtitle: "Queen of Hills", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Himachal Pradesh", link: "/stays" },
+  { image: dharamshalaImg, title: "Dharamshala", subtitle: "Home of Dalai Lama", rating: 4.7, priceRange: "Starting ₹900/night", state: "Himachal Pradesh", link: "/stays" },
+  { image: kasolImg, title: "Kasol", subtitle: "Mini Israel of India", rating: 4.5, priceRange: "Starting ₹800/night", state: "Himachal Pradesh", link: "/stays" },
+  { image: spitiImg, title: "Spiti Valley", subtitle: "Cold desert wonderland", rating: 4.9, priceRange: "Starting ₹1,500/night", state: "Himachal Pradesh", link: "/stays" },
   // Kerala
   { image: munnarImg, title: "Munnar", subtitle: "Tea gardens & mist", rating: 4.6, priceRange: "Starting ₹900/night", state: "Kerala", link: "/stays" },
-  { image: munnarImg, title: "Alleppey", subtitle: "Backwater houseboat capital", rating: 4.8, priceRange: "Starting ₹2,000/night", state: "Kerala", link: "/stays" },
-  { image: munnarImg, title: "Wayanad", subtitle: "Lush green wilderness", rating: 4.5, priceRange: "Starting ₹1,200/night", state: "Kerala", link: "/stays" },
-  { image: munnarImg, title: "Kochi", subtitle: "Historic port city", rating: 4.4, priceRange: "Starting ₹800/night", state: "Kerala", link: "/stays" },
+  { image: alleppeyImg, title: "Alleppey", subtitle: "Backwater houseboat capital", rating: 4.8, priceRange: "Starting ₹2,000/night", state: "Kerala", link: "/stays" },
+  { image: wayanadImg, title: "Wayanad", subtitle: "Lush green wilderness", rating: 4.5, priceRange: "Starting ₹1,200/night", state: "Kerala", link: "/stays" },
+  { image: kochiImg, title: "Kochi", subtitle: "Historic port city", rating: 4.4, priceRange: "Starting ₹800/night", state: "Kerala", link: "/stays" },
   // Uttarakhand
   { image: rishikeshImg, title: "Rishikesh", subtitle: "Yoga capital of the world", rating: 4.7, priceRange: "Starting ₹800/night", state: "Uttarakhand", link: "/stays" },
-  { image: rishikeshImg, title: "Mussoorie", subtitle: "Queen of the Hills", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Uttarakhand", link: "/stays" },
-  { image: rishikeshImg, title: "Nainital", subtitle: "Lake district of India", rating: 4.6, priceRange: "Starting ₹900/night", state: "Uttarakhand", link: "/stays" },
-  { image: rishikeshImg, title: "Auli", subtitle: "Skiing paradise", rating: 4.7, priceRange: "Starting ₹1,500/night", state: "Uttarakhand", link: "/stays" },
+  { image: mussoorieImg, title: "Mussoorie", subtitle: "Queen of the Hills", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Uttarakhand", link: "/stays" },
+  { image: nainitalImg, title: "Nainital", subtitle: "Lake district of India", rating: 4.6, priceRange: "Starting ₹900/night", state: "Uttarakhand", link: "/stays" },
+  { image: auliImg, title: "Auli", subtitle: "Skiing paradise", rating: 4.7, priceRange: "Starting ₹1,500/night", state: "Uttarakhand", link: "/stays" },
   // Karnataka
-  { image: goaImg, title: "Coorg", subtitle: "Scotland of India", rating: 4.7, priceRange: "Starting ₹1,300/night", state: "Karnataka", link: "/stays" },
-  { image: goaImg, title: "Hampi", subtitle: "Ancient ruins & boulders", rating: 4.6, priceRange: "Starting ₹600/night", state: "Karnataka", link: "/stays" },
-  { image: goaImg, title: "Gokarna", subtitle: "Pristine beaches & temples", rating: 4.5, priceRange: "Starting ₹800/night", state: "Karnataka", link: "/stays" },
+  { image: coorgImg, title: "Coorg", subtitle: "Scotland of India", rating: 4.7, priceRange: "Starting ₹1,300/night", state: "Karnataka", link: "/stays" },
+  { image: hampiImg, title: "Hampi", subtitle: "Ancient ruins & boulders", rating: 4.6, priceRange: "Starting ₹600/night", state: "Karnataka", link: "/stays" },
+  { image: gokarnaImg, title: "Gokarna", subtitle: "Pristine beaches & temples", rating: 4.5, priceRange: "Starting ₹800/night", state: "Karnataka", link: "/stays" },
   // Jammu & Kashmir
-  { image: manaliImg, title: "Srinagar", subtitle: "Paradise on Earth", rating: 4.9, priceRange: "Starting ₹2,000/night", state: "Jammu & Kashmir", link: "/stays" },
-  { image: manaliImg, title: "Gulmarg", subtitle: "Meadow of flowers", rating: 4.8, priceRange: "Starting ₹2,500/night", state: "Jammu & Kashmir", link: "/stays" },
-  { image: manaliImg, title: "Pahalgam", subtitle: "Valley of shepherds", rating: 4.7, priceRange: "Starting ₹1,800/night", state: "Jammu & Kashmir", link: "/stays" },
+  { image: srinagarImg, title: "Srinagar", subtitle: "Paradise on Earth", rating: 4.9, priceRange: "Starting ₹2,000/night", state: "Jammu & Kashmir", link: "/stays" },
+  { image: gulmargImg, title: "Gulmarg", subtitle: "Meadow of flowers", rating: 4.8, priceRange: "Starting ₹2,500/night", state: "Jammu & Kashmir", link: "/stays" },
+  { image: pahalgamImg, title: "Pahalgam", subtitle: "Valley of shepherds", rating: 4.7, priceRange: "Starting ₹1,800/night", state: "Jammu & Kashmir", link: "/stays" },
   // Tamil Nadu
-  { image: munnarImg, title: "Ooty", subtitle: "Queen of Nilgiris", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Tamil Nadu", link: "/stays" },
-  { image: munnarImg, title: "Kodaikanal", subtitle: "Princess of hill stations", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Tamil Nadu", link: "/stays" },
-  { image: munnarImg, title: "Pondicherry", subtitle: "French colonial charm", rating: 4.7, priceRange: "Starting ₹1,200/night", state: "Tamil Nadu", link: "/stays" },
+  { image: ootyImg, title: "Ooty", subtitle: "Queen of Nilgiris", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Tamil Nadu", link: "/stays" },
+  { image: kodaikanalImg, title: "Kodaikanal", subtitle: "Princess of hill stations", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Tamil Nadu", link: "/stays" },
+  { image: pondicherryImg, title: "Pondicherry", subtitle: "French colonial charm", rating: 4.7, priceRange: "Starting ₹1,200/night", state: "Tamil Nadu", link: "/stays" },
   // Meghalaya
-  { image: rishikeshImg, title: "Shillong", subtitle: "Scotland of the East", rating: 4.6, priceRange: "Starting ₹1,000/night", state: "Meghalaya", link: "/stays" },
-  { image: rishikeshImg, title: "Cherrapunji", subtitle: "Wettest place on Earth", rating: 4.7, priceRange: "Starting ₹1,200/night", state: "Meghalaya", link: "/stays" },
+  { image: shillongImg, title: "Shillong", subtitle: "Scotland of the East", rating: 4.6, priceRange: "Starting ₹1,000/night", state: "Meghalaya", link: "/stays" },
+  { image: cherrapunjiImg, title: "Cherrapunji", subtitle: "Wettest place on Earth", rating: 4.7, priceRange: "Starting ₹1,200/night", state: "Meghalaya", link: "/stays" },
   // Maharashtra
-  { image: goaImg, title: "Lonavala", subtitle: "Misty hills & chikkis", rating: 4.3, priceRange: "Starting ₹1,200/night", state: "Maharashtra", link: "/stays" },
-  { image: goaImg, title: "Mahabaleshwar", subtitle: "Strawberry country", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Maharashtra", link: "/stays" },
+  { image: lonavalaImg, title: "Lonavala", subtitle: "Misty hills & chikkis", rating: 4.3, priceRange: "Starting ₹1,200/night", state: "Maharashtra", link: "/stays" },
+  { image: mahabaleshwarImg, title: "Mahabaleshwar", subtitle: "Strawberry country", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Maharashtra", link: "/stays" },
   // Sikkim
-  { image: manaliImg, title: "Gangtok", subtitle: "Gateway to the Himalayas", rating: 4.7, priceRange: "Starting ₹1,300/night", state: "Sikkim", link: "/stays" },
-  { image: manaliImg, title: "Pelling", subtitle: "Kanchenjunga views", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Sikkim", link: "/stays" },
+  { image: gangtokImg, title: "Gangtok", subtitle: "Gateway to the Himalayas", rating: 4.7, priceRange: "Starting ₹1,300/night", state: "Sikkim", link: "/stays" },
+  { image: pellingImg, title: "Pelling", subtitle: "Kanchenjunga views", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Sikkim", link: "/stays" },
   // Ladakh
-  { image: manaliImg, title: "Leh", subtitle: "Land of high passes", rating: 4.9, priceRange: "Starting ₹2,000/night", state: "Ladakh", link: "/stays" },
-  { image: manaliImg, title: "Nubra Valley", subtitle: "Desert in the mountains", rating: 4.8, priceRange: "Starting ₹2,500/night", state: "Ladakh", link: "/stays" },
+  { image: lehImg, title: "Leh", subtitle: "Land of high passes", rating: 4.9, priceRange: "Starting ₹2,000/night", state: "Ladakh", link: "/stays" },
+  { image: nubraImg, title: "Nubra Valley", subtitle: "Desert in the mountains", rating: 4.8, priceRange: "Starting ₹2,500/night", state: "Ladakh", link: "/stays" },
 ];
 
 const states = [...new Set(allDestinations.map((d) => d.state))].sort();
