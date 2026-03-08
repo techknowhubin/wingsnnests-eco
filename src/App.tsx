@@ -23,6 +23,7 @@ import HelpCenter from "./pages/HelpCenter";
 import NotFound from "./pages/NotFound";
 import LinkInBioLanding from "./pages/LinkInBioLanding";
 import Destinations from "./pages/Destinations";
+import DestinationDetail from "./pages/DestinationDetail";
 
 // Host Dashboard
 import HostLayout from "./pages/HostLayout";
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/link-in-bio" element={<LinkInBioLanding />} />
             <Route path="/destinations" element={<Destinations />} />
+            <Route path="/destinations/:name" element={<DestinationDetail />} />
             
             {/* Host Dashboard — shared layout, only content transitions */}
             <Route path="/host" element={<HostLayout />}>

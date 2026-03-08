@@ -176,3 +176,9 @@ All colors MUST be HSL.
 .dark .bg-primary:hover {
   box-shadow: 0 0 30px hsl(158 60% 45% / 0.4);
 }
+
+/* Leaflet custom marker reset */
+.custom-map-marker {
+  background: transparent !important;
+  border: none !important;
+}
