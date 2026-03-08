@@ -230,7 +230,7 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background" />
           </motion.div>
         </AnimatePresence>
-        <div className="relative z-10 w-full px-4">
+        <div className="relative z-10 w-full px-4 pb-16">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-8">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-[0_4px_24px_rgba(255,255,255,0.3)] [text-shadow:_0_2px_20px_rgba(0,0,0,0.8)]">
               Your Next Adventure<br />Starts Here
@@ -239,7 +239,6 @@ const Index = () => {
               Discover unique stays, experiences, and rentals across India
             </p>
           </motion.div>
-          <SearchBar />
         </div>
         {/* Slide indicators */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
@@ -256,8 +255,13 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Search Bar - offset below hero */}
+      <div className="container mx-auto px-4 -mt-12 relative z-20 mb-8">
+        <SearchBar />
+      </div>
+
       {/* Categories Section */}
-      <section className="container mx-auto px-4 pt-20 pb-12">
+      <section className="container mx-auto px-4 pt-8 pb-12">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
           <div
             className="flex justify-center gap-4 overflow-hidden py-4"
