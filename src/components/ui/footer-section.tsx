@@ -25,7 +25,7 @@ function Footerdemo() {
           {/* Newsletter Section */}
           <div className="relative">
             <Link to="/">
-              <img src={logo} alt="Xplorwing" className="h-12 w-auto mb-4" />
+              <img src={logo} alt="Xplorwing" className="h-10 w-auto mb-4" />
             </Link>
             <h2 className="mb-4 text-lg font-semibold tracking-tight">Stay Connected</h2>
             <p className="mb-6 text-muted-foreground">
