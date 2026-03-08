@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarDays, Users, ChevronDown } from "lucide-react";
+import { CalendarDays, Users, Minus, Plus } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
