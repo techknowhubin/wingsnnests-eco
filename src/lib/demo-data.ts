@@ -261,7 +261,7 @@ export const DEMO_BIKES: Bike[] = [
     vehicle_type: 'Scooter',
     mileage_limit: 100,
     helmet_included: true,
-    images: ['/placeholder.svg'],
+    images: [hondaActiva],
     availability_status: true,
     is_verified: true,
     verified_by: null,
