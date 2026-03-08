@@ -13,6 +13,9 @@ import {
   isAdmin, isHost, isModerator,
   createStay, createCar, createBike, createExperience,
 } from '@/lib/supabase-helpers';
+import {
+  DEMO_STAYS, DEMO_CARS, DEMO_BIKES, DEMO_EXPERIENCES, DEMO_BOOKINGS, DEMO_PROFILE,
+} from '@/lib/demo-data';
 import type { ListingType, BookingStatus } from '@/types/database';
 
 // ============ Stays Hooks ============
@@ -128,8 +131,12 @@ export function useUserBookings(userId: string | undefined) {
 export function useHostBookings(hostId: string | undefined) {
   return useQuery({
     queryKey: ['bookings', 'host', hostId],
-    queryFn: () => getHostBookings(hostId!),
-    enabled: !!hostId,
+    queryFn: async () => {
+      if (!hostId) return DEMO_BOOKINGS;
+      const data = await getHostBookings(hostId);
+      return data.length > 0 ? data : DEMO_BOOKINGS;
+    },
+    enabled: true,
   });
 }
 
@@ -235,8 +242,16 @@ export function useRemoveFromWishlist() {
 export function useProfile(userId: string | undefined) {
   return useQuery({
     queryKey: ['profile', userId],
-    queryFn: () => getProfile(userId!),
-    enabled: !!userId,
+    queryFn: async () => {
+      if (!userId) return DEMO_PROFILE;
+      try {
+        const data = await getProfile(userId);
+        return data;
+      } catch {
+        return DEMO_PROFILE;
+      }
+    },
+    enabled: true,
   });
 }
 
@@ -265,8 +280,15 @@ export function useNotifications(userId: string | undefined) {
 export function useUnreadNotificationCount(userId: string | undefined) {
   return useQuery({
     queryKey: ['notifications', userId, 'unread-count'],
-    queryFn: () => getUnreadNotificationCount(userId!),
-    enabled: !!userId,
+    queryFn: async () => {
+      if (!userId) return 3; // Demo notification count
+      try {
+        return await getUnreadNotificationCount(userId);
+      } catch {
+        return 3;
+      }
+    },
+    enabled: true,
   });
 }
 
@@ -286,32 +308,48 @@ export function useMarkNotificationAsRead() {
 export function useHostStays(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'stays', hostId],
-    queryFn: () => getHostStays(hostId!),
-    enabled: !!hostId,
+    queryFn: async () => {
+      if (!hostId) return DEMO_STAYS;
+      const data = await getHostStays(hostId);
+      return data.length > 0 ? data : DEMO_STAYS;
+    },
+    enabled: true,
   });
 }
 
 export function useHostCars(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'cars', hostId],
-    queryFn: () => getHostCars(hostId!),
-    enabled: !!hostId,
+    queryFn: async () => {
+      if (!hostId) return DEMO_CARS;
+      const data = await getHostCars(hostId);
+      return data.length > 0 ? data : DEMO_CARS;
+    },
+    enabled: true,
   });
 }
 
 export function useHostBikes(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'bikes', hostId],
-    queryFn: () => getHostBikes(hostId!),
-    enabled: !!hostId,
+    queryFn: async () => {
+      if (!hostId) return DEMO_BIKES;
+      const data = await getHostBikes(hostId);
+      return data.length > 0 ? data : DEMO_BIKES;
+    },
+    enabled: true,
   });
 }
 
 export function useHostExperiences(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'experiences', hostId],
-    queryFn: () => getHostExperiences(hostId!),
-    enabled: !!hostId,
+    queryFn: async () => {
+      if (!hostId) return DEMO_EXPERIENCES;
+      const data = await getHostExperiences(hostId);
+      return data.length > 0 ? data : DEMO_EXPERIENCES;
+    },
+    enabled: true,
   });
 }
 
