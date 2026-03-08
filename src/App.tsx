@@ -22,6 +22,7 @@ import Blog from "./pages/Blog";
 import HelpCenter from "./pages/HelpCenter";
 import NotFound from "./pages/NotFound";
 import LinkInBioLanding from "./pages/LinkInBioLanding";
+import Destinations from "./pages/Destinations";
 
 // Host Dashboard Pages
 import HostDashboard from "./pages/HostDashboard";
@@ -65,6 +66,7 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/link-in-bio" element={<LinkInBioLanding />} />
+            <Route path="/destinations" element={<Destinations />} />
             
             {/* Host Dashboard Routes */}
             <Route path="/host" element={<HostDashboard />} />

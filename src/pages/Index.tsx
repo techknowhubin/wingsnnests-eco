@@ -271,7 +271,7 @@ const Index = () => {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">Explore India</h2>
-            <Link to="/stays" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+            <Link to="/destinations" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
               See more <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
