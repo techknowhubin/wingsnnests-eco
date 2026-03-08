@@ -147,19 +147,22 @@ export function DashboardOverview() {
         {stats.map((stat, index) => (
           <Card
             key={index}
-            className={`relative overflow-hidden rounded-2xl border-0 shadow-sm transition-all duration-200 hover:shadow-md ${
+            className={`relative overflow-hidden rounded-2xl border-0 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${
               stat.highlighted
-                ? 'bg-primary text-primary-foreground'
+                ? 'text-primary-foreground'
                 : 'bg-card'
             }`}
+            style={stat.highlighted ? {
+              background: 'linear-gradient(135deg, hsl(158 100% 10%) 0%, hsl(158 80% 25%) 50%, hsl(158 60% 35%) 100%)',
+            } : undefined}
           >
-            <CardContent className="p-5">
+            <CardContent className="p-5 relative z-10">
               <div className="flex items-center justify-between mb-4">
                 <p className={`text-sm font-medium ${stat.highlighted ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
                   {stat.label}
                 </p>
                 <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-                  stat.highlighted ? 'bg-primary-foreground/15' : 'bg-muted/60'
+                  stat.highlighted ? 'bg-primary-foreground/15 backdrop-blur-sm' : 'bg-muted/60'
                 }`}>
                   <ArrowUpRight className={`h-4 w-4 ${stat.highlighted ? 'text-primary-foreground/70' : 'text-muted-foreground'}`} />
                 </div>
@@ -174,6 +177,12 @@ export function DashboardOverview() {
                 </p>
               </div>
             </CardContent>
+            {/* Decorative gradient overlay for highlighted */}
+            {stat.highlighted && (
+              <div className="absolute inset-0 opacity-20" style={{
+                background: 'radial-gradient(circle at 80% 20%, hsl(158 60% 55% / 0.6) 0%, transparent 50%), radial-gradient(circle at 20% 80%, hsl(158 80% 20% / 0.4) 0%, transparent 50%)',
+              }} />
+            )}
           </Card>
         ))}
       </motion.div>
@@ -226,10 +235,17 @@ export function DashboardOverview() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 rounded-xl bg-primary text-primary-foreground">
-                <p className="text-xs text-primary-foreground/70">Total Earnings</p>
-                <p className="text-2xl font-bold mt-1">{formatPrice(totalEarnings)}</p>
-                <p className="text-[11px] text-primary-foreground/60 mt-1">After 20% commission</p>
+              <div className="p-4 rounded-xl text-primary-foreground relative overflow-hidden" style={{
+                background: 'linear-gradient(135deg, hsl(158 100% 10%) 0%, hsl(158 80% 25%) 60%, hsl(158 60% 35%) 100%)',
+              }}>
+                <div className="relative z-10">
+                  <p className="text-xs text-primary-foreground/70">Total Earnings</p>
+                  <p className="text-2xl font-bold mt-1">{formatPrice(totalEarnings)}</p>
+                  <p className="text-[11px] text-primary-foreground/60 mt-1">After 20% commission</p>
+                </div>
+                <div className="absolute inset-0 opacity-15" style={{
+                  background: 'radial-gradient(circle at 90% 10%, hsl(158 60% 55% / 0.8) 0%, transparent 40%)',
+                }} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-muted/40">
