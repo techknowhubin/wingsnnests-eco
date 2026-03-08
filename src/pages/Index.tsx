@@ -245,15 +245,21 @@ const Index = () => {
           </div>
           {/* Dot navigation - hidden on desktop, transparent bg */}
           {isMobileOrTablet && (
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="flex justify-center gap-2 mt-4 bg-transparent">
               {Array.from({ length: totalPages }).map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCategoryPage(i)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    i === categoryPage ? "bg-primary/80 w-6" : "bg-primary/20 w-2"
+                  aria-label={`Go to slide ${i + 1}`}
+                  className={`h-2 rounded-full border-0 outline-none bg-transparent p-0 transition-all duration-300 ${
+                    i === categoryPage ? "!bg-primary/80 w-6" : "!bg-primary/20 w-2"
                   }`}
-                />
+                  style={{ background: 'transparent' }}
+                >
+                  <span className={`block h-2 rounded-full transition-all duration-300 ${
+                    i === categoryPage ? "bg-primary/80 w-6" : "bg-primary/20 w-2"
+                  }`} />
+                </button>
               ))}
             </div>
           )}
