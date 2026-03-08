@@ -10,9 +10,10 @@ interface CategoryCardProps {
   delay?: number;
   iconScale?: number;
   iconOffsetX?: number;
+  iconOffsetY?: number;
 }
 
-const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0, iconScale = 1, iconOffsetX = 0 }: CategoryCardProps) => {
+const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0, iconScale = 1, iconOffsetX = 0, iconOffsetY = 0 }: CategoryCardProps) => {
   const size = 120 * iconScale;
   return (
     <Link to={link} className="block">
@@ -28,7 +29,7 @@ const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0, iconSc
           <span className="font-bold text-foreground text-base leading-tight">{title}</span>
           <span className="text-xs text-foreground/70">{subtitle}</span>
         </div>
-        <div className="flex-shrink-0 flex items-center justify-center absolute top-1/2 -translate-y-[calc(50%+10px)] drop-shadow-lg" style={{ width: size, height: size, right: -22 + iconOffsetX }}>
+        <div className="flex-shrink-0 flex items-center justify-center absolute drop-shadow-lg" style={{ width: size, height: size, right: -22 + iconOffsetX, top: `calc(50% + ${iconOffsetY}px)`, transform: 'translateY(calc(-50% - 10px))' }}>
           <img 
             src={image} 
             alt={title}
