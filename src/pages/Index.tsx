@@ -93,8 +93,8 @@ const categories = [
     link: "/cars",
     bgColor: "bg-purple-100 dark:bg-purple-950/40",
     iconScale: 1.45,
-    iconOffsetX: 10,
-    iconOffsetY: -5,
+    iconOffsetX: 5,
+    iconOffsetY: -15,
   },
   {
     image: experiencesIcon,
