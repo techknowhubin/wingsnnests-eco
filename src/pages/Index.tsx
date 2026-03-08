@@ -64,7 +64,7 @@ const categories = [
     link: "/stays",
     bgColor: "bg-pink-100 dark:bg-pink-950/40",
     iconOffsetX: 30,
-    iconOffsetY: 20,
+    iconOffsetY: 15,
   },
   {
     image: bikesIcon,
@@ -72,8 +72,8 @@ const categories = [
     subtitle: "Explore on two wheels",
     link: "/bikes",
     bgColor: "bg-green-100 dark:bg-green-950/40",
-    iconScale: 1.25,
-    iconOffsetX: 10,
+    iconScale: 1.05,
+    iconOffsetX: 20,
     iconOffsetY: -5,
   },
   {
@@ -101,7 +101,8 @@ const categories = [
     subtitle: "Unforgettable moments",
     link: "/experiences",
     bgColor: "bg-amber-100 dark:bg-amber-950/40",
-    iconOffsetX: 10,
+    iconOffsetX: 20,
+    iconOffsetY: -5,
   },
   {
     image: hotelsIcon,
