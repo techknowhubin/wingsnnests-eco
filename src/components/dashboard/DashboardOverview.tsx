@@ -111,9 +111,9 @@ export function DashboardOverview() {
   const recentBookings = bookings.slice(0, 5);
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+    <StaggerContainer className="space-y-6">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <StaggerItem className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1 text-sm">Welcome back, {firstName}! Here's your overview.</p>
@@ -128,57 +128,59 @@ export function DashboardOverview() {
             <Link to="/host/earnings">View Reports</Link>
           </Button>
         </div>
-      </motion.div>
+      </StaggerItem>
 
       {/* Stats Cards */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <Card
-            key={index}
-            className={`relative overflow-hidden rounded-2xl border-0 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${
-              stat.highlighted
-                ? 'text-primary-foreground'
-                : 'bg-card'
-            }`}
-            style={stat.highlighted ? {
-              background: 'linear-gradient(135deg, hsl(158 100% 10%) 0%, hsl(158 80% 25%) 50%, hsl(158 60% 35%) 100%)',
-            } : undefined}
-          >
-            <CardContent className="p-5 relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <p className={`text-sm font-medium ${stat.highlighted ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
-                  {stat.label}
-                </p>
-                <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
-                  stat.highlighted ? 'bg-primary-foreground/15 backdrop-blur-sm' : 'bg-muted/60'
-                }`}>
-                  <ArrowUpRight className={`h-4 w-4 ${stat.highlighted ? 'text-primary-foreground/70' : 'text-muted-foreground'}`} />
-                </div>
-              </div>
-              <p className={`text-3xl lg:text-4xl font-bold ${stat.highlighted ? '' : 'text-foreground'}`}>
-                {stat.value}
-              </p>
-              <div className="flex items-center gap-1.5 mt-2">
-                <div className={`h-1.5 w-1.5 rounded-full ${stat.highlighted ? 'bg-primary-foreground/60' : 'bg-primary'}`} />
-                <p className={`text-xs ${stat.highlighted ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                  {stat.change}
-                </p>
-              </div>
-            </CardContent>
-            {/* Decorative gradient overlay for highlighted */}
-            {stat.highlighted && (
-              <div className="absolute inset-0 opacity-20" style={{
-                background: 'radial-gradient(circle at 80% 20%, hsl(158 60% 55% / 0.6) 0%, transparent 50%), radial-gradient(circle at 20% 80%, hsl(158 80% 20% / 0.4) 0%, transparent 50%)',
-              }} />
-            )}
-          </Card>
-        ))}
-      </motion.div>
+      <StaggerItem>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((stat, index) => (
+            <LayoutCard key={index} layoutId={`stat-${stat.label}`}>
+              <Card
+                className={`relative overflow-hidden rounded-2xl border-0 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${
+                  stat.highlighted
+                    ? 'text-primary-foreground'
+                    : 'bg-card'
+                }`}
+                style={stat.highlighted ? {
+                  background: 'linear-gradient(135deg, hsl(158 100% 10%) 0%, hsl(158 80% 25%) 50%, hsl(158 60% 35%) 100%)',
+                } : undefined}
+              >
+                <CardContent className="p-5 relative z-10">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className={`text-sm font-medium ${stat.highlighted ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                      {stat.label}
+                    </p>
+                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
+                      stat.highlighted ? 'bg-primary-foreground/15 backdrop-blur-sm' : 'bg-muted/60'
+                    }`}>
+                      <ArrowUpRight className={`h-4 w-4 ${stat.highlighted ? 'text-primary-foreground/70' : 'text-muted-foreground'}`} />
+                    </div>
+                  </div>
+                  <p className={`text-3xl lg:text-4xl font-bold ${stat.highlighted ? '' : 'text-foreground'}`}>
+                    {stat.value}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <div className={`h-1.5 w-1.5 rounded-full ${stat.highlighted ? 'bg-primary-foreground/60' : 'bg-primary'}`} />
+                    <p className={`text-xs ${stat.highlighted ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                      {stat.change}
+                    </p>
+                  </div>
+                </CardContent>
+                {stat.highlighted && (
+                  <div className="absolute inset-0 opacity-20" style={{
+                    background: 'radial-gradient(circle at 80% 20%, hsl(158 60% 55% / 0.6) 0%, transparent 50%), radial-gradient(circle at 20% 80%, hsl(158 80% 20% / 0.4) 0%, transparent 50%)',
+                  }} />
+                )}
+              </Card>
+            </LayoutCard>
+          ))}
+        </div>
+      </StaggerItem>
 
       {/* Middle Row: Listings + Earnings */}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Listings Grid */}
-        <motion.div variants={itemVariants} className="lg:col-span-2">
+        <StaggerItem className="lg:col-span-2">
           <Card className="rounded-2xl border-0 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div>
@@ -193,7 +195,12 @@ export function DashboardOverview() {
               <div className="grid grid-cols-2 gap-3">
                 {listingTypes.map((type) => (
                   <Link key={type.path} to={type.path}>
-                    <div className="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/30 transition-all group">
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0.15 }}
+                      className="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-primary/30 hover:bg-muted/30 transition-colors group"
+                    >
                       <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${type.color}`}>
                         <type.icon className="h-5 w-5" />
                       </div>
@@ -202,16 +209,16 @@ export function DashboardOverview() {
                         <p className="text-xs text-muted-foreground">{type.label}</p>
                       </div>
                       <ChevronRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
-                    </div>
+                    </motion.div>
                   </Link>
                 ))}
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </StaggerItem>
 
         {/* Earnings Card */}
-        <motion.div variants={itemVariants}>
+        <StaggerItem>
           <Card className="rounded-2xl border-0 shadow-sm h-full">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div>
@@ -253,11 +260,11 @@ export function DashboardOverview() {
               </Button>
             </CardContent>
           </Card>
-        </motion.div>
+        </StaggerItem>
       </div>
 
       {/* Recent Bookings */}
-      <motion.div variants={itemVariants}>
+      <StaggerItem>
         <Card className="rounded-2xl border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
@@ -277,9 +284,12 @@ export function DashboardOverview() {
               </div>
             ) : (
               <div className="space-y-2">
-                {recentBookings.map((booking) => (
-                  <div
+                {recentBookings.map((booking, i) => (
+                  <motion.div
                     key={booking.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05, duration: 0.25, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] }}
                     className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/30 transition-colors"
                   >
                     <div className="flex items-center gap-3">
@@ -311,13 +321,13 @@ export function DashboardOverview() {
                         {booking.booking_status}
                       </Badge>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             )}
           </CardContent>
         </Card>
-      </motion.div>
-    </motion.div>
+      </StaggerItem>
+    </StaggerContainer>
   );
 }
