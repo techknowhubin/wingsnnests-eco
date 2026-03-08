@@ -105,6 +105,14 @@ const allDestinations = [
   // Ladakh
   { image: lehImg, title: "Leh", subtitle: "Land of high passes", rating: 4.9, priceRange: "Starting ₹2,000/night", state: "Ladakh", link: "/stays" },
   { image: nubraImg, title: "Nubra Valley", subtitle: "Desert in the mountains", rating: 4.8, priceRange: "Starting ₹2,500/night", state: "Ladakh", link: "/stays" },
+  // Telangana
+  { image: hyderabadImg, title: "Hyderabad", subtitle: "City of Pearls & Biryani", rating: 4.8, priceRange: "Starting ₹1,200/night", state: "Telangana", link: "/stays" },
+  { image: warangalImg, title: "Warangal", subtitle: "Kakatiya heritage city", rating: 4.4, priceRange: "Starting ₹800/night", state: "Telangana", link: "/stays" },
+  // Andhra Pradesh
+  { image: visakhapatnamImg, title: "Visakhapatnam", subtitle: "City of Destiny", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: tirupatiImg, title: "Tirupati", subtitle: "Sacred temple town", rating: 4.7, priceRange: "Starting ₹900/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: arakuImg, title: "Araku Valley", subtitle: "Coffee plantations & tribal culture", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: nagarjunasagarImg, title: "Nagarjuna Sagar", subtitle: "Massive dam & Buddhist ruins", rating: 4.3, priceRange: "Starting ₹700/night", state: "Andhra Pradesh", link: "/stays" },
 ];
 
 const states = [...new Set(allDestinations.map((d) => d.state))].sort();
