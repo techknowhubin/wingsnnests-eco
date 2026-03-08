@@ -77,7 +77,7 @@ const Bikes = () => {
               Explore India on two wheels with our diverse bike fleet
             </p>
           </motion.div>
-          <SearchBar />
+          <SearchBar defaultCategory="bikes" />
         </div>
       </section>
 

@@ -72,7 +72,7 @@ const Experiences = () => {
               Immerse yourself in local culture and traditions
             </p>
           </motion.div>
-          <SearchBar />
+          <SearchBar defaultCategory="experiences" />
         </div>
       </section>
 

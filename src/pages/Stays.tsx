@@ -87,7 +87,7 @@ const Stays = () => {
               Experience authentic local hospitality across India
             </p>
           </motion.div>
-          <SearchBar />
+          <SearchBar defaultCategory="stays" />
         </div>
       </section>
 
