@@ -129,6 +129,15 @@ const Index = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [getCardsPerPage]);
 
+  // Auto-slide for mobile/tablet
+  useEffect(() => {
+    if (!isMobileOrTablet) return;
+    const interval = setInterval(() => {
+      setCategoryPage(p => (p + 1) % totalPages);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isMobileOrTablet, totalPages]);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
