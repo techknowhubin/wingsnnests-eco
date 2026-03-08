@@ -1,4 +1,4 @@
-import { Heart, Star } from "lucide-react";
+import { Heart, Star, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -66,6 +66,11 @@ const ListingCard = ({
             } transition-colors`}
           />
         </motion.button>
+      </div>
+
+      {/* Arrow icon */}
+      <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <ArrowUpRight className="h-4 w-4 text-foreground" />
       </div>
 
       {/* Content */}
