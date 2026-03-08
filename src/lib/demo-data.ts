@@ -3,6 +3,19 @@
 
 import type { Stay, Car, Bike, Experience, Booking, Profile } from '@/types/database';
 
+// Demo listing images
+import mistyValleyCottage from '@/assets/demo/misty-valley-cottage.jpg';
+import hilltopHeritageBungalow from '@/assets/demo/hilltop-heritage-bungalow.jpg';
+import pineForestTreehouse from '@/assets/demo/pine-forest-treehouse.jpg';
+import swiftDzire from '@/assets/demo/swift-dzire.jpg';
+import mahindraThar from '@/assets/demo/mahindra-thar.jpg';
+import royalEnfieldClassic from '@/assets/demo/royal-enfield-classic.jpg';
+import hondaActiva from '@/assets/demo/honda-activa.jpg';
+import ktmDuke from '@/assets/demo/ktm-duke.jpg';
+import sunriseTrek from '@/assets/demo/sunrise-trek.jpg';
+import lakeCycling from '@/assets/demo/lake-cycling.jpg';
+import stargazing from '@/assets/demo/stargazing.jpg';
+
 const DEMO_HOST_ID = 'demo-host-kodaikanal';
 const now = new Date().toISOString();
 const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString();
