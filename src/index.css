@@ -8,14 +8,14 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Xplorwing Light Mode - Light Ivory & Dark Forest Green */
-    --background: 48 100% 99%;
+    /* Xplorwing Light Mode - Clean White & Dark Forest Green */
+    --background: 0 0% 100%;
     --foreground: 158 100% 10%;
 
-    --card: 48 100% 98%;
+    --card: 0 0% 100%;
     --card-foreground: 158 100% 10%;
 
-    --popover: 48 100% 98%;
+    --popover: 0 0% 100%;
     --popover-foreground: 158 100% 10%;
 
     --primary: 158 100% 10%;
