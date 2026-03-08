@@ -72,7 +72,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-9 rounded-lg border-border px-2 text-xs",
+                  "w-full justify-start text-left font-normal h-9 rounded-full border-border px-3 text-xs",
                   !checkIn && "text-muted-foreground"
                 )}
               >
