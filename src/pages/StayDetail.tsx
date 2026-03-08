@@ -2,12 +2,17 @@ import { useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Marquee from "@/components/Marquee";
-import { Star, MapPin, Wifi, Car, Check, Shield, X, Users, BedDouble, Bath, Tv, Coffee, Wind, Utensils, Snowflake, Dumbbell, ParkingCircle, Camera, type LucideIcon } from "lucide-react";
+import { Star, MapPin, Wifi, Car, Check, Shield, X, Users, BedDouble, Bath, Tv, Coffee, Wind, Utensils, Snowflake, Dumbbell, ParkingCircle, Camera, Heart, Share2, MoreHorizontal, Map, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import StayBreadcrumb from "@/components/stay-detail/StayBreadcrumb";
+import StayImageGallery from "@/components/stay-detail/StayImageGallery";
+import StayFeatureHighlights from "@/components/stay-detail/StayFeatureHighlights";
+import StayBookingPanel from "@/components/stay-detail/StayBookingPanel";
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
 import goaImage from "@/assets/stays/goa-beach-villa.jpg";
 import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
@@ -26,10 +31,8 @@ const imageMap: Record<string, string> = {
   "kasol-valley-home.jpg": kasolImage,
 };
 
-// Helper function to get appropriate icon for amenity
 const getAmenityIcon = (amenity: string): LucideIcon => {
   const amenityLower = amenity.toLowerCase();
-  
   if (amenityLower.includes('wifi') || amenityLower.includes('internet')) return Wifi;
   if (amenityLower.includes('tv') || amenityLower.includes('television')) return Tv;
   if (amenityLower.includes('coffee') || amenityLower.includes('kitchen')) return Coffee;
@@ -39,8 +42,7 @@ const getAmenityIcon = (amenity: string): LucideIcon => {
   if (amenityLower.includes('gym') || amenityLower.includes('fitness')) return Dumbbell;
   if (amenityLower.includes('parking')) return ParkingCircle;
   if (amenityLower.includes('security') || amenityLower.includes('camera')) return Camera;
-  
-  return Wifi; // default icon
+  return Wifi;
 };
 
 interface Stay {
@@ -67,35 +69,27 @@ const StayDetail = () => {
   const { id } = useParams();
   const [stay, setStay] = useState<Stay | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const { toast } = useToast();
-  const [guests, setGuests] = useState(1);
-  const [pricingOption, setPricingOption] = useState<"daily" | "weekly" | "monthly">("weekly");
 
   useEffect(() => {
     const fetchStay = async () => {
       if (!id) return;
-      
       try {
         const { data, error } = await supabase
           .from("stays")
           .select("*")
           .eq("id", id)
           .single();
-
         if (error) throw error;
         setStay(data);
       } catch (error) {
         console.error("Error fetching stay:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load homestay details.",
-          variant: "destructive",
-        });
+        toast({ title: "Error", description: "Failed to load homestay details.", variant: "destructive" });
       } finally {
         setLoading(false);
       }
     };
-
     fetchStay();
   }, [id, toast]);
 
@@ -134,108 +128,117 @@ const StayDetail = () => {
   const amenitiesList = Array.isArray(stay.amenities) ? stay.amenities : [];
   const mainImage = stay.images?.[0] ? imageMap[stay.images[0]] || manaliImage : manaliImage;
   const currencySymbol = stay.currency === 'INR' ? '₹' : '$';
-  const weeklyPrice = stay.price_per_night * 7 * 0.85; // 15% discount
-  const monthlyPrice = stay.price_per_night * 30 * 0.7; // 30% discount
 
   return (
     <div className="min-h-screen flex flex-col">
       <Marquee />
       <Header />
 
-      <div className="max-w-7xl mx-auto px-4 py-8 flex-grow">
-        {/* Header Section */}
-        <div className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-            {stay.title}
-          </h1>
-          <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-foreground text-foreground" />
-              <span className="font-semibold text-foreground">{stay.rating}</span>
+      <div className="max-w-7xl mx-auto px-4 py-6 flex-grow">
+        {/* Breadcrumb */}
+        <StayBreadcrumb title={stay.title} />
+
+        {/* Title & Meta */}
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              {stay.title}
+            </h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30 font-medium">
+                {stay.property_type || "Homestay"}
+              </Badge>
+              <span className="text-sm text-muted-foreground flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" />
+                {stay.location}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                <span className="text-sm font-semibold text-foreground">{stay.rating}</span>
+                <span className="text-sm text-muted-foreground">({stay.total_reviews} reviews)</span>
+              </div>
             </div>
-            <span>·</span>
-            <button className="underline hover:text-foreground transition-colors">
-              {stay.total_reviews} reviews
-            </button>
-            <span>·</span>
-            <button className="flex items-center gap-1 underline hover:text-foreground transition-colors">
-              <MapPin className="h-4 w-4" />
-              {stay.location}
-            </button>
+          </div>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" className="rounded-full h-10 w-10">
+              <Map className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="rounded-full h-10 w-10">
+              <Share2 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className={`rounded-full h-10 w-10 ${isWishlisted ? 'bg-destructive/10 border-destructive/30' : ''}`}
+              onClick={() => setIsWishlisted(!isWishlisted)}
+            >
+              <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-destructive text-destructive' : ''}`} />
+            </Button>
+            <Button variant="outline" size="icon" className="rounded-full h-10 w-10">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
         {/* Image Gallery */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 mb-10 h-[400px] lg:h-[500px] rounded-2xl overflow-hidden">
-          <div className="lg:col-span-2 lg:row-span-2 h-full">
-            <img
-              src={mainImage}
-              alt={stay.title}
-              className="w-full h-full object-cover hover:opacity-95 transition-opacity cursor-pointer"
-            />
-          </div>
-          <div className="hidden lg:block h-full">
-            <img
-              src={mainImage}
-              alt="View 2"
-              className="w-full h-full object-cover hover:opacity-95 transition-opacity cursor-pointer"
-            />
-          </div>
-          <div className="hidden lg:block h-full">
-            <img
-              src={mainImage}
-              alt="View 3"
-              className="w-full h-full object-cover hover:opacity-95 transition-opacity cursor-pointer"
-            />
-          </div>
-          <div className="hidden lg:block h-full">
-            <img
-              src={mainImage}
-              alt="View 4"
-              className="w-full h-full object-cover hover:opacity-95 transition-opacity cursor-pointer"
-            />
-          </div>
-          <div className="hidden lg:block h-full">
-            <img
-              src={mainImage}
-              alt="View 5"
-              className="w-full h-full object-cover hover:opacity-95 transition-opacity cursor-pointer"
-            />
-          </div>
-        </div>
+        <StayImageGallery mainImage={mainImage} title={stay.title} />
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Left Column - Property Details */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Property Specs & Host */}
+            {/* Property Specs */}
             <div className="pb-8 border-b border-border">
-              <div className="flex items-start justify-between">
+              <h2 className="text-xl font-semibold text-foreground mb-4">
+                Entire {stay.property_type || "Homestay"} Details
+              </h2>
+              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  {stay.max_guests} Guests
+                </span>
+                <span className="flex items-center gap-2">
+                  <BedDouble className="h-4 w-4" />
+                  {stay.bedrooms} {stay.bedrooms === 1 ? "Bedroom" : "Bedrooms"}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Bath className="h-4 w-4" />
+                  {stay.bathrooms} Private {stay.bathrooms === 1 ? "bath" : "baths"}
+                </span>
+              </div>
+            </div>
+
+            {/* Host Info */}
+            <div className="pb-8 border-b border-border">
+              <div className="flex items-start gap-4">
                 <div>
-                  <h2 className="text-xl font-semibold text-foreground mb-2">
-                    Entire rental unit hosted by Host Name
-                  </h2>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <span>{stay.max_guests} guests</span>
-                    <span>·</span>
-                    <span>{stay.bedrooms} bedrooms</span>
-                    <span>·</span>
-                    <span>{stay.bedrooms} beds</span>
-                    <span>·</span>
-                    <span>{stay.bathrooms} baths</span>
+                  <p className="text-sm text-muted-foreground mb-1">Hosted by:</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold">
+                      H
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Host Name</h4>
+                      <p className="text-xs text-muted-foreground">Joined in March 2020</p>
+                    </div>
                   </div>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-foreground font-semibold">
-                  H
                 </div>
               </div>
             </div>
 
-            {/* Description */}
+            {/* Feature Highlights */}
+            <StayFeatureHighlights cancellationPolicy={stay.cancellation_policy} />
+
+            {/* Room Description */}
             <div className="pb-8 border-b border-border">
-              <p className="text-foreground leading-relaxed">
+              <Badge className="bg-accent text-accent-foreground mb-4">Room Description</Badge>
+              <p className="text-foreground leading-relaxed mb-3">
                 {stay.description}
               </p>
+              <button className="text-sm font-semibold text-accent hover:underline">
+                Read More
+              </button>
             </div>
 
             {/* Sleeping Arrangements */}
@@ -278,8 +281,8 @@ const StayDetail = () => {
                 ].map((vehicle, i) => (
                   <Card key={i} className="border-border overflow-hidden">
                     <div className="aspect-video overflow-hidden">
-                      <img 
-                        src={vehicle.image} 
+                      <img
+                        src={vehicle.image}
                         alt={vehicle.name}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                       />
@@ -287,7 +290,7 @@ const StayDetail = () => {
                     <div className="p-4">
                       <h3 className="font-semibold text-foreground mb-1">{vehicle.name}</h3>
                       <div className="flex items-center gap-1 mb-2">
-                        <Star className="h-3 w-3 fill-foreground text-foreground" />
+                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                         <span className="text-sm text-muted-foreground">{vehicle.rating}</span>
                       </div>
                       <p className="text-lg font-bold text-foreground mb-1">
@@ -313,7 +316,7 @@ const StayDetail = () => {
             {/* Detailed Ratings */}
             <div className="pb-8 border-b border-border">
               <h2 className="text-2xl font-semibold text-foreground mb-6 flex items-center gap-2">
-                <Star className="h-6 w-6 fill-foreground text-foreground" />
+                <Star className="h-6 w-6 fill-amber-400 text-amber-400" />
                 {stay.rating} · {stay.total_reviews} reviews
               </h2>
               <div className="grid grid-cols-2 gap-x-12 gap-y-4">
@@ -331,10 +334,7 @@ const StayDetail = () => {
                       <span className="text-sm font-semibold text-foreground">{rating.score}</span>
                     </div>
                     <div className="h-1 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-foreground"
-                        style={{ width: `${(rating.score / 5) * 100}%` }}
-                      />
+                      <div className="h-full bg-accent" style={{ width: `${(rating.score / 5) * 100}%` }} />
                     </div>
                   </div>
                 ))}
@@ -353,14 +353,14 @@ const StayDetail = () => {
             {/* Host Profile */}
             <Card className="bg-secondary/30 border-border p-6">
               <div className="flex gap-4 mb-4">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-foreground font-bold text-xl">
+                <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-xl">
                   H
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-foreground">Hosted by Host Name</h3>
                   <p className="text-sm text-muted-foreground">Joined in March 2020</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Star className="h-4 w-4 fill-foreground text-foreground" />
+                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                     <span className="text-sm font-semibold">Superhost</span>
                   </div>
                 </div>
@@ -368,9 +368,7 @@ const StayDetail = () => {
               <p className="text-muted-foreground mb-4">
                 I love hosting travelers and sharing the beauty of our region. I'm always available to help make your stay memorable!
               </p>
-              <Button variant="outline" className="w-full">
-                Contact host
-              </Button>
+              <Button variant="outline" className="w-full">Contact host</Button>
             </Card>
 
             {/* Things to Know */}
@@ -415,121 +413,14 @@ const StayDetail = () => {
             </div>
           </div>
 
-          {/* Right Column - Booking Panel (Sticky) */}
+          {/* Right Column - Booking Panel */}
           <div className="lg:col-span-1">
-            <Card className="border-border shadow-strong sticky top-24 p-6">
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-foreground uppercase mb-4">
-                  Select your stay
-                </h3>
-                
-                {/* Date & Guests Input */}
-                <div className="border border-border rounded-lg overflow-hidden mb-6">
-                  <div className="grid grid-cols-2 border-b border-border">
-                    <div className="p-3 border-r border-border">
-                      <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">
-                        Check-in
-                      </label>
-                      <input
-                        type="date"
-                        className="w-full bg-transparent text-sm text-foreground border-none outline-none"
-                        aria-label="Check-in date"
-                      />
-                    </div>
-                    <div className="p-3">
-                      <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">
-                        Checkout
-                      </label>
-                      <input
-                        type="date"
-                        className="w-full bg-transparent text-sm text-foreground border-none outline-none"
-                        aria-label="Checkout date"
-                      />
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1">
-                      Guests
-                    </label>
-                    <select
-                      value={guests}
-                      onChange={(e) => setGuests(Number(e.target.value))}
-                      className="w-full bg-transparent text-sm text-foreground border-none outline-none"
-                      aria-label="Number of guests"
-                    >
-                      {Array.from({ length: stay.max_guests }, (_, i) => i + 1).map((num) => (
-                        <option key={num} value={num}>
-                          {num} {num === 1 ? "guest" : "guests"}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Pricing Options */}
-                <div className="grid grid-cols-3 gap-2 mb-6">
-                  <button
-                    onClick={() => setPricingOption("daily")}
-                    className={`p-3 border rounded-lg text-center transition-all ${
-                      pricingOption === "daily"
-                        ? "border-foreground bg-secondary"
-                        : "border-border hover:border-muted-foreground"
-                    }`}
-                    aria-label="Daily pricing"
-                  >
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">Daily</p>
-                    <p className="text-sm font-bold text-foreground">
-                      {currencySymbol}{stay.price_per_night}
-                    </p>
-                  </button>
-                  <button
-                    onClick={() => setPricingOption("weekly")}
-                    className={`p-3 border rounded-lg text-center transition-all relative ${
-                      pricingOption === "weekly"
-                        ? "border-foreground bg-secondary scale-105"
-                        : "border-border hover:border-muted-foreground"
-                    }`}
-                    aria-label="Weekly pricing (popular)"
-                  >
-                    {pricingOption === "weekly" && (
-                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        POPULAR
-                      </span>
-                    )}
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">Weekly</p>
-                    <p className="text-sm font-bold text-foreground">
-                      {currencySymbol}{Math.round(weeklyPrice)}
-                    </p>
-                  </button>
-                  <button
-                    onClick={() => setPricingOption("monthly")}
-                    className={`p-3 border rounded-lg text-center transition-all ${
-                      pricingOption === "monthly"
-                        ? "border-foreground bg-secondary"
-                        : "border-border hover:border-muted-foreground"
-                    }`}
-                    aria-label="Monthly pricing"
-                  >
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">Monthly</p>
-                    <p className="text-sm font-bold text-foreground">
-                      {currencySymbol}{Math.round(monthlyPrice)}
-                    </p>
-                  </button>
-                </div>
-              </div>
-
-              <Button
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-                size="lg"
-                aria-label="Reserve this property"
-              >
-                Reserve
-              </Button>
-
-              <p className="text-xs text-center text-muted-foreground mt-4">
-                You won't be charged yet
-              </p>
-            </Card>
+            <StayBookingPanel
+              pricePerNight={stay.price_per_night}
+              currencySymbol={currencySymbol}
+              maxGuests={stay.max_guests}
+              title={stay.title}
+            />
           </div>
         </div>
       </div>
@@ -538,4 +429,5 @@ const StayDetail = () => {
     </div>
   );
 };
+
 export default StayDetail;
