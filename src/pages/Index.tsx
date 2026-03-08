@@ -5,8 +5,8 @@ import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import DestinationCard from "@/components/DestinationCard";
 import ListingCard from "@/components/ListingCard";
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -103,6 +103,49 @@ const Index = () => {
   const [cars, setCars] = useState<any[]>([]);
   const [experiences, setExperiences] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [categoryPage, setCategoryPage] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  // Determine cards per page based on screen width
+  const getCardsPerPage = useCallback(() => {
+    if (typeof window === "undefined") return categories.length;
+    if (window.innerWidth < 640) return 1; // mobile
+    if (window.innerWidth < 1024) return 2; // tablet
+    return categories.length; // desktop: show all
+  }, []);
+
+  const [cardsPerPage, setCardsPerPage] = useState(getCardsPerPage);
+  const totalPages = Math.ceil(categories.length / cardsPerPage);
+  const isMobileOrTablet = cardsPerPage < categories.length;
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newPerPage = getCardsPerPage();
+      setCardsPerPage(newPerPage);
+      setCategoryPage(0);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [getCardsPerPage]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && categoryPage < totalPages - 1) setCategoryPage(p => p + 1);
+      if (diff < 0 && categoryPage > 0) setCategoryPage(p => p - 1);
+    }
+  };
+
+  const visibleCategories = isMobileOrTablet
+    ? categories.slice(categoryPage * cardsPerPage, categoryPage * cardsPerPage + cardsPerPage)
+    : categories;
 
   const fetchStays = async () => {
     const { data } = await supabase.from("stays").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
@@ -162,31 +205,49 @@ const Index = () => {
       {/* Categories Section */}
       <section className="container mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((cat, index) => (
-              <CategoryCard
-                key={cat.title}
-                image={cat.image}
-                title={cat.title}
-                subtitle={cat.subtitle}
-                link={cat.link}
-                bgColor={cat.bgColor}
-                delay={index * 0.08}
-              />
-            ))}
-          </div>
-          {/* Dot navigation */}
-          <div className="flex justify-center gap-2 mt-6">
-            {categories.map((cat, i) => (
+          <div
+            className="flex justify-center gap-4 overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <AnimatePresence mode="wait">
               <motion.div
-                key={cat.title}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3 + i * 0.08 }}
-                className={`w-2 h-2 rounded-full ${i === 0 ? "bg-primary w-6" : "bg-muted-foreground/30"} transition-all duration-300`}
-              />
-            ))}
+                key={categoryPage}
+                initial={isMobileOrTablet ? { opacity: 0, x: 60 } : { opacity: 1, x: 0 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={isMobileOrTablet ? { opacity: 0, x: -60 } : { opacity: 1, x: 0 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                className="flex flex-wrap justify-center gap-4"
+              >
+                {visibleCategories.map((cat, index) => (
+                  <CategoryCard
+                    key={cat.title}
+                    image={cat.image}
+                    title={cat.title}
+                    subtitle={cat.subtitle}
+                    link={cat.link}
+                    bgColor={cat.bgColor}
+                    delay={index * 0.08}
+                  />
+                ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
+          {/* Dot navigation - hidden on desktop */}
+          {isMobileOrTablet && (
+            <div className="flex justify-center gap-2 mt-6">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCategoryPage(i)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    i === categoryPage ? "bg-primary w-6" : "bg-muted-foreground/30 w-2"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </motion.div>
       </section>
 
