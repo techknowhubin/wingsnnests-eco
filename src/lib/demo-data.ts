@@ -411,7 +411,7 @@ export const DEMO_EXPERIENCES: Experience[] = [
       { time: '9:30 PM', activity: 'Deep sky object viewing' },
       { time: '10:30 PM', activity: 'Wrap up & departure' },
     ],
-    images: ['/placeholder.svg'],
+    images: [stargazing],
     availability_status: true,
     is_verified: false,
     verified_by: null,
