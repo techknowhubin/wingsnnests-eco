@@ -42,6 +42,9 @@ const mainMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/host' },
   { icon: Bell, label: 'Notifications', path: '/host/bookings', badge: true },
   { icon: Calendar, label: 'Reservations', path: '/host/bookings' },
+];
+
+const listingMenuItems = [
   { icon: Home, label: 'Stays', path: '/host/stays' },
   { icon: Car, label: 'Cars', path: '/host/cars' },
   { icon: Bike, label: 'Bikes', path: '/host/bikes' },
