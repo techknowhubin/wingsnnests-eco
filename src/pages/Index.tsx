@@ -215,7 +215,7 @@ const Index = () => {
       <section className="container mx-auto px-4 pt-20 pb-12">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
           <div
-            className="flex justify-center gap-4 overflow-hidden"
+            className="flex justify-center gap-4 overflow-hidden py-4"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
