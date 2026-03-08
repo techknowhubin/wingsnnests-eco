@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarDays, Users, ChevronDown } from "lucide-react";
+import { CalendarDays, Users, Minus, Plus } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -63,21 +63,22 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
         </p>
       </div>
 
-      {/* Check-in / Check-out with Popover Calendar */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      {/* Check-in / Check-out / Guests — single row */}
+      <div className="grid grid-cols-3 gap-2 mb-5">
+        {/* Check in */}
         <div>
-          <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1.5">Check in</label>
+          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-1">Check in</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-11 rounded-xl border-border",
+                  "w-full justify-start text-left font-normal h-10 rounded-xl border-border px-2 text-xs",
                   !checkIn && "text-muted-foreground"
                 )}
               >
-                <CalendarDays className="h-4 w-4 mr-2 text-accent" />
-                {checkIn ? format(checkIn, "MMM dd, yyyy") : "Select"}
+                <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-accent flex-shrink-0" />
+                {checkIn ? format(checkIn, "MMM dd") : "Select"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -92,19 +93,21 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
             </PopoverContent>
           </Popover>
         </div>
+
+        {/* Check out */}
         <div>
-          <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1.5">Check out</label>
+          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-1">Check out</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-11 rounded-xl border-border",
+                  "w-full justify-start text-left font-normal h-10 rounded-xl border-border px-2 text-xs",
                   !checkOut && "text-muted-foreground"
                 )}
               >
-                <CalendarDays className="h-4 w-4 mr-2 text-accent" />
-                {checkOut ? format(checkOut, "MMM dd, yyyy") : "Select"}
+                <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-accent flex-shrink-0" />
+                {checkOut ? format(checkOut, "MMM dd") : "Select"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -119,43 +122,30 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
             </PopoverContent>
           </Popover>
         </div>
-      </div>
 
-      {/* Guests Dropdown */}
-      <div className="mb-5">
-        <label className="text-xs font-semibold text-muted-foreground uppercase block mb-1.5">Guest</label>
-        <Popover open={guestOpen} onOpenChange={setGuestOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full justify-between text-left font-normal h-11 rounded-xl border-border"
+        {/* Guests +/- stepper */}
+        <div>
+          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-1">Guests</label>
+          <div className="flex items-center justify-between h-10 border border-border rounded-xl px-1.5">
+            <button
+              onClick={() => setGuests(Math.max(1, guests - 1))}
+              disabled={guests <= 1}
+              className="h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-secondary disabled:opacity-30 transition-colors"
+              aria-label="Decrease guests"
             >
-              <span className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-accent" />
-                <span>{guests} {guests === 1 ? "Guest" : "Guests"}</span>
-              </span>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-2 pointer-events-auto" align="start">
-            <div className="space-y-1">
-              {Array.from({ length: maxGuests }, (_, i) => i + 1).map((num) => (
-                <button
-                  key={num}
-                  onClick={() => { setGuests(num); setGuestOpen(false); }}
-                  className={cn(
-                    "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
-                    guests === num
-                      ? "bg-accent text-accent-foreground font-medium"
-                      : "hover:bg-secondary text-foreground"
-                  )}
-                >
-                  {num} {num === 1 ? "Guest" : "Guests"}
-                </button>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+              <Minus className="h-3.5 w-3.5" />
+            </button>
+            <span className="text-sm font-semibold text-foreground">{guests}</span>
+            <button
+              onClick={() => setGuests(Math.min(maxGuests, guests + 1))}
+              disabled={guests >= maxGuests}
+              className="h-7 w-7 rounded-lg flex items-center justify-center text-accent hover:bg-accent/10 disabled:opacity-30 transition-colors"
+              aria-label="Increase guests"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Pricing Options */}
