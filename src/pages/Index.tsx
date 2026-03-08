@@ -220,7 +220,7 @@ const Index = () => {
 
       {/* Hero Section with Slider */}
       <section className="container mx-auto px-4 pt-4">
-        <div className="relative h-[70vh] rounded-3xl overflow-hidden">
+        <div className="relative h-[85vh] rounded-3xl overflow-hidden">
           {heroImages.map((img, i) => (
             <motion.div
               key={i}
