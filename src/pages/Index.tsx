@@ -64,7 +64,7 @@ const categories = [
     link: "/stays",
     bgColor: "bg-pink-100 dark:bg-pink-950/40",
     iconOffsetX: 30,
-    iconOffsetY: 20,
+    iconOffsetY: 15,
   },
   {
     image: bikesIcon,
