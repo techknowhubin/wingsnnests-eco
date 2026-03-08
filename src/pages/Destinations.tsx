@@ -172,7 +172,7 @@ const Destinations = () => {
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-md border ${
                 selectedState === "All"
                   ? "bg-gradient-to-r from-primary/80 to-primary/60 text-white border-primary/30 shadow-lg shadow-primary/20"
-                  : "bg-white/40 dark:bg-white/10 text-foreground/80 border-white/30 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20"
+                  : "bg-muted/80 text-foreground border-border hover:bg-muted"
               }`}
             >
               All States
@@ -184,7 +184,7 @@ const Destinations = () => {
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-md border ${
                   selectedState === state
                     ? "bg-gradient-to-r from-primary/80 to-primary/60 text-white border-primary/30 shadow-lg shadow-primary/20"
-                    : "bg-white/40 dark:bg-white/10 text-foreground/80 border-white/30 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20"
+                    : "bg-muted/80 text-foreground border-border hover:bg-muted"
                 }`}
               >
                 {state}
