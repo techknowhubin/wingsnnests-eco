@@ -13,6 +13,9 @@ import {
   isAdmin, isHost, isModerator,
   createStay, createCar, createBike, createExperience,
 } from '@/lib/supabase-helpers';
+import {
+  DEMO_STAYS, DEMO_CARS, DEMO_BIKES, DEMO_EXPERIENCES, DEMO_BOOKINGS, DEMO_PROFILE,
+} from '@/lib/demo-data';
 import type { ListingType, BookingStatus } from '@/types/database';
 
 // ============ Stays Hooks ============
