@@ -158,49 +158,12 @@ const BikeDetail = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="glass-effect rounded-2xl p-6 sticky top-24"
             >
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-3xl font-bold text-foreground">₹1,500</span>
-                  <span className="text-muted-foreground">/ day</span>
-                </div>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="text-sm font-semibold text-foreground mb-2 block">
-                    Pickup Date
-                  </label>
-                  <Calendar
-                    mode="single"
-                    selected={pickupDate}
-                    onSelect={setPickupDate}
-                    disabled={(date) => date < new Date()}
-                    className="rounded-xl border"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-foreground mb-2 block">
-                    Drop-off Date
-                  </label>
-                  <Calendar
-                    mode="single"
-                    selected={dropoffDate}
-                    onSelect={setDropoffDate}
-                    disabled={(date) => date < (pickupDate || new Date())}
-                    className="rounded-xl border"
-                  />
-                </div>
-              </div>
-
-              <Button className="w-full bg-primary hover:bg-accent" size="lg">
-                Book Now
-              </Button>
-
-              <p className="text-xs text-muted-foreground mt-4">
-                <strong>Requirements:</strong> Valid driving license, ID proof, security deposit
-              </p>
+              <VehicleBookingPanel
+                pricePerDay={1500}
+                title="Royal Enfield Himalayan"
+                requirements="Valid driving license, ID proof, security deposit"
+              />
             </motion.div>
           </div>
         </div>
