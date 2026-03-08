@@ -63,8 +63,8 @@ const categories = [
     subtitle: "Unique homestays",
     link: "/stays",
     bgColor: "bg-pink-100 dark:bg-pink-950/40",
-    iconOffsetX: 15,
-    iconOffsetY: 5,
+    iconOffsetX: 30,
+    iconOffsetY: 20,
   },
   {
     image: bikesIcon,
