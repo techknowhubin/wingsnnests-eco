@@ -240,6 +240,7 @@ const Index = () => {
                     link={cat.link}
                     bgColor={cat.bgColor}
                     delay={index * 0.08}
+                    iconScale={cat.iconScale}
                   />
                 ))}
               </motion.div>
