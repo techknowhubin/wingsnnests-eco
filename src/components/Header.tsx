@@ -95,9 +95,11 @@ const Header = () => {
               </Button>
 
               <Link to="/login">
-                <Button variant="outline" className="gap-2 rounded-full">
-                  <User className="h-4 w-4" />
-                  <span className="hidden md:inline">Login</span>
+                <Button variant="ghost" className="gap-2 rounded-full p-1 pr-3 hover:bg-muted/60">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="hidden md:inline text-sm font-medium text-foreground">Login</span>
                 </Button>
               </Link>
 
