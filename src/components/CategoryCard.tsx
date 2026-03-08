@@ -19,19 +19,20 @@ const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0 }: Cate
         transition={{ duration: 0.5, delay }}
         whileHover={{ scale: 1.05, y: -4 }}
         whileTap={{ scale: 0.97 }}
-        className={`${bgColor} rounded-2xl px-6 py-5 flex items-center justify-between gap-4 cursor-pointer w-[286px] h-[114px] shadow-md hover:shadow-lg transition-shadow relative overflow-visible`}
+        className={`${bgColor} rounded-2xl px-6 py-5 flex items-center justify-between gap-4 cursor-pointer w-[286px] h-[114px] shadow-md hover:shadow-lg transition-shadow relative overflow-x-hidden overflow-y-visible`}
       >
         <div className="flex flex-col gap-0.5">
           <span className="font-bold text-foreground text-base leading-tight">{title}</span>
           <span className="text-xs text-foreground/70">{subtitle}</span>
         </div>
-        <div className="w-[140px] h-[140px] flex-shrink-0 flex items-center justify-center absolute right-4 top-1/2 -translate-y-1/2">
-          <img 
-            src={image} 
-            alt={title}
-            className="w-[140px] h-[140px] object-cover"
-          />
-        </div>
+        <div className="w-[140px] h-[140px] flex-shrink-0 flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2">
+          <div className="w-[112px] h-[112px] flex items-center justify-center">
+            <img
+              src={image}
+              alt={title}
+              className="w-[112px] h-[112px] object-cover"
+            />
+          </div>
       </motion.div>
     </Link>
   );
