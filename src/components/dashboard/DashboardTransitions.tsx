@@ -19,7 +19,7 @@ const pageVariants = {
     filter: 'blur(0px)',
     transition: {
       duration: 0.28,
-      ease: [0.4, 0, 0.2, 1],
+      ease: [0.4, 0, 0.2, 1] as [number, number, number, number],
       staggerChildren: 0.06,
       delayChildren: 0.08,
     },
