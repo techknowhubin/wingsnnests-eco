@@ -46,6 +46,14 @@ import gangtokImg from "@/assets/destinations/gangtok.jpg";
 import pellingImg from "@/assets/destinations/pelling.jpg";
 import lehImg from "@/assets/destinations/leh.jpg";
 import nubraImg from "@/assets/destinations/nubra.jpg";
+// Telangana
+import hyderabadImg from "@/assets/destinations/hyderabad.jpg";
+import warangalImg from "@/assets/destinations/warangal.jpg";
+// Andhra Pradesh
+import visakhapatnamImg from "@/assets/destinations/visakhapatnam.jpg";
+import tirupatiImg from "@/assets/destinations/tirupati.jpg";
+import arakuImg from "@/assets/destinations/araku.jpg";
+import nagarjunasagarImg from "@/assets/destinations/nagarjunasagar.jpg";
 
 const allDestinations = [
   // Goa
