@@ -92,8 +92,9 @@ const categories = [
     subtitle: "Intercity travel",
     link: "/cars",
     bgColor: "bg-purple-100 dark:bg-purple-950/40",
-    iconScale: 1.25,
+    iconScale: 1.45,
     iconOffsetX: 10,
+    iconOffsetY: -5,
   },
   {
     image: experiencesIcon,
