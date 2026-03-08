@@ -89,6 +89,7 @@ const categories = [
     subtitle: "Unforgettable moments",
     link: "/experiences",
     bgColor: "bg-amber-100 dark:bg-amber-950/40",
+    iconOffsetX: 10,
   },
 ];
 

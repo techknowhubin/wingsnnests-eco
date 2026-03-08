@@ -28,7 +28,7 @@ const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0, iconSc
           <span className="font-bold text-foreground text-base leading-tight">{title}</span>
           <span className="text-xs text-foreground/70">{subtitle}</span>
         </div>
-        <div className="flex-shrink-0 flex items-center justify-center absolute -right-[22px] top-1/2 -translate-y-[calc(50%+10px)] drop-shadow-lg" style={{ width: size, height: size }}>
+        <div className="flex-shrink-0 flex items-center justify-center absolute top-1/2 -translate-y-[calc(50%+10px)] drop-shadow-lg" style={{ width: size, height: size, right: -22 + iconOffsetX }}>
           <img 
             src={image} 
             alt={title}
