@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Plane, Building2 } from "lucide-react";
 
 interface RoleToggleProps {
   role: "user" | "host";
@@ -7,37 +6,25 @@ interface RoleToggleProps {
 }
 
 const RoleToggle = ({ role, onChange }: RoleToggleProps) => {
-  const options = [
-    { key: "user" as const, label: "Traveller", icon: Plane, emoji: "✈️" },
-    { key: "host" as const, label: "Host", icon: Building2, emoji: "🏡" },
-  ];
-
   return (
-    <div className="flex items-center justify-center mb-8">
-      <div className="relative flex items-center w-full max-w-xs bg-muted/40 backdrop-blur-sm rounded-2xl p-1.5 border border-border/60 shadow-sm">
-        {/* Animated sliding pill */}
+    <div className="flex items-center justify-center mb-6">
+      <div className="relative flex items-center bg-muted/50 rounded-full p-1 border border-border/50">
         <motion.div
-          className="absolute top-1.5 bottom-1.5 rounded-xl bg-primary shadow-lg"
-          style={{ width: "calc(50% - 6px)" }}
-          animate={{
-            x: role === "user" ? 0 : "calc(100% + 6px)",
-          }}
+          className="absolute top-1 bottom-1 rounded-full bg-primary"
+          style={{ width: "calc(50% - 4px)" }}
+          animate={{ x: role === "user" ? 0 : "calc(100% + 4px)" }}
           transition={{ type: "spring", stiffness: 500, damping: 35 }}
         />
-
-        {options.map((opt) => (
+        {(["user", "host"] as const).map((key) => (
           <button
-            key={opt.key}
+            key={key}
             type="button"
-            onClick={() => onChange(opt.key)}
-            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 ${
-              role === opt.key
-                ? "text-primary-foreground scale-[1.02]"
-                : "text-muted-foreground hover:text-foreground"
+            onClick={() => onChange(key)}
+            className={`relative z-10 px-5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+              role === key ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <span className="text-base">{opt.emoji}</span>
-            {opt.label}
+            {key === "user" ? "Traveller" : "Host"}
           </button>
         ))}
       </div>
