@@ -121,7 +121,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
         </div>
         <div>
           <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-0.5">Guests</label>
-          <div className="flex items-center justify-between h-9 border border-border rounded-lg px-1.5">
+          <div className="flex items-center justify-between h-9 border border-border rounded-full px-2">
             <button
               onClick={() => setGuests(Math.max(1, guests - 1))}
               disabled={guests <= 1}
