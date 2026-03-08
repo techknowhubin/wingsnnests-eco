@@ -68,6 +68,11 @@ const ListingCard = ({
         </motion.button>
       </div>
 
+      {/* Arrow icon */}
+      <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <ArrowUpRight className="h-4 w-4 text-foreground" />
+      </div>
+
       {/* Content */}
       <div className="space-y-1">
         <div className="flex items-start justify-between">
