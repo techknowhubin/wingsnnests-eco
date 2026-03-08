@@ -415,7 +415,27 @@ const DestinationDetail = () => {
         </div>
 
         {/* Mobile floating toggle button */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden flex items-center gap-2">
+          {!mobileShowMap && (
+            <div className="flex items-center border border-border rounded-full overflow-hidden bg-card shadow-lg">
+              <Button
+                variant={viewMode === "grid" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-full h-10 w-10 p-0"
+                onClick={() => setViewMode("grid")}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-full h-10 w-10 p-0"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
           <Button
             onClick={() => setMobileShowMap(!mobileShowMap)}
             className="rounded-full shadow-lg shadow-primary/30 h-12 px-6 gap-2 text-sm font-semibold"
