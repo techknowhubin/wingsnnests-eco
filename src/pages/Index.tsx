@@ -120,7 +120,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [categoryPage, setCategoryPage] = useState(0);
   const [heroSlide, setHeroSlide] = useState(0);
-  const heroImages = [heroImage, heroXplorwing, heroTajmahal, heroMysorePalace, heroOutstationCabs];
+  const heroImages = [heroImage, heroXplorwing, heroTajmahal, heroOutstationCabs];
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
