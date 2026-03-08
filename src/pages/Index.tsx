@@ -11,6 +11,7 @@ import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
+import heroXplorwing from "@/assets/hero-xplorwing.jpg";
 import homestaysIcon from "@/assets/categories/homestays-icon.png";
 import bikesIcon from "@/assets/categories/bikes-icon.png";
 import carsIcon from "@/assets/categories/cars-icon.png";
