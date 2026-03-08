@@ -143,6 +143,14 @@ const Index = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [getCardsPerPage]);
 
+  // Auto-slide for hero banner
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroSlide(p => (p + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
   // Auto-slide for mobile/tablet
   useEffect(() => {
     if (!isMobileOrTablet) return;
