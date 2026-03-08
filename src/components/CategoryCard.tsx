@@ -25,7 +25,7 @@ const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0 }: Cate
           <span className="font-bold text-foreground text-base leading-tight">{title}</span>
           <span className="text-xs text-foreground/70">{subtitle}</span>
         </div>
-        <div className="w-[120px] h-[120px] flex-shrink-0 flex items-center justify-center absolute -right-3 top-1/2 -translate-y-1/2 drop-shadow-lg">
+        <div className="w-[120px] h-[120px] flex-shrink-0 flex items-center justify-center absolute -right-[22px] top-1/2 -translate-y-[calc(50%+10px)] drop-shadow-lg">
           <img 
             src={image} 
             alt={title}
