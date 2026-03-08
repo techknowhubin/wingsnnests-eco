@@ -8,10 +8,11 @@ import { motion } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, LayoutGrid, List, MapPin } from "lucide-react";
+import { Search, LayoutGrid, List, MapPin, Map } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { destinationCoordinates } from "@/lib/destination-coordinates";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Demo images for fallback
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
