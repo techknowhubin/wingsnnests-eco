@@ -9,9 +9,10 @@ interface CategoryCardProps {
   bgColor: string;
   delay?: number;
   iconScale?: number;
+  iconOffsetX?: number;
 }
 
-const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0, iconScale = 1 }: CategoryCardProps) => {
+const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0, iconScale = 1, iconOffsetX = 0 }: CategoryCardProps) => {
   const size = 120 * iconScale;
   return (
     <Link to={link} className="block">
