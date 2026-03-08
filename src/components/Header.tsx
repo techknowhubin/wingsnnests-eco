@@ -183,7 +183,7 @@ const Header = () => {
               {/* Bottom actions */}
               <div className="p-4 border-t border-border space-y-3">
                 <Link to="/login" onClick={() => setMobileOpen(false)}>
-                  <Button className="w-full rounded-full gap-2">
+                  <Button variant="gradient" className="w-full rounded-full gap-2">
                     <User className="h-4 w-4" />
                     Login / Sign Up
                   </Button>
