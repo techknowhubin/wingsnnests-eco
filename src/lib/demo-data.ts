@@ -82,7 +82,7 @@ export const DEMO_STAYS: Stay[] = [
     bathrooms: 3,
     property_type: 'Bungalow',
     amenities: ['Wi-Fi', 'Fireplace', 'Kitchen', 'Parking', 'Caretaker', 'BBQ', 'Lake View', 'Antique Décor'],
-    images: ['/placeholder.svg'],
+    images: [hilltopHeritageBungalow],
     availability_status: true,
     is_verified: true,
     verified_by: null,
