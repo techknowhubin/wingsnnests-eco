@@ -74,6 +74,7 @@ const categories = [
     link: "/cars",
     bgColor: "bg-cyan-100 dark:bg-cyan-950/40",
     iconScale: 1.5,
+    iconOffsetX: 10,
   },
   {
     image: cabsIcon,
