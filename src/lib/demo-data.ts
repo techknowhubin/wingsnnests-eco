@@ -192,7 +192,7 @@ export const DEMO_CARS: Car[] = [
     vehicle_type: 'SUV',
     mileage_limit: 150,
     amenities: ['4x4', 'Bluetooth', 'AC', 'Off-road Tyres', 'Roof Rack'],
-    images: ['/placeholder.svg'],
+    images: [mahindraThar],
     availability_status: true,
     is_verified: true,
     verified_by: null,
