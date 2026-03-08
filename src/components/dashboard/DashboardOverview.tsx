@@ -235,10 +235,17 @@ export function DashboardOverview() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 rounded-xl bg-primary text-primary-foreground">
-                <p className="text-xs text-primary-foreground/70">Total Earnings</p>
-                <p className="text-2xl font-bold mt-1">{formatPrice(totalEarnings)}</p>
-                <p className="text-[11px] text-primary-foreground/60 mt-1">After 20% commission</p>
+              <div className="p-4 rounded-xl text-primary-foreground relative overflow-hidden" style={{
+                background: 'linear-gradient(135deg, hsl(158 100% 10%) 0%, hsl(158 80% 25%) 60%, hsl(158 60% 35%) 100%)',
+              }}>
+                <div className="relative z-10">
+                  <p className="text-xs text-primary-foreground/70">Total Earnings</p>
+                  <p className="text-2xl font-bold mt-1">{formatPrice(totalEarnings)}</p>
+                  <p className="text-[11px] text-primary-foreground/60 mt-1">After 20% commission</p>
+                </div>
+                <div className="absolute inset-0 opacity-15" style={{
+                  background: 'radial-gradient(circle at 90% 10%, hsl(158 60% 55% / 0.8) 0%, transparent 40%)',
+                }} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-muted/40">
