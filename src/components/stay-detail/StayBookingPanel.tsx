@@ -45,39 +45,38 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
   const total = subtotal - discount + serviceFee;
 
   return (
-    <Card className="border-border shadow-strong sticky top-24 p-6 rounded-2xl bg-white dark:bg-card">
+    <Card className="border-border shadow-strong sticky top-24 p-4 rounded-2xl bg-white dark:bg-card">
       {/* Price */}
-      <div className="mb-4">
-        <span className="text-3xl font-bold text-foreground">{currencySymbol}{pricePerNight}</span>
+      <div className="mb-2">
+        <span className="text-2xl font-bold text-foreground">{currencySymbol}{pricePerNight}</span>
         <span className="text-sm text-muted-foreground font-medium">/Night</span>
       </div>
 
       {/* Stay summary */}
-      <div className="bg-secondary/50 rounded-xl p-3 mb-5">
+      <div className="bg-secondary/50 rounded-lg p-2.5 mb-3">
         <p className="text-sm text-foreground">
           <span className="font-bold">{nights} Nights</span>
           <span className="text-muted-foreground"> in {title}</span>
         </p>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-[11px] text-muted-foreground mt-0.5">
           {checkIn ? format(checkIn, "MMM dd, yyyy") : "Select date"} - {checkOut ? format(checkOut, "MMM dd, yyyy") : "Select date"}
         </p>
       </div>
 
       {/* Check-in / Check-out / Guests — single row */}
-      <div className="grid grid-cols-3 gap-2 mb-5">
-        {/* Check in */}
+      <div className="grid grid-cols-3 gap-1.5 mb-3">
         <div>
-          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-1">Check in</label>
+          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-0.5">Check in</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-10 rounded-xl border-border px-2 text-xs",
+                  "w-full justify-start text-left font-normal h-9 rounded-lg border-border px-2 text-xs",
                   !checkIn && "text-muted-foreground"
                 )}
               >
-                <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-accent flex-shrink-0" />
+                <CalendarDays className="h-3.5 w-3.5 mr-1 text-accent flex-shrink-0" />
                 {checkIn ? format(checkIn, "MMM dd") : "Select"}
               </Button>
             </PopoverTrigger>
@@ -93,20 +92,18 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
             </PopoverContent>
           </Popover>
         </div>
-
-        {/* Check out */}
         <div>
-          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-1">Check out</label>
+          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-0.5">Check out</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-10 rounded-xl border-border px-2 text-xs",
+                  "w-full justify-start text-left font-normal h-9 rounded-lg border-border px-2 text-xs",
                   !checkOut && "text-muted-foreground"
                 )}
               >
-                <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-accent flex-shrink-0" />
+                <CalendarDays className="h-3.5 w-3.5 mr-1 text-accent flex-shrink-0" />
                 {checkOut ? format(checkOut, "MMM dd") : "Select"}
               </Button>
             </PopoverTrigger>
@@ -122,101 +119,99 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
             </PopoverContent>
           </Popover>
         </div>
-
-        {/* Guests +/- stepper */}
         <div>
-          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-1">Guests</label>
-          <div className="flex items-center justify-between h-10 border border-border rounded-xl px-1.5">
+          <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-0.5">Guests</label>
+          <div className="flex items-center justify-between h-9 border border-border rounded-lg px-1.5">
             <button
               onClick={() => setGuests(Math.max(1, guests - 1))}
               disabled={guests <= 1}
-              className="h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-secondary disabled:opacity-30 transition-colors"
+              className="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-secondary disabled:opacity-30 transition-colors"
               aria-label="Decrease guests"
             >
-              <Minus className="h-3.5 w-3.5" />
+              <Minus className="h-3 w-3" />
             </button>
             <span className="text-sm font-semibold text-foreground">{guests}</span>
             <button
               onClick={() => setGuests(Math.min(maxGuests, guests + 1))}
               disabled={guests >= maxGuests}
-              className="h-7 w-7 rounded-lg flex items-center justify-center text-accent hover:bg-accent/10 disabled:opacity-30 transition-colors"
+              className="h-6 w-6 rounded flex items-center justify-center text-accent hover:bg-accent/10 disabled:opacity-30 transition-colors"
               aria-label="Increase guests"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3 w-3" />
             </button>
           </div>
         </div>
       </div>
 
       {/* Pricing Options */}
-      <div className="grid grid-cols-3 gap-2 mb-5">
+      <div className="grid grid-cols-3 gap-1.5 mb-3">
         <button
           onClick={() => setPricingOption("daily")}
-          className={`p-3 border rounded-xl text-center transition-all ${
+          className={`py-2 px-1 border rounded-lg text-center transition-all ${
             pricingOption === "daily"
               ? "border-accent bg-accent/10"
               : "border-border hover:border-muted-foreground"
           }`}
         >
-          <p className="text-xs font-semibold text-muted-foreground mb-1">Daily</p>
-          <p className="text-sm font-bold text-foreground">{currencySymbol}{pricePerNight}</p>
+          <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Daily</p>
+          <p className="text-xs font-bold text-foreground">{currencySymbol}{pricePerNight}</p>
         </button>
         <button
           onClick={() => setPricingOption("weekly")}
-          className={`p-3 border rounded-xl text-center transition-all relative ${
+          className={`py-2 px-1 border rounded-lg text-center transition-all relative ${
             pricingOption === "weekly"
               ? "border-accent bg-accent/10 scale-[1.03]"
               : "border-border hover:border-muted-foreground"
           }`}
         >
           {pricingOption === "weekly" && (
-            <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+            <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full">
               POPULAR
             </span>
           )}
-          <p className="text-xs font-semibold text-muted-foreground mb-1">Weekly</p>
-          <p className="text-sm font-bold text-foreground">{currencySymbol}{Math.round(weeklyPrice)}</p>
+          <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Weekly</p>
+          <p className="text-xs font-bold text-foreground">{currencySymbol}{Math.round(weeklyPrice)}</p>
         </button>
         <button
           onClick={() => setPricingOption("monthly")}
-          className={`p-3 border rounded-xl text-center transition-all ${
+          className={`py-2 px-1 border rounded-lg text-center transition-all ${
             pricingOption === "monthly"
               ? "border-accent bg-accent/10"
               : "border-border hover:border-muted-foreground"
           }`}
         >
-          <p className="text-xs font-semibold text-muted-foreground mb-1">Monthly</p>
-          <p className="text-sm font-bold text-foreground">{currencySymbol}{Math.round(monthlyPrice)}</p>
+          <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Monthly</p>
+          <p className="text-xs font-bold text-foreground">{currencySymbol}{Math.round(monthlyPrice)}</p>
         </button>
       </div>
 
       {/* Book Now */}
       <Button
-        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-12 rounded-xl text-base font-semibold"
+        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-10 rounded-xl text-sm font-semibold"
         size="lg"
       >
         Book Now
       </Button>
 
-      <p className="text-xs text-center text-muted-foreground mt-3 mb-5">
+      <p className="text-[11px] text-center text-muted-foreground mt-2 mb-3">
         You won't be charged yet
       </p>
 
       {/* Price Breakdown */}
-      <div className="space-y-2.5 pt-4 border-t border-border">
-        <div className="flex justify-between text-sm">
+      <div className="space-y-1.5 pt-3 border-t border-border">
+        <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">{currencySymbol}{pricePerNight} × {nights} nights</span>
           <span className="text-foreground font-medium">{currencySymbol}{subtotal.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">10% campaign discount</span>
           <span className="text-accent font-medium">-{currencySymbol}{discount}</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">Service fee</span>
           <span className="text-foreground font-medium">{currencySymbol}{serviceFee}</span>
         </div>
-        <div className="flex justify-between text-sm font-bold pt-3 border-t border-border">
+        <div className="flex justify-between text-xs font-bold pt-2 border-t border-border">
           <span className="text-foreground">Total before taxes</span>
           <span className="text-foreground">{currencySymbol}{total.toLocaleString()}</span>
         </div>
