@@ -335,7 +335,7 @@ export const DEMO_EXPERIENCES: Experience[] = [
       { time: '7:30 AM', activity: 'Chai break & photo session' },
       { time: '9:00 AM', activity: 'Return to base' },
     ],
-    images: ['/placeholder.svg'],
+    images: [sunriseTrek],
     availability_status: true,
     is_verified: true,
     verified_by: null,
