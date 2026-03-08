@@ -73,8 +73,8 @@ const categories = [
     link: "/bikes",
     bgColor: "bg-green-100 dark:bg-green-950/40",
     iconScale: 1.05,
-    iconOffsetX: 20,
-    iconOffsetY: -5,
+    iconOffsetX: 25,
+    iconOffsetY: 0,
   },
   {
     image: carsIcon,
@@ -82,9 +82,9 @@ const categories = [
     subtitle: "Drive your adventure",
     link: "/cars",
     bgColor: "bg-cyan-100 dark:bg-cyan-950/40",
-    iconScale: 1.5,
+    iconScale: 1.4,
     iconOffsetX: 10,
-    iconOffsetY: -5,
+    iconOffsetY: -10,
   },
   {
     image: cabsIcon,
@@ -92,8 +92,9 @@ const categories = [
     subtitle: "Intercity travel",
     link: "/cars",
     bgColor: "bg-purple-100 dark:bg-purple-950/40",
-    iconScale: 1.25,
+    iconScale: 1.45,
     iconOffsetX: 10,
+    iconOffsetY: -5,
   },
   {
     image: experiencesIcon,
@@ -111,7 +112,8 @@ const categories = [
     link: "/stays",
     bgColor: "bg-blue-100 dark:bg-blue-950/40",
     iconOffsetX: 10,
-    iconOffsetY: -5,
+    iconOffsetY: 5,
+    iconScale: 0.9,
   },
   {
     image: resortsIcon,
