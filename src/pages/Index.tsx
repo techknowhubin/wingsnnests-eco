@@ -11,6 +11,7 @@ import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
+import heroXplorwing from "@/assets/hero-xplorwing.jpg";
 import homestaysIcon from "@/assets/categories/homestays-icon.png";
 import bikesIcon from "@/assets/categories/bikes-icon.png";
 import carsIcon from "@/assets/categories/cars-icon.png";
@@ -115,6 +116,8 @@ const Index = () => {
   const [experiences, setExperiences] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [categoryPage, setCategoryPage] = useState(0);
+  const [heroSlide, setHeroSlide] = useState(0);
+  const heroImages = [heroImage, heroXplorwing];
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -139,6 +142,14 @@ const Index = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [getCardsPerPage]);
+
+  // Auto-slide for hero banner
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroSlide(p => (p + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
 
   // Auto-slide for mobile/tablet
   useEffect(() => {
@@ -204,21 +215,44 @@ const Index = () => {
       <Marquee />
       <Header />
 
-      {/* Hero Section */}
+      {/* Hero Section with Slider */}
       <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${heroImage})` }}>
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background" />
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={heroSlide}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${heroImages[heroSlide]})` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background" />
+          </motion.div>
+        </AnimatePresence>
         <div className="relative z-10 w-full px-4">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-8">
-            <h2 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-[0_4px_24px_rgba(255,255,255,0.3)] [text-shadow:_0_2px_20px_rgba(0,0,0,0.8)]">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-[0_4px_24px_rgba(255,255,255,0.3)] [text-shadow:_0_2px_20px_rgba(0,0,0,0.8)]">
               Your Next Adventure<br />Starts Here
-            </h2>
+            </h1>
             <p className="text-xl text-white/95 drop-shadow-md [text-shadow:_0_2px_12px_rgba(0,0,0,0.7)]">
               Discover unique stays, experiences, and rentals across India
             </p>
           </motion.div>
           <SearchBar />
+        </div>
+        {/* Slide indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          {heroImages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setHeroSlide(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === heroSlide ? "w-6 bg-white" : "w-2 bg-white/50"
+              }`}
+            />
+          ))}
         </div>
       </section>
 
