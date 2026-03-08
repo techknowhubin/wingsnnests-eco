@@ -116,6 +116,8 @@ const Index = () => {
   const [experiences, setExperiences] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [categoryPage, setCategoryPage] = useState(0);
+  const [heroSlide, setHeroSlide] = useState(0);
+  const heroImages = [heroImage, heroXplorwing];
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
