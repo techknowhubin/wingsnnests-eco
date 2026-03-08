@@ -4,31 +4,33 @@ import { Link } from "react-router-dom";
 interface CategoryCardProps {
   image: string;
   title: string;
-  description: string;
+  subtitle: string;
   link: string;
+  bgColor: string;
   delay?: number;
 }
 
-const CategoryCard = ({ image, title, description, link, delay = 0 }: CategoryCardProps) => {
+const CategoryCard = ({ image, title, subtitle, link, bgColor, delay = 0 }: CategoryCardProps) => {
   return (
-    <Link to={link}>
+    <Link to={link} className="block">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
-        whileHover={{ scale: 1.02 }}
-        className="card-gradient rounded-2xl overflow-hidden hover-lift cursor-pointer group"
+        whileHover={{ scale: 1.05, y: -4 }}
+        whileTap={{ scale: 0.97 }}
+        className={`${bgColor} rounded-2xl px-5 py-4 flex items-center justify-between gap-3 cursor-pointer min-w-[200px] shadow-md hover:shadow-lg transition-shadow`}
       >
-        <div className="aspect-video relative overflow-hidden bg-muted/30">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-bold text-foreground text-base leading-tight">{title}</span>
+          <span className="text-xs text-foreground/70">{subtitle}</span>
+        </div>
+        <div className="w-16 h-16 flex-shrink-0">
           <img 
             src={image} 
             alt={title}
-            className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-full object-contain"
           />
-        </div>
-        <div className="p-6">
-          <h3 className="font-semibold text-lg text-foreground mb-1">{title}</h3>
-          <p className="text-sm text-muted-foreground">{description}</p>
         </div>
       </motion.div>
     </Link>
