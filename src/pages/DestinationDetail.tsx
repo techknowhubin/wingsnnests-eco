@@ -8,10 +8,11 @@ import { motion } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, LayoutGrid, List, MapPin } from "lucide-react";
+import { Search, LayoutGrid, List, MapPin, Map } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { destinationCoordinates } from "@/lib/destination-coordinates";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Demo images for fallback
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
@@ -72,6 +73,8 @@ const DestinationDetail = () => {
   const [activeFilter, setActiveFilter] = useState<ServiceType | "all">("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [showMap, setShowMap] = useState(true);
+  const [mobileShowMap, setMobileShowMap] = useState(false);
+  const isMobile = useIsMobile();
 
   const coords = destinationCoordinates[displayName];
 
@@ -297,7 +300,7 @@ const DestinationDetail = () => {
               <Button
                 variant={showMap ? "default" : "outline"}
                 size="sm"
-                className="h-8 gap-1.5 text-xs"
+                className="h-8 gap-1.5 text-xs hidden lg:flex"
                 onClick={() => setShowMap(!showMap)}
               >
                 <MapPin className="h-3.5 w-3.5" />
@@ -309,11 +312,13 @@ const DestinationDetail = () => {
       </section>
 
       {/* Main content */}
-      <section className="flex-1">
+      <section className="flex-1 relative">
         <div className={`flex h-[calc(100vh-220px)] ${showMap ? "" : "container mx-auto px-4"}`}>
-          {/* Listings panel */}
+          {/* Listings panel - hidden on mobile when map is shown */}
           <div
             className={`overflow-y-auto p-4 ${
+              mobileShowMap && isMobile ? "hidden" : "block"
+            } ${
               showMap ? "w-full lg:w-1/2 xl:w-[55%]" : "w-full"
             }`}
           >
@@ -321,7 +326,7 @@ const DestinationDetail = () => {
               <div className={`grid gap-4 ${
                 viewMode === "grid"
                   ? showMap
-                    ? "grid-cols-1 sm:grid-cols-2"
+                    ? "grid-cols-2 sm:grid-cols-2"
                     : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
                   : "grid-cols-1"
               }`}>
@@ -363,7 +368,7 @@ const DestinationDetail = () => {
               <div
                 className={`grid gap-4 ${
                   showMap
-                    ? "grid-cols-1 sm:grid-cols-2"
+                    ? "grid-cols-2 sm:grid-cols-2"
                     : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
                 }`}
               >
@@ -384,7 +389,7 @@ const DestinationDetail = () => {
             )}
           </div>
 
-          {/* Map panel */}
+          {/* Map panel - desktop: side panel; mobile: full screen when toggled */}
           {showMap && (
             <div className="hidden lg:block lg:w-1/2 xl:w-[45%] sticky top-0 border-l border-border">
               <ListingsMap
@@ -395,10 +400,42 @@ const DestinationDetail = () => {
               />
             </div>
           )}
+
+          {/* Mobile map - full width when toggled */}
+          {mobileShowMap && isMobile && (
+            <div className="w-full h-full lg:hidden">
+              <ListingsMap
+                markers={mapMarkers}
+                center={coords ? [coords.lat, coords.lng] : undefined}
+                zoom={12}
+                className="w-full h-full"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Mobile floating toggle button */}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 lg:hidden">
+          <Button
+            onClick={() => setMobileShowMap(!mobileShowMap)}
+            className="rounded-full shadow-lg shadow-primary/30 h-12 px-6 gap-2 text-sm font-semibold"
+          >
+            {mobileShowMap ? (
+              <>
+                <List className="h-4 w-4" />
+                Show List
+              </>
+            ) : (
+              <>
+                <Map className="h-4 w-4" />
+                Show Map
+              </>
+            )}
+          </Button>
         </div>
       </section>
 
-      {!showMap && <Footer />}
+      {!showMap && !mobileShowMap && <Footer />}
     </div>
   );
 };
