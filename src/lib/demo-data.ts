@@ -116,7 +116,7 @@ export const DEMO_STAYS: Stay[] = [
     bathrooms: 1,
     property_type: 'Treehouse',
     amenities: ['Stargazing Roof', 'Deck', 'Hot Water', 'Nature Trail', 'Breakfast Included'],
-    images: ['/placeholder.svg'],
+    images: [pineForestTreehouse],
     availability_status: true,
     is_verified: false,
     verified_by: null,
