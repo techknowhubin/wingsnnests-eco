@@ -8,7 +8,7 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
+    // Set up auth state listener BEFORE getSession
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -17,7 +17,6 @@ export const useAuth = () => {
       }
     );
 
-    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -27,19 +26,29 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, role: 'user' | 'host' = 'user') => {
     const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          full_name: fullName
+          full_name: fullName,
+          role,
         }
       }
     });
+
+    // Assign role in user_roles table
+    if (!error && data.user) {
+      await supabase.from('user_roles').insert({
+        user_id: data.user.id,
+        role,
+      });
+    }
+
     return { error };
   };
 
@@ -66,6 +75,16 @@ export const useAuth = () => {
     return { error };
   };
 
+  const getUserRole = async (): Promise<'user' | 'host' | 'admin' | 'moderator' | null> => {
+    if (!user) return null;
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    return data?.role ?? null;
+  };
+
   return {
     user,
     session,
@@ -73,6 +92,7 @@ export const useAuth = () => {
     signUp,
     signIn,
     signInWithProvider,
-    signOut
+    signOut,
+    getUserRole,
   };
 };
