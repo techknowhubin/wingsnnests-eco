@@ -33,6 +33,8 @@ import royalEnfieldImage from "@/assets/vehicles/royal-enfield-classic.jpg";
 import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
 import bikeImage from "@/assets/bike-featured.jpg";
 import experienceImage from "@/assets/experience-featured.jpg";
+import homestayImage from "@/assets/homestay-featured.jpg";
+import bikeImage from "@/assets/bike-featured.jpg";
 import goaDestImage from "@/assets/destinations/goa.jpg";
 import manaliDestImage from "@/assets/destinations/manali.jpg";
 import jaipurDestImage from "@/assets/destinations/jaipur.jpg";
