@@ -57,6 +57,7 @@ const categories = [
     subtitle: "Unique homestays",
     link: "/stays",
     bgColor: "bg-pink-100 dark:bg-pink-950/40",
+    iconOffsetX: 10,
   },
   {
     image: bikesIcon,
@@ -73,6 +74,7 @@ const categories = [
     link: "/cars",
     bgColor: "bg-cyan-100 dark:bg-cyan-950/40",
     iconScale: 1.5,
+    iconOffsetX: 10,
   },
   {
     image: cabsIcon,
@@ -87,6 +89,7 @@ const categories = [
     subtitle: "Unforgettable moments",
     link: "/experiences",
     bgColor: "bg-amber-100 dark:bg-amber-950/40",
+    iconOffsetX: 10,
   },
 ];
 
@@ -241,6 +244,7 @@ const Index = () => {
                     bgColor={cat.bgColor}
                     delay={index * 0.08}
                     iconScale={cat.iconScale}
+                    iconOffsetX={cat.iconOffsetX}
                   />
                 ))}
               </motion.div>
