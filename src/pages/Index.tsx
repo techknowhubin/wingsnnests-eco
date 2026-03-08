@@ -103,6 +103,49 @@ const Index = () => {
   const [cars, setCars] = useState<any[]>([]);
   const [experiences, setExperiences] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [categoryPage, setCategoryPage] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  // Determine cards per page based on screen width
+  const getCardsPerPage = useCallback(() => {
+    if (typeof window === "undefined") return categories.length;
+    if (window.innerWidth < 640) return 1; // mobile
+    if (window.innerWidth < 1024) return 2; // tablet
+    return categories.length; // desktop: show all
+  }, []);
+
+  const [cardsPerPage, setCardsPerPage] = useState(getCardsPerPage);
+  const totalPages = Math.ceil(categories.length / cardsPerPage);
+  const isMobileOrTablet = cardsPerPage < categories.length;
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newPerPage = getCardsPerPage();
+      setCardsPerPage(newPerPage);
+      setCategoryPage(0);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [getCardsPerPage]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && categoryPage < totalPages - 1) setCategoryPage(p => p + 1);
+      if (diff < 0 && categoryPage > 0) setCategoryPage(p => p - 1);
+    }
+  };
+
+  const visibleCategories = isMobileOrTablet
+    ? categories.slice(categoryPage * cardsPerPage, categoryPage * cardsPerPage + cardsPerPage)
+    : categories;
 
   const fetchStays = async () => {
     const { data } = await supabase.from("stays").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
