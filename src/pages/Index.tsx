@@ -82,9 +82,9 @@ const categories = [
     subtitle: "Drive your adventure",
     link: "/cars",
     bgColor: "bg-cyan-100 dark:bg-cyan-950/40",
-    iconScale: 1.5,
+    iconScale: 1.4,
     iconOffsetX: 10,
-    iconOffsetY: -5,
+    iconOffsetY: -10,
   },
   {
     image: cabsIcon,
