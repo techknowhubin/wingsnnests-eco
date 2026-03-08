@@ -73,6 +73,8 @@ const DestinationDetail = () => {
   const [activeFilter, setActiveFilter] = useState<ServiceType | "all">("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [showMap, setShowMap] = useState(true);
+  const [mobileShowMap, setMobileShowMap] = useState(false);
+  const isMobile = useIsMobile();
 
   const coords = destinationCoordinates[displayName];
 
