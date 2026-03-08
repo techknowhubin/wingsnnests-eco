@@ -242,8 +242,16 @@ export function useRemoveFromWishlist() {
 export function useProfile(userId: string | undefined) {
   return useQuery({
     queryKey: ['profile', userId],
-    queryFn: () => getProfile(userId!),
-    enabled: !!userId,
+    queryFn: async () => {
+      if (!userId) return DEMO_PROFILE;
+      try {
+        const data = await getProfile(userId);
+        return data;
+      } catch {
+        return DEMO_PROFILE;
+      }
+    },
+    enabled: true,
   });
 }
 
