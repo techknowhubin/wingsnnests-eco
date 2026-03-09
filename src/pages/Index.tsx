@@ -5,6 +5,7 @@ import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
 import DestinationCard from "@/components/DestinationCard";
 import ListingCard from "@/components/ListingCard";
+import CustomerTestimonials from "@/components/CustomerTestimonials";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronRight, ChevronLeft, Calendar, User } from "lucide-react";
