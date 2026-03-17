@@ -136,7 +136,7 @@ const MegaMenu = () => {
               transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
               className="fixed top-[72px] left-0 right-0 mx-auto w-[94vw] max-w-5xl z-50"
             >
-              <div className="bg-card/98 backdrop-blur-xl rounded-2xl border border-border shadow-[var(--shadow-strong)] overflow-hidden">
+              <div className="bg-card backdrop-blur-xl rounded-2xl border border-border shadow-[var(--shadow-strong)] overflow-hidden">
                 {/* Top section: Categories + Preview */}
                 <div className="grid grid-cols-[280px_1fr] min-h-[340px]">
                   {/* Left: Category nav */}
