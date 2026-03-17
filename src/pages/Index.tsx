@@ -480,6 +480,9 @@ const Index = () => {
       {/* Customer Testimonials */}
       <CustomerTestimonials />
 
+      {/* FAQ Section */}
+      <HomeFAQ />
+
       {/* Footer CTA */}
       <section className="container mx-auto px-4 py-24">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} viewport={{ once: true }} className="card-gradient rounded-3xl p-12 text-center">
