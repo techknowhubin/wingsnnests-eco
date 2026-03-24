@@ -66,7 +66,7 @@ All colors MUST be HSL.
     --popover: 158 35% 12%;
     --popover-foreground: 48 100% 96%;
 
-    --primary: 158 60% 45%;
+    --primary: 68 90% 70%;
     --primary-foreground: 158 100% 10%;
 
     --secondary: 158 30% 18%;
@@ -83,24 +83,24 @@ All colors MUST be HSL.
 
     --border: 158 25% 20%;
     --input: 158 25% 20%;
-    --ring: 158 60% 45%;
+    --ring: 68 90% 70%;
 
-    /* Dark green gradient */
-    --gradient-primary: linear-gradient(135deg, hsl(158 60% 35%), hsl(158 60% 45%));
+    /* Dark lime-green gradient */
+    --gradient-primary: linear-gradient(135deg, hsl(68 80% 55%), hsl(68 90% 70%));
 
     /* Dark mode glassmorphism */
     --glass-bg: 158 35% 12% / 0.7;
     --glass-border: 158 25% 20% / 0.3;
     
     /* Dark mode shadows with glow */
-    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.3), 0 0 20px hsl(158 60% 45% / 0.1);
-    --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.4), 0 0 30px hsl(158 60% 45% / 0.15);
-    --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.5), 0 0 40px hsl(158 60% 45% / 0.2);
+    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.3), 0 0 20px hsl(68 90% 70% / 0.1);
+    --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.4), 0 0 30px hsl(68 90% 70% / 0.15);
+    --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.5), 0 0 40px hsl(68 90% 70% / 0.2);
     
     /* Element glow */
-    --glow-subtle: 0 0 15px hsl(158 60% 45% / 0.15);
-    --glow-medium: 0 0 25px hsl(158 60% 45% / 0.2);
-    --glow-strong: 0 0 40px hsl(158 60% 45% / 0.3);
+    --glow-subtle: 0 0 15px hsl(68 90% 70% / 0.15);
+    --glow-medium: 0 0 25px hsl(68 90% 70% / 0.2);
+    --glow-strong: 0 0 40px hsl(68 90% 70% / 0.3);
   }
 }
 
@@ -163,24 +163,24 @@ All colors MUST be HSL.
 .dark .rounded-2xl,
 .dark .rounded-xl,
 .dark .rounded-lg {
-  box-shadow: 0 0 20px hsl(158 60% 45% / 0.08);
+  box-shadow: 0 0 20px hsl(68 90% 70% / 0.08);
   transition: box-shadow 0.3s ease;
 }
 
 .dark [data-slot="card"]:hover,
 .dark .hover-lift:hover {
-  box-shadow: 0 0 30px hsl(158 60% 45% / 0.15), 0 4px 16px hsl(0 0% 0% / 0.4);
+  box-shadow: 0 0 30px hsl(68 90% 70% / 0.15), 0 4px 16px hsl(0 0% 0% / 0.4);
 }
 
 /* Buttons glow in dark mode */
 .dark button[class*="bg-primary"],
 .dark .bg-primary {
-  box-shadow: 0 0 20px hsl(158 60% 45% / 0.25);
+  box-shadow: 0 0 20px hsl(68 90% 70% / 0.25);
 }
 
 .dark button[class*="bg-primary"]:hover,
 .dark .bg-primary:hover {
-  box-shadow: 0 0 30px hsl(158 60% 45% / 0.4);
+  box-shadow: 0 0 30px hsl(68 90% 70% / 0.4);
 }
 
 /* Leaflet custom marker reset */
