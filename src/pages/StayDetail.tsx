@@ -303,7 +303,7 @@ const StayDetail = () => {
                         <Button variant="outline" size="sm" className="flex-1">
                           Choose other vehicle
                         </Button>
-                        <Button size="sm" className="flex-1 bg-accent hover:bg-accent/90">
+                        <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground">
                           Add to Reserve
                         </Button>
                       </div>
