@@ -102,9 +102,9 @@ export function DashboardOverview() {
   ];
 
   const listingTypes = [
-    { icon: Home, label: 'Stays', count: stays.length, path: '/host/stays', color: 'bg-primary/10 text-primary' },
+    { icon: Home, label: 'Stays', count: stays.length, path: '/host/stays', color: 'bg-primary/10 text-primary-text' },
     { icon: Car, label: 'Cars', count: cars.length, path: '/host/cars', color: 'bg-accent/10 text-accent' },
-    { icon: Bike, label: 'Bikes', count: bikes.length, path: '/host/bikes', color: 'bg-primary/10 text-primary' },
+    { icon: Bike, label: 'Bikes', count: bikes.length, path: '/host/bikes', color: 'bg-primary/10 text-primary-text' },
     { icon: Compass, label: 'Experiences', count: experiences.length, path: '/host/experiences', color: 'bg-accent/10 text-accent' },
   ];
 

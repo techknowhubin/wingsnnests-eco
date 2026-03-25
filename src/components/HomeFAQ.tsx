@@ -120,7 +120,7 @@ const HomeFAQ = () => {
                     onClick={() => setOpenIndex(isOpen ? null : i)}
                     className="w-full flex items-center justify-between py-5 px-1 text-left group"
                   >
-                    <span className="text-base font-medium text-foreground pr-4 group-hover:text-primary transition-colors">
+                    <span className="text-base font-medium text-foreground pr-4 group-hover:text-primary-text transition-colors">
                       {item.q}
                     </span>
                     <div

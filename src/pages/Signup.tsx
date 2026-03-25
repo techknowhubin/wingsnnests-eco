@@ -220,18 +220,18 @@ const Signup = () => {
               <input
                 type="checkbox"
                 id="terms"
-                className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-ring"
+                className="mt-1 h-4 w-4 rounded border-input text-primary-text focus:ring-2 focus:ring-ring"
               />
               <label
                 htmlFor="terms"
                 className="text-sm text-muted-foreground"
               >
                 I agree to the{" "}
-                <a href="#" className="text-primary hover:text-accent">
+                <a href="#" className="text-primary-text hover:text-accent">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-primary hover:text-accent">
+                <a href="#" className="text-primary-text hover:text-accent">
                   Privacy Policy
                 </a>
               </label>
@@ -315,7 +315,7 @@ const Signup = () => {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-primary hover:text-accent font-semibold transition-colors"
+              className="text-primary-text hover:text-accent font-semibold transition-colors"
             >
               Sign in
             </Link>

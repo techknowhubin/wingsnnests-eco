@@ -52,19 +52,19 @@ function Footerdemo() {
           <div>
             <h3 className="mb-6 text-lg font-semibold">Quick Links</h3>
             <nav className="space-y-3 text-sm">
-              <Link to="/" className="block text-muted-foreground transition-colors hover:text-primary">
+              <Link to="/" className="block text-muted-foreground transition-colors hover:text-primary-text">
                 Home
               </Link>
-              <Link to="/about" className="block text-muted-foreground transition-colors hover:text-primary">
+              <Link to="/about" className="block text-muted-foreground transition-colors hover:text-primary-text">
                 About Us
               </Link>
-              <Link to="/stays" className="block text-muted-foreground transition-colors hover:text-primary">
+              <Link to="/stays" className="block text-muted-foreground transition-colors hover:text-primary-text">
                 Homestays
               </Link>
-              <Link to="/experiences" className="block text-muted-foreground transition-colors hover:text-primary">
+              <Link to="/experiences" className="block text-muted-foreground transition-colors hover:text-primary-text">
                 Experiences
               </Link>
-              <Link to="/help" className="block text-muted-foreground transition-colors hover:text-primary">
+              <Link to="/help" className="block text-muted-foreground transition-colors hover:text-primary-text">
                 Help Center
               </Link>
             </nav>
@@ -153,13 +153,13 @@ function Footerdemo() {
             © {new Date().getFullYear()} Xplorwing. All rights reserved.
           </p>
           <nav className="flex gap-6 text-sm">
-            <Link to="/" className="text-muted-foreground transition-colors hover:text-primary">
+            <Link to="/" className="text-muted-foreground transition-colors hover:text-primary-text">
               Privacy Policy
             </Link>
-            <Link to="/" className="text-muted-foreground transition-colors hover:text-primary">
+            <Link to="/" className="text-muted-foreground transition-colors hover:text-primary-text">
               Terms of Service
             </Link>
-            <Link to="/" className="text-muted-foreground transition-colors hover:text-primary">
+            <Link to="/" className="text-muted-foreground transition-colors hover:text-primary-text">
               Cookie Settings
             </Link>
           </nav>

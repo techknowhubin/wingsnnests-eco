@@ -286,7 +286,7 @@ export function BookingsManager() {
                             </div>
                             <div className="pt-3 border-t border-border flex justify-between">
                               <span className="font-medium">Your Earnings</span>
-                              <span className="font-bold text-primary">{formatPrice(hostEarnings)}</span>
+                              <span className="font-bold text-primary-text">{formatPrice(hostEarnings)}</span>
                             </div>
                           </div>
 

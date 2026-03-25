@@ -107,10 +107,10 @@ const HelpCenter = () => {
               className="glass-effect rounded-2xl p-6 text-center hover-lift cursor-pointer"
             >
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
-                <method.icon className="h-6 w-6 text-primary" />
+                <method.icon className="h-6 w-6 text-primary-text" />
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">{method.title}</h3>
-              <p className="text-primary font-semibold mb-1">{method.detail}</p>
+              <p className="text-primary-text font-semibold mb-1">{method.detail}</p>
               <p className="text-sm text-muted-foreground">{method.description}</p>
             </motion.div>
           ))}
@@ -124,7 +124,7 @@ const HelpCenter = () => {
           className="max-w-4xl mx-auto"
         >
           <div className="flex items-center gap-2 mb-8">
-            <HelpCircle className="h-8 w-8 text-primary" />
+            <HelpCircle className="h-8 w-8 text-primary-text" />
             <h2 className="text-3xl font-bold text-foreground">Frequently Asked Questions</h2>
           </div>
           <Accordion type="single" collapsible className="space-y-4">

@@ -144,7 +144,7 @@ export default function LinkInBioLanding() {
           >
             We earn only when
             <br />
-            <span className="text-primary">you earn</span>
+            <span className="text-primary-text">you earn</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -189,7 +189,7 @@ export default function LinkInBioLanding() {
                       <span className="text-5xl md:text-6xl font-black text-foreground tracking-tight">
                         {card.rate}
                       </span>
-                      <Sparkles className="h-8 w-8 text-primary/40" />
+                      <Sparkles className="h-8 w-8 text-primary-text/40" />
                     </div>
                     <p className="text-muted-foreground leading-relaxed">
                       {card.description}{" "}
@@ -239,7 +239,7 @@ export default function LinkInBioLanding() {
         >
           {[...features, ...features, ...features].map((f, i) => (
             <div key={i} className="flex items-center gap-3 text-muted-foreground shrink-0">
-              <f.icon className="h-5 w-5 text-primary" />
+              <f.icon className="h-5 w-5 text-primary-text" />
               <span className="text-sm font-medium">{f.label}</span>
             </div>
           ))}
@@ -270,7 +270,7 @@ export default function LinkInBioLanding() {
                 transition={{ delay: i * 0.1 }}
                 className="text-center"
               >
-                <div className="text-6xl font-black text-primary/10 mb-2">{s.step}</div>
+                <div className="text-6xl font-black text-primary-text/10 mb-2">{s.step}</div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">{s.title}</h3>
                 <p className="text-sm text-muted-foreground">{s.desc}</p>
               </motion.div>
@@ -288,7 +288,7 @@ export default function LinkInBioLanding() {
             viewport={{ once: true }}
             className="text-center mb-4"
           >
-            <span className="inline-block text-xs font-semibold tracking-widest text-primary uppercase mb-3">
+            <span className="inline-block text-xs font-semibold tracking-widest text-primary-text uppercase mb-3">
               Comparison
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
@@ -310,7 +310,7 @@ export default function LinkInBioLanding() {
               <div className="grid grid-cols-3 text-sm font-semibold border-b border-border">
                 <div className="p-5 text-muted-foreground">Feature</div>
                 <div className="p-5 text-center">
-                  <span className="inline-flex items-center gap-1.5 text-primary font-bold">
+                  <span className="inline-flex items-center gap-1.5 text-primary-text font-bold">
                     Xplorwing
                   </span>
                 </div>
@@ -328,9 +328,9 @@ export default function LinkInBioLanding() {
                   <div className="p-4 font-medium text-foreground">{row.feature}</div>
                   <div className="p-4 flex items-center justify-center">
                     {typeof row.ours === "string" ? (
-                      <span className="font-bold text-primary">{row.ours}</span>
+                      <span className="font-bold text-primary-text">{row.ours}</span>
                     ) : row.ours ? (
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                      <CheckCircle2 className="h-5 w-5 text-primary-text" />
                     ) : (
                       <X className="h-5 w-5 text-muted-foreground/40" />
                     )}
@@ -339,7 +339,7 @@ export default function LinkInBioLanding() {
                     {typeof row.others === "string" ? (
                       <span className="text-muted-foreground">{row.others}</span>
                     ) : row.others ? (
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                      <CheckCircle2 className="h-5 w-5 text-primary-text" />
                     ) : (
                       <X className="h-5 w-5 text-muted-foreground/40" />
                     )}
@@ -386,7 +386,7 @@ export default function LinkInBioLanding() {
                   <CardContent className="p-8">
                     <div className="flex gap-1 mb-5">
                       {[...Array(5)].map((_, j) => (
-                        <Star key={j} className="h-4 w-4 fill-primary text-primary" />
+                        <Star key={j} className="h-4 w-4 fill-primary text-primary-text" />
                       ))}
                     </div>
                     <blockquote className="text-foreground leading-relaxed mb-6 text-[15px]">
@@ -394,7 +394,7 @@ export default function LinkInBioLanding() {
                     </blockquote>
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary">
+                        <span className="text-sm font-bold text-primary-text">
                           {t.name.charAt(0)}
                         </span>
                       </div>
@@ -425,7 +425,7 @@ export default function LinkInBioLanding() {
             </h2>
             <p className="text-muted-foreground">
               Can't find the answer you're looking for?{" "}
-              <Link to="/help" className="text-primary font-medium hover:underline">
+              <Link to="/help" className="text-primary-text font-medium hover:underline">
                 Reach out to us
               </Link>
             </p>

@@ -81,7 +81,7 @@ const ListingCard = ({
             <p className="text-sm text-muted-foreground">{location}</p>
           </div>
           <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-primary text-primary" />
+            <Star className="h-4 w-4 fill-primary text-primary-text" />
             <span className="text-sm font-medium">{rating}</span>
           </div>
         </div>

@@ -302,7 +302,7 @@ export function LinkInBioGenerator() {
                         <div className={`h-20 rounded-md ${theme.bg}`} />
                         <p className="text-sm font-medium mt-2">{theme.name}</p>
                         {settings.theme === key && (
-                          <Check className="absolute top-2 right-2 h-5 w-5 text-primary" />
+                          <Check className="absolute top-2 right-2 h-5 w-5 text-primary-text" />
                         )}
                       </button>
                     ))}

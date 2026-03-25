@@ -159,11 +159,11 @@ export function EarningsTracker() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="p-6">
-            <div className="flex items-center gap-2 text-primary mb-2">
+            <div className="flex items-center gap-2 text-primary-text mb-2">
               <Wallet className="h-5 w-5" />
               <span className="text-sm font-medium">Total Earnings</span>
             </div>
-            <p className="text-3xl font-bold text-primary">{formatPrice(totalEarnings)}</p>
+            <p className="text-3xl font-bold text-primary-text">{formatPrice(totalEarnings)}</p>
             <p className="text-sm text-muted-foreground mt-1">
               From {completedBookings.length} bookings
             </p>
@@ -211,7 +211,7 @@ export function EarningsTracker() {
         <CardContent className="p-6">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-primary">Save on Commission!</h3>
+              <h3 className="text-lg font-semibold text-primary-text">Save on Commission!</h3>
               <p className="text-muted-foreground mt-1">
                 Create your Link-in-Bio page and pay only 10% commission instead of 20%
               </p>
@@ -248,7 +248,7 @@ export function EarningsTracker() {
                       <p className="font-medium">{data.month}</p>
                       <p className="text-sm text-muted-foreground">{data.bookings} bookings</p>
                     </div>
-                    <p className="text-lg font-bold text-primary">{formatPrice(data.earnings)}</p>
+                    <p className="text-lg font-bold text-primary-text">{formatPrice(data.earnings)}</p>
                   </div>
                 ))}
               </div>

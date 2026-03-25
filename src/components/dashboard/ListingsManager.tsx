@@ -227,7 +227,7 @@ export function ListingsManager({
                 
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
                   <div>
-                    <p className="text-lg font-bold text-primary">
+                    <p className="text-lg font-bold text-primary-text">
                       {formatPrice(getPrice(listing))}
                     </p>
                     <p className="text-xs text-muted-foreground">{priceLabel}</p>
