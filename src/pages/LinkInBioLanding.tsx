@@ -386,7 +386,7 @@ export default function LinkInBioLanding() {
                   <CardContent className="p-8">
                     <div className="flex gap-1 mb-5">
                       {[...Array(5)].map((_, j) => (
-                        <Star key={j} className="h-4 w-4 fill-primary text-primary-text" />
+                        <Star key={j} className="h-4 w-4 fill-primary-text text-primary-text" />
                       ))}
                     </div>
                     <blockquote className="text-foreground leading-relaxed mb-6 text-[15px]">
