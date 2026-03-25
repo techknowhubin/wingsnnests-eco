@@ -357,7 +357,7 @@ const Index = () => {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">Explore India</h2>
-            <Link to="/destinations" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+            <Link to="/destinations" className="flex items-center gap-1 text-sm font-medium text-primary-text hover:underline">
               See more <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
@@ -439,7 +439,7 @@ const Index = () => {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.5 }} viewport={{ once: true }}>
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">From Our Blog</h2>
-            <Link to="/blog" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+            <Link to="/blog" className="flex items-center gap-1 text-sm font-medium text-primary-text hover:underline">
               Read more <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
@@ -464,7 +464,7 @@ const Index = () => {
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">{post.title}</h3>
+                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary-text transition-colors line-clamp-2">{post.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{post.excerpt}</p>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{post.author}</span>

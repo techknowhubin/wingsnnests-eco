@@ -236,7 +236,7 @@ const DestinationDetail = () => {
             transition={{ duration: 0.4 }}
           >
             <div className="flex items-center gap-2 mb-1">
-              <MapPin className="h-5 w-5 text-primary" />
+              <MapPin className="h-5 w-5 text-primary-text" />
               <h1 className="text-2xl md:text-3xl font-bold text-foreground">
                 {displayName}
               </h1>

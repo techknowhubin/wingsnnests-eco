@@ -39,7 +39,7 @@ const ExperienceDetail = () => {
               </h1>
               <div className="flex items-center gap-4 text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-primary text-primary" />
+                  <Star className="h-4 w-4 fill-primary-text text-primary-text" />
                   5.0 (234 reviews)
                 </span>
                 <span className="flex items-center gap-1">
@@ -130,7 +130,7 @@ const ExperienceDetail = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {details.map((detail, index) => (
                   <div key={index} className="glass-effect rounded-2xl p-4">
-                    <detail.icon className="h-6 w-6 text-primary mb-2" />
+                    <detail.icon className="h-6 w-6 text-primary-text mb-2" />
                     <p className="text-sm text-muted-foreground">{detail.label}</p>
                     <p className="font-semibold text-foreground">{detail.value}</p>
                   </div>

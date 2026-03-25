@@ -141,7 +141,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 className={cn(
                   "flex items-center gap-3 px-4 py-2.5 mx-2 rounded-xl text-sm transition-all duration-200 w-[calc(100%-16px)] relative",
                   isListingRoute
-                    ? "text-primary font-medium bg-primary/8"
+                    ? "text-primary-text font-medium bg-primary/8"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >

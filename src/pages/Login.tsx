@@ -195,7 +195,7 @@ const Login = () => {
             <div className="flex justify-end">
               <a
                 href="#"
-                className="text-sm text-primary hover:text-accent transition-colors"
+                className="text-sm text-primary-text hover:text-accent transition-colors"
               >
                 Forgot password?
               </a>
@@ -279,7 +279,7 @@ const Login = () => {
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="text-primary hover:text-accent font-semibold transition-colors"
+              className="text-primary-text hover:text-accent font-semibold transition-colors"
             >
               Sign up
             </Link>

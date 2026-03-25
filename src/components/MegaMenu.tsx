@@ -87,7 +87,7 @@ const MegaMenu = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50">
+      <button className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50">
         Explore
         <ChevronDown
           className={`h-3.5 w-3.5 transition-transform duration-300 ${
@@ -159,7 +159,7 @@ const MegaMenu = () => {
                 <div className="p-6 pt-5">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <Star className="h-3.5 w-3.5 text-primary" />
+                      <Star className="h-3.5 w-3.5 text-primary-text" />
                       <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                         Popular destinations
                       </p>
@@ -167,7 +167,7 @@ const MegaMenu = () => {
                     <Link
                       to="/destinations"
                       onClick={() => setIsOpen(false)}
-                      className="text-xs font-medium text-primary hover:underline flex items-center gap-1"
+                      className="text-xs font-medium text-primary-text hover:underline flex items-center gap-1"
                     >
                       View all
                       <ArrowUpRight className="h-3 w-3" />
@@ -191,7 +191,7 @@ const MegaMenu = () => {
                             />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                            <p className="text-xs font-semibold text-foreground group-hover:text-primary-text transition-colors truncate">
                               {dest.name}
                             </p>
                             <p className="text-[10px] text-muted-foreground truncate">

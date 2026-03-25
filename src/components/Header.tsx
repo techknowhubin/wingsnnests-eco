@@ -45,25 +45,25 @@ const Header = () => {
               <MegaMenu />
               <Link
                 to="/stays"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
               >
                 Stays
               </Link>
               <Link
                 to="/experiences"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
               >
                 Experiences
               </Link>
               <Link
                 to="/bikes"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
               >
                 Bikes
               </Link>
               <Link
                 to="/cars"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
               >
                 Cars
               </Link>
@@ -97,7 +97,7 @@ const Header = () => {
               <Link to="/login">
                 <Button variant="ghost" className="gap-2 rounded-full p-1 pr-3 hover:bg-muted/60">
                   <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden">
-                    <User className="h-4 w-4 text-primary" />
+                    <User className="h-4 w-4 text-primary-text" />
                   </div>
                   <span className="hidden md:inline text-sm font-medium text-foreground">Login</span>
                 </Button>
@@ -168,12 +168,12 @@ const Header = () => {
                         className="flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-muted/60 transition-colors group"
                       >
                         <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                          <link.icon className="h-4 w-4 text-primary group-hover:text-primary-foreground transition-colors" />
+                          <link.icon className="h-4 w-4 text-primary-text group-hover:text-primary-foreground transition-colors" />
                         </div>
-                        <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                        <span className="text-sm font-semibold text-foreground group-hover:text-primary-text transition-colors">
                           {link.label}
                         </span>
-                        <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground group-hover:text-primary transition-colors" />
+                        <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground group-hover:text-primary-text transition-colors" />
                       </Link>
                     </motion.div>
                   ))}

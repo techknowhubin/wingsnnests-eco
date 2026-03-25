@@ -72,7 +72,7 @@ const CustomerTestimonials = () => {
               {/* Stars */}
               <div className="flex gap-0.5 mb-3">
                 {Array.from({ length: t.rating }).map((_, s) => (
-                  <Star key={s} className="h-4 w-4 fill-primary text-primary" />
+                  <Star key={s} className="h-4 w-4 fill-primary-text text-primary-text" />
                 ))}
               </div>
 
@@ -83,7 +83,7 @@ const CustomerTestimonials = () => {
 
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold text-primary-text">
                   {t.avatar}
                 </div>
                 <span className="text-sm font-medium text-foreground">{t.name}</span>

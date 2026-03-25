@@ -107,7 +107,7 @@ const AboutUs = () => {
                 className="glass-effect rounded-2xl p-6 text-center hover-lift"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                  <value.icon className="h-8 w-8 text-primary" />
+                  <value.icon className="h-8 w-8 text-primary-text" />
                 </div>
                 <h3 className="text-xl font-bold text-foreground mb-2">{value.title}</h3>
                 <p className="text-muted-foreground">{value.description}</p>

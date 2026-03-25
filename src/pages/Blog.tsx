@@ -107,7 +107,7 @@ const Blog = () => {
                 </div>
               </div>
               <div className="p-6">
-                <h2 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                <h2 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary-text transition-colors">
                   {post.title}
                 </h2>
                 <p className="text-muted-foreground mb-4">{post.excerpt}</p>
