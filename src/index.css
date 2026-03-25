@@ -39,6 +39,9 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
+    /* Primary text color - dark forest green for readability on white */
+    --primary-text: 158 80% 25%;
+
     /* Green gradient */
     --gradient-primary: linear-gradient(135deg, hsl(68 80% 55%), hsl(68 90% 70%));
 
@@ -84,6 +87,9 @@ All colors MUST be HSL.
     --border: 158 25% 20%;
     --input: 158 25% 20%;
     --ring: 68 90% 70%;
+
+    /* Primary text color - lime green is fine on dark backgrounds */
+    --primary-text: 68 90% 70%;
 
     /* Dark lime-green gradient */
     --gradient-primary: linear-gradient(135deg, hsl(68 80% 55%), hsl(68 90% 70%));
