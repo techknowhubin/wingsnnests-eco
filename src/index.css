@@ -18,8 +18,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 158 100% 10%;
 
-    --primary: 158 100% 10%;
-    --primary-foreground: 48 100% 99%;
+    --primary: 68 90% 70%;
+    --primary-foreground: 158 100% 10%;
 
     --secondary: 158 20% 90%;
     --secondary-foreground: 158 100% 10%;
@@ -35,12 +35,12 @@ All colors MUST be HSL.
 
     --border: 158 20% 85%;
     --input: 158 20% 85%;
-    --ring: 158 100% 10%;
+    --ring: 68 90% 70%;
 
     --radius: 0.75rem;
 
     /* Green gradient */
-    --gradient-primary: linear-gradient(135deg, hsl(158 100% 10%), hsl(158 80% 25%));
+    --gradient-primary: linear-gradient(135deg, hsl(68 80% 55%), hsl(68 90% 70%));
 
     /* Glassmorphism effects */
     --glass-bg: 48 100% 99% / 0.7;
