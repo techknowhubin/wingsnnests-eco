@@ -72,7 +72,7 @@ const CustomerTestimonials = () => {
               {/* Stars */}
               <div className="flex gap-0.5 mb-3">
                 {Array.from({ length: t.rating }).map((_, s) => (
-                  <Star key={s} className="h-4 w-4 fill-primary text-primary-text" />
+                  <Star key={s} className="h-4 w-4 fill-primary-text text-primary-text" />
                 ))}
               </div>
 

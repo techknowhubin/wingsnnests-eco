@@ -38,7 +38,7 @@ const BikeDetail = () => {
               </h1>
               <div className="flex items-center gap-4 text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-primary text-primary-text" />
+                  <Star className="h-4 w-4 fill-primary-text text-primary-text" />
                   4.8 (89 reviews)
                 </span>
                 <span className="flex items-center gap-1">
