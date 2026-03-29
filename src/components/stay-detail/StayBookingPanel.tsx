@@ -123,7 +123,8 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
           <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-0.5">Guests</label>
           <div className="flex items-center justify-between h-9 border border-border rounded-full px-2">
             <button
-              onClick={() => setGuests(Math.max(1, guests - 1))}
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setGuests(Math.max(1, guests - 1)); }}
               disabled={guests <= 1}
               className="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-secondary disabled:opacity-30 transition-colors"
               aria-label="Decrease guests"
@@ -132,7 +133,8 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
             </button>
             <span className="text-sm font-semibold text-foreground">{guests}</span>
             <button
-              onClick={() => setGuests(Math.min(maxGuests, guests + 1))}
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setGuests(Math.min(maxGuests, guests + 1)); }}
               disabled={guests >= maxGuests}
               className="h-6 w-6 rounded flex items-center justify-center text-accent hover:bg-accent/10 disabled:opacity-30 transition-colors"
               aria-label="Increase guests"
@@ -146,7 +148,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
       {/* Pricing Options */}
       <div className="grid grid-cols-3 gap-1.5 mb-3">
         <button
-          onClick={() => setPricingOption("daily")}
+          type="button"
           className={`py-2 px-1 border rounded-lg text-center transition-all ${
             pricingOption === "daily"
               ? "border-accent bg-accent/10"
@@ -157,7 +159,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
           <p className="text-xs font-bold text-foreground">{currencySymbol}{pricePerNight}</p>
         </button>
         <button
-          onClick={() => setPricingOption("weekly")}
+          type="button"
           className={`py-2 px-1 border rounded-lg text-center transition-all relative ${
             pricingOption === "weekly"
               ? "border-accent bg-accent/10 scale-[1.03]"
@@ -173,7 +175,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
           <p className="text-xs font-bold text-foreground">{currencySymbol}{Math.round(weeklyPrice)}</p>
         </button>
         <button
-          onClick={() => setPricingOption("monthly")}
+          type="button"
           className={`py-2 px-1 border rounded-lg text-center transition-all ${
             pricingOption === "monthly"
               ? "border-accent bg-accent/10"
