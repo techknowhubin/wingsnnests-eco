@@ -135,7 +135,7 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
     return "Travelers";
   };
 
-  const DestinationSuggestions = () => (
+  const destinationSuggestionsJSX = (
     <AnimatePresence>
       {showSuggestions && (
         <motion.div
@@ -150,6 +150,7 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
           ) : (
             filteredDestinations.map((dest) => (
               <button
+                type="button"
                 key={dest}
                 onClick={() => selectDestination(dest)}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors text-left"
@@ -164,7 +165,7 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
     </AnimatePresence>
   );
 
-  const TravelersContent = () => (
+  const travelersContentJSX = (
     <div className="p-4 space-y-4 min-w-[240px]">
       {(activeCategory === "stays") && (
         <div className="flex items-center justify-between">
@@ -173,7 +174,8 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setRooms(Math.max(1, rooms - 1))}
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setRooms(Math.max(1, rooms - 1)); }}
               className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-40"
               disabled={rooms <= 1}
             >
@@ -181,7 +183,8 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
             </button>
             <span className="text-sm font-medium w-4 text-center">{rooms}</span>
             <button
-              onClick={() => setRooms(Math.min(10, rooms + 1))}
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setRooms(Math.min(10, rooms + 1)); }}
               className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -196,7 +199,8 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setAdults(Math.max(1, adults - 1))}
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setAdults(Math.max(1, adults - 1)); }}
             className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-40"
             disabled={adults <= 1}
           >
@@ -204,7 +208,8 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
           </button>
           <span className="text-sm font-medium w-4 text-center">{adults}</span>
           <button
-            onClick={() => setAdults(Math.min(20, adults + 1))}
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setAdults(Math.min(20, adults + 1)); }}
             className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
@@ -218,7 +223,8 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setChildren(Math.max(0, children - 1))}
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setChildren(Math.max(0, children - 1)); }}
             className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-40"
             disabled={children <= 0}
           >
@@ -226,7 +232,8 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
           </button>
           <span className="text-sm font-medium w-4 text-center">{children}</span>
           <button
-            onClick={() => setChildren(Math.min(10, children + 1))}
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setChildren(Math.min(10, children + 1)); }}
             className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors"
           >
             <Plus className="h-3.5 w-3.5" />
