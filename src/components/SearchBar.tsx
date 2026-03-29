@@ -289,7 +289,7 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
               </button>
             )}
           </div>
-          <DestinationSuggestions />
+          {destinationSuggestionsJSX}
         </div>
 
         {/* Check-in / Pick-up */}
@@ -357,7 +357,7 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="end">
-            <TravelersContent />
+            {travelersContentJSX}
           </PopoverContent>
         </Popover>
 
@@ -395,7 +395,7 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
               </button>
             )}
           </div>
-          <DestinationSuggestions />
+          {destinationSuggestionsJSX}
         </div>
 
         {/* Dates Row */}
@@ -465,7 +465,7 @@ const SearchBar = ({ defaultCategory }: SearchBarProps) => {
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-[calc(100vw-2rem)] p-0" align="start">
-            <TravelersContent />
+            {travelersContentJSX}
           </PopoverContent>
         </Popover>
 
