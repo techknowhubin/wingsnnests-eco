@@ -30,12 +30,13 @@ const Login = () => {
       getUserRole().then((r) => {
         if (r === "host" || r === "admin") {
           navigate("/host/dashboard");
-        } else {
+        } else if (r) {
           navigate("/");
         }
       });
     }
-  }, [user, navigate, getUserRole]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
