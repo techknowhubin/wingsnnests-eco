@@ -30,12 +30,13 @@ const Login = () => {
       getUserRole().then((r) => {
         if (r === "host" || r === "admin") {
           navigate("/host/dashboard");
-        } else {
+        } else if (r) {
           navigate("/");
         }
       });
     }
-  }, [user, navigate, getUserRole]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +98,7 @@ const Login = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
         >
-          <div className="absolute inset-0 bg-primary/70" />
+          <div className="absolute inset-0 bg-accent/70" />
         </div>
         <div className="relative z-10 flex flex-col justify-center items-start p-16 text-primary-foreground">
           <Link to="/">
