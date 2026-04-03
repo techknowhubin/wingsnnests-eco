@@ -21,7 +21,7 @@ const RoleToggle = ({ role, onChange }: RoleToggleProps) => {
             type="button"
             onClick={() => onChange(key)}
             className={`relative z-10 px-5 py-2 text-xs font-semibold transition-colors ${
-              role === key ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              role === key ? "text-accent-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {key === "user" ? "Traveller" : "Host"}
