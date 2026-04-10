@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import LinkInBioLanding from "./pages/LinkInBioLanding";
 import Destinations from "./pages/Destinations";
 import DestinationDetail from "./pages/DestinationDetail";
+import UserOnboarding from "./pages/UserOnboarding";
 
 // Host Dashboard
 import HostLayout from "./pages/HostLayout";
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="/link-in-bio" element={<LinkInBioLanding />} />
             <Route path="/destinations" element={<Destinations />} />
             <Route path="/destinations/:name" element={<DestinationDetail />} />
+            <Route path="/onboarding/user" element={<UserOnboarding />} />
             
             {/* Host Dashboard — shared layout, only content transitions */}
             <Route path="/host" element={<HostLayout />}>
