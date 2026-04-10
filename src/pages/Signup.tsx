@@ -28,7 +28,7 @@ const Signup = () => {
 
   useEffect(() => {
     if (user) {
-      navigate(role === "host" ? "/host/dashboard" : "/");
+      navigate(role === "host" ? "/onboarding/host" : "/onboarding/user");
     }
   }, [user, navigate, role]);
 
