@@ -74,6 +74,9 @@ const App = () => (
             <Route path="/destinations" element={<Destinations />} />
             <Route path="/destinations/:name" element={<DestinationDetail />} />
             <Route path="/onboarding/user" element={<UserOnboarding />} />
+            <Route path="/onboarding/host" element={<HostOnboarding />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/profile/:section" element={<UserProfile />} />
             
             {/* Host Dashboard — shared layout, only content transitions */}
             <Route path="/host" element={<HostLayout />}>
