@@ -25,6 +25,8 @@ import LinkInBioLanding from "./pages/LinkInBioLanding";
 import Destinations from "./pages/Destinations";
 import DestinationDetail from "./pages/DestinationDetail";
 import UserOnboarding from "./pages/UserOnboarding";
+import HostOnboarding from "./pages/HostOnboarding";
+import UserProfile from "./pages/UserProfile";
 
 // Host Dashboard
 import HostLayout from "./pages/HostLayout";
