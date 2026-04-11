@@ -475,7 +475,7 @@ export default function UserProfile() {
                           {doc.status === "verified" ? (
                             <ShieldCheck className="h-5 w-5 text-accent" />
                           ) : doc.status === "under_review" ? (
-                            <Clock className="h-5 w-5 text-yellow-500" />
+                            <Clock className="h-5 w-5 text-muted-foreground" />
                           ) : (
                             <FileText className="h-5 w-5 text-muted-foreground" />
                           )}
@@ -491,7 +491,7 @@ export default function UserProfile() {
                             <Check className="h-3 w-3 mr-1" /> Verified
                           </Badge>
                         ) : doc.status === "under_review" ? (
-                          <Badge variant="outline" className="text-yellow-600 border-yellow-300 text-[10px]">
+                          <Badge variant="outline" className="text-muted-foreground border-border text-[10px]">
                             <Clock className="h-3 w-3 mr-1" /> Under Review
                           </Badge>
                         ) : (
