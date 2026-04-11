@@ -75,8 +75,8 @@ function Footerdemo() {
             <h3 className="mb-6 text-lg font-semibold">Contact Us</h3>
             <address className="space-y-3 text-sm not-italic text-muted-foreground">
               <p>Serving across India</p>
-              <p>Phone: +91 98765 43210</p>
-              <p>Email: support@xplorwing.in</p>
+              <p>Phone: +91 9422 799 420</p>
+              <p>Email: hello@xplorwing.com</p>
             </address>
           </div>
 
@@ -150,7 +150,7 @@ function Footerdemo() {
         {/* Bottom Bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-center md:flex-row">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Xplorwing. All rights reserved.
+            © {new Date().getFullYear()} WINGSNNESTS ECO SOLUTIONS PVT LTD. All rights reserved.
           </p>
           <nav className="flex gap-6 text-sm">
             <Link to="/" className="text-muted-foreground transition-colors hover:text-primary-text">
