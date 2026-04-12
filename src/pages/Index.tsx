@@ -112,7 +112,7 @@ const categories = [
     image: hotelsIcon,
     title: "Hotels",
     subtitle: "Comfortable stays",
-    link: "/stays",
+    link: "/hotels",
     bgColor: "bg-blue-100 dark:bg-blue-950/40",
     iconOffsetX: 10,
     iconOffsetY: 5,
@@ -122,7 +122,7 @@ const categories = [
     image: resortsIcon,
     title: "Resorts",
     subtitle: "Luxury getaways",
-    link: "/stays",
+    link: "/resorts",
     bgColor: "bg-teal-100 dark:bg-teal-950/40",
     iconScale: 1.25,
     iconOffsetX: 10,
@@ -217,7 +217,7 @@ const Index = () => {
     return data || [];
   };
   const fetchCars = async () => {
-    const { data } = await supabase.from("cars").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
+    const { data } = await supabase.from("cars").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false }).limit(4);
     return data || [];
   };
   const fetchExperiences = async () => {
@@ -413,7 +413,7 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-foreground mb-8">Car Rentals</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {cars.map((car, index) => (
-                <ListingCard key={car.id} id={car.id} image={carImageMap[car.images?.[0]] || hondaCityImage} title={car.title} location={car.location} price={`₹${car.price_per_day}`} rating={Number(car.rating) || 0} type="car" delay={index * 0.05} />
+                <ListingCard key={car.id} id={car.id} image={car.images?.[0]?.startsWith('http') ? car.images[0] : (carImageMap[car.images?.[0]] || hondaCityImage)} title={car.title} location={car.location} price={`₹${car.price_per_day}`} rating={Number(car.rating) || 0} type="car" delay={index * 0.05} />
               ))}
             </div>
           </motion.div>

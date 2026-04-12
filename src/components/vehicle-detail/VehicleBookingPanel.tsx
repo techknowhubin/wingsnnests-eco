@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarDays } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { initiateRazorpayPayment } from "@/lib/razorpay";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -17,9 +17,24 @@ interface VehicleBookingPanelProps {
 
 const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requirements }: VehicleBookingPanelProps) => {
   const tomorrow = useMemo(() => addDays(new Date(), 1), []);
+  const [pricingOption, setPricingOption] = useState<"daily" | "weekly" | "monthly">("daily");
+  
+  const getDurationDays = (option: "daily" | "weekly" | "monthly") => {
+    if (option === "daily") return 1;
+    if (option === "weekly") return 7;
+    return 30;
+  };
+
   const [pickupDate, setPickupDate] = useState<Date>(tomorrow);
-  const [dropoffDate, setDropoffDate] = useState<Date>(addDays(tomorrow, 3));
+  const [dropoffDate, setDropoffDate] = useState<Date>(addDays(tomorrow, getDurationDays("daily")));
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    setDropoffDate(addDays(pickupDate, getDurationDays(pricingOption)));
+  }, [pricingOption, pickupDate]);
+
+  const weeklyPrice = pricePerDay * 7 * 0.90;
+  const monthlyPrice = pricePerDay * 30 * 0.80;
 
   const days = Math.max(differenceInDays(dropoffDate, pickupDate), 1);
   const subtotal = pricePerDay * days;
@@ -29,13 +44,11 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
 
   return (
     <Card className="border-border shadow-strong sticky top-24 p-4 rounded-2xl bg-white dark:bg-card">
-      {/* Price */}
       <div className="mb-2">
         <span className="text-2xl font-bold text-foreground">{currencySymbol}{pricePerDay.toLocaleString()}</span>
         <span className="text-sm text-muted-foreground font-medium">/Day</span>
       </div>
 
-      {/* Rental summary */}
       <div className="bg-secondary/50 rounded-lg p-2.5 mb-3">
         <p className="text-sm text-foreground">
           <span className="font-bold">{days} Day{days > 1 ? "s" : ""}</span>
@@ -46,7 +59,6 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
         </p>
       </div>
 
-      {/* Pickup / Drop-off — two columns */}
       <div className="grid grid-cols-2 gap-1.5 mb-3">
         <div>
           <label className="text-[10px] font-semibold text-muted-foreground uppercase block mb-0.5">Pickup</label>
@@ -66,12 +78,7 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
               <Calendar
                 mode="single"
                 selected={pickupDate}
-                onSelect={(d) => {
-                  if (d) {
-                    setPickupDate(d);
-                    if (d >= dropoffDate) setDropoffDate(addDays(d, 1));
-                  }
-                }}
+                onSelect={setPickupDate}
                 disabled={(date) => date < new Date()}
                 initialFocus
                 className={cn("p-3 pointer-events-auto")}
@@ -107,7 +114,51 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
         </div>
       </div>
 
-      {/* Book Now */}
+      {/* Pricing Options */}
+      <div className="grid grid-cols-3 gap-1.5 mb-3">
+        <button
+          type="button"
+          onClick={() => setPricingOption("daily")}
+          className={`py-2 px-1 border rounded-lg text-center transition-all ${
+            pricingOption === "daily"
+              ? "border-accent bg-accent/10"
+              : "border-border hover:border-muted-foreground"
+          }`}
+        >
+          <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Daily</p>
+          <p className="text-xs font-bold text-foreground">{currencySymbol}{pricePerDay}</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => setPricingOption("weekly")}
+          className={`py-2 px-1 border rounded-lg text-center transition-all relative ${
+            pricingOption === "weekly"
+              ? "border-accent bg-accent/10 scale-[1.03]"
+              : "border-border hover:border-muted-foreground"
+          }`}
+        >
+          {pricingOption === "weekly" && (
+            <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+              POPULAR
+            </span>
+          )}
+          <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Weekly</p>
+          <p className="text-xs font-bold text-foreground">{currencySymbol}{Math.round(weeklyPrice)}</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => setPricingOption("monthly")}
+          className={`py-2 px-1 border rounded-lg text-center transition-all ${
+            pricingOption === "monthly"
+              ? "border-accent bg-accent/10"
+              : "border-border hover:border-muted-foreground"
+          }`}
+        >
+          <p className="text-[10px] font-semibold text-muted-foreground mb-0.5">Monthly</p>
+          <p className="text-xs font-bold text-foreground">{currencySymbol}{Math.round(monthlyPrice)}</p>
+        </button>
+      </div>
+
       <Button
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10 rounded-full text-sm font-semibold"
         size="lg"
@@ -130,7 +181,6 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
         You won't be charged yet
       </p>
 
-      {/* Price Breakdown */}
       <div className="space-y-1.5 pt-3 border-t border-border">
         <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">{currencySymbol}{pricePerDay.toLocaleString()} × {days} day{days > 1 ? "s" : ""}</span>

@@ -51,7 +51,8 @@ export async function initiateRazorpayPayment({
     });
 
     if (error || !data?.id) {
-      throw new Error(error?.message || "Failed to create order");
+      console.error("Razorpay Edge Function Failed. Ensure RAZORPAY_KEY_SECRET is configured in your Supabase project secrets.", error || data);
+      throw new Error(error?.message || "Failed to create order. Check backend secrets.");
     }
 
     const options = {

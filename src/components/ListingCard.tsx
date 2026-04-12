@@ -10,7 +10,7 @@ interface ListingCardProps {
   price: string;
   rating: number;
   delay?: number;
-  type?: "stay" | "bike" | "car" | "experience";
+  type?: "stay" | "bike" | "car" | "experience" | "hotel" | "resort";
   id?: string;
 }
 
@@ -31,6 +31,8 @@ const ListingCard = ({
       case "bike": return `/bikes/${id}`;
       case "car": return `/cars/${id}`;
       case "experience": return `/experiences/${id}`;
+      case "hotel": return `/hotels/${id}`;
+      case "resort": return `/resorts/${id}`;
       default: return `/stays/${id}`;
     }
   };
@@ -68,10 +70,7 @@ const ListingCard = ({
         </motion.button>
       </div>
 
-      {/* Arrow icon */}
-      <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-foreground/10 backdrop-blur-sm flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-        <ArrowUpRight className="h-4 w-4 text-foreground" />
-      </div>
+
 
       {/* Content */}
       <div className="space-y-1">

@@ -151,6 +151,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
       <div className="grid grid-cols-3 gap-1.5 mb-3">
         <button
           type="button"
+          onClick={() => setPricingOption("daily")}
           className={`py-2 px-1 border rounded-lg text-center transition-all ${
             pricingOption === "daily"
               ? "border-accent bg-accent/10"
@@ -162,6 +163,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
         </button>
         <button
           type="button"
+          onClick={() => setPricingOption("weekly")}
           className={`py-2 px-1 border rounded-lg text-center transition-all relative ${
             pricingOption === "weekly"
               ? "border-accent bg-accent/10 scale-[1.03]"
@@ -178,6 +180,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
         </button>
         <button
           type="button"
+          onClick={() => setPricingOption("monthly")}
           className={`py-2 px-1 border rounded-lg text-center transition-all ${
             pricingOption === "monthly"
               ? "border-accent bg-accent/10"

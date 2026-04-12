@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import StayBreadcrumb from "@/components/stay-detail/StayBreadcrumb";
 import StayImageGallery from "@/components/stay-detail/StayImageGallery";
+import VehicleSelectionModal from "@/components/stay-detail/VehicleSelectionModal";
 import StayFeatureHighlights from "@/components/stay-detail/StayFeatureHighlights";
 import StayBookingPanel from "@/components/stay-detail/StayBookingPanel";
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
@@ -70,14 +71,20 @@ const StayDetail = () => {
   const [stay, setStay] = useState<Stay | null>(null);
   const [loading, setLoading] = useState(true);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [modalVehicleType, setModalVehicleType] = useState<"car" | "bike" | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchStay = async () => {
       if (!id) return;
+      
+      const isHotelRoute = window.location.pathname.includes("/hotels");
+      const isResortRoute = window.location.pathname.includes("/resorts");
+      const tableName = isHotelRoute ? "hotels" : isResortRoute ? "resorts" : "stays";
+      
       try {
         const { data, error } = await supabase
-          .from("stays")
+          .from(tableName)
           .select("*")
           .eq("id", id)
           .single();
@@ -126,8 +133,24 @@ const StayDetail = () => {
   }
 
   const amenitiesList = Array.isArray(stay.amenities) ? stay.amenities : [];
-  const mainImage = stay.images?.[0] ? imageMap[stay.images[0]] || manaliImage : manaliImage;
+  const resolvedImages = stay.images?.length > 0
+    ? stay.images.map((img: string) => img.startsWith('http') ? img : (imageMap[img] || manaliImage))
+    : [manaliImage];
   const currencySymbol = stay.currency === 'INR' ? '₹' : '$';
+
+  const isHotel = window.location.pathname.includes("/hotels");
+  const isResort = window.location.pathname.includes("/resorts");
+  
+  let categoryName = "Homestays";
+  let categoryLink = "/stays";
+  
+  if (isHotel) {
+    categoryName = "Hotels";
+    categoryLink = "/hotels";
+  } else if (isResort) {
+    categoryName = "Resorts";
+    categoryLink = "/resorts";
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -136,7 +159,7 @@ const StayDetail = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-6 flex-grow">
         {/* Breadcrumb */}
-        <StayBreadcrumb title={stay.title} />
+        <StayBreadcrumb title={stay.title} categoryName={categoryName} categoryLink={categoryLink} />
 
         {/* Title & Meta */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
@@ -182,7 +205,7 @@ const StayDetail = () => {
         </div>
 
         {/* Image Gallery */}
-        <StayImageGallery mainImage={mainImage} title={stay.title} />
+        <StayImageGallery images={resolvedImages} title={stay.title} />
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -272,45 +295,57 @@ const StayDetail = () => {
             </div>
 
             {/* Vehicle Rentals */}
-            <div className="pb-8 border-b border-border">
+            <div className="pb-8 border-b border-border relative">
               <h2 className="text-2xl font-semibold text-foreground mb-6">Rent a vehicle</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {[
-                  { name: "Royal Enfield Classic", rating: 4.8, price: 1200, km: 100, image: royalEnfieldImage },
-                  { name: "Honda City", rating: 4.9, price: 2500, km: 150, image: hondaCityImage },
+                  { type: "bike" as const, name: "Royal Enfield Classic", rating: 4.8, price: 1200, km: 100, image: royalEnfieldImage },
+                  { type: "car" as const, name: "Honda City", rating: 4.9, price: 2500, km: 150, image: hondaCityImage },
                 ].map((vehicle, i) => (
-                  <Card key={i} className="border-border overflow-hidden">
-                    <div className="aspect-video overflow-hidden">
+                  <div key={i} className="group flex flex-col">
+                    <div className="relative overflow-hidden rounded-2xl mb-3 aspect-square">
                       <img
                         src={vehicle.image}
                         alt={vehicle.name}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-foreground mb-1">{vehicle.name}</h3>
-                      <div className="flex items-center gap-1 mb-2">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        <span className="text-sm text-muted-foreground">{vehicle.rating}</span>
+                    
+                    <div className="space-y-1 mb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 pr-2">
+                          <h3 className="font-semibold text-foreground line-clamp-1">{vehicle.name}</h3>
+                          <p className="text-sm text-muted-foreground line-clamp-1">{vehicle.km} KM limit · {currencySymbol}15/KM</p>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Star className="h-4 w-4 fill-primary-text text-primary-text" />
+                          <span className="text-sm font-medium">{vehicle.rating}</span>
+                        </div>
                       </div>
-                      <p className="text-lg font-bold text-foreground mb-1">
-                        {currencySymbol}{vehicle.price}<span className="text-sm font-normal text-muted-foreground">/day</span>
+                      <p className="text-sm">
+                        <span className="font-semibold text-foreground">{currencySymbol}{vehicle.price}</span>
+                        <span className="text-muted-foreground">/day</span>
                       </p>
-                      <p className="text-xs text-muted-foreground mb-4">
-                        {vehicle.km} KM limit · {currencySymbol}15/KM excess
-                      </p>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1">
-                          Choose other vehicle
-                        </Button>
-                        <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground">
-                          Add to Reserve
-                        </Button>
-                      </div>
                     </div>
-                  </Card>
+
+                    <div className="flex flex-col gap-2 mt-auto">
+                      <Button variant="outline" size="sm" className="w-full font-medium" onClick={() => setModalVehicleType(vehicle.type)}>
+                        Choose other vehicle
+                      </Button>
+                      <Button size="sm" className="w-full font-medium bg-primary hover:bg-primary/90 text-primary-foreground">
+                        Add to Reserve
+                      </Button>
+                    </div>
+                  </div>
                 ))}
               </div>
+              
+              <VehicleSelectionModal 
+                isOpen={modalVehicleType !== null}
+                onClose={() => setModalVehicleType(null)}
+                vehicleType={modalVehicleType}
+                location={stay.location}
+              />
             </div>
 
             {/* Detailed Ratings */}

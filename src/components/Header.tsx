@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Moon, Sun, Menu, User, Heart, X, Home, Car, Bike, Compass, MapPin, ChevronRight } from "lucide-react";
+import { Moon, Sun, Menu, User, Heart, X, Home, Car, Bike, Compass, MapPin, ChevronRight, Building, Palmtree } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +9,8 @@ import logo from "@/assets/logo.png";
 
 const mobileNavLinks = [
   { label: "Stays", icon: Home, to: "/stays" },
+  { label: "Hotels", icon: Building, to: "/hotels" },
+  { label: "Resorts", icon: Palmtree, to: "/resorts" },
   { label: "Experiences", icon: Compass, to: "/experiences" },
   { label: "Bikes", icon: Bike, to: "/bikes" },
   { label: "Cars", icon: Car, to: "/cars" },
@@ -48,6 +50,18 @@ const Header = () => {
                 className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
               >
                 Stays
+              </Link>
+              <Link
+                to="/hotels"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+              >
+                Hotels
+              </Link>
+              <Link
+                to="/resorts"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+              >
+                Resorts
               </Link>
               <Link
                 to="/experiences"

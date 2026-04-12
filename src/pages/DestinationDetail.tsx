@@ -23,7 +23,7 @@ import hondaCity from "@/assets/vehicles/honda-city.jpg";
 import royalEnfield from "@/assets/vehicles/royal-enfield-classic.jpg";
 import sunriseTrek from "@/assets/demo/sunrise-trek.jpg";
 
-type ServiceType = "stay" | "car" | "bike" | "experience";
+type ServiceType = "stay" | "hotel" | "resort" | "car" | "bike" | "experience";
 type ViewMode = "grid" | "list";
 
 interface ServiceListing {
@@ -41,6 +41,8 @@ interface ServiceListing {
 
 const fallbackImages: Record<ServiceType, string[]> = {
   stay: [manaliImage, goaImage, jaipurImage, munnarImage],
+  hotel: [jaipurImage, munnarImage, goaImage],
+  resort: [goaImage, manaliImage, jaipurImage],
   car: [hondaCity],
   bike: [royalEnfield],
   experience: [sunriseTrek],
@@ -53,7 +55,9 @@ function getFallbackImage(type: ServiceType, index: number): string {
 
 const serviceFilters: { type: ServiceType | "all"; label: string }[] = [
   { type: "all", label: "All Services" },
-  { type: "stay", label: "Stays" },
+  { type: "stay", label: "Homestays" },
+  { type: "hotel", label: "Hotels" },
+  { type: "resort", label: "Resorts" },
   { type: "car", label: "Cars" },
   { type: "bike", label: "Bikes" },
   { type: "experience", label: "Experiences" },
@@ -87,7 +91,7 @@ const DestinationDetail = () => {
         // Fetch stays
         const { data: stays } = await supabase
           .from("stays")
-          .select("id, title, location, price_per_night, currency, rating, images, slug")
+          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
           .eq("availability_status", true)
           .ilike("location", `%${displayName}%`);
 
@@ -98,8 +102,50 @@ const DestinationDetail = () => {
             location: s.location,
             price: `${s.currency === "INR" ? "₹" : "$"}${s.price_per_night.toLocaleString()}/night`,
             rating: Number(s.rating),
-            image: getFallbackImage("stay", i),
+            image: s.images?.[0]?.startsWith('http') ? s.images[0] : getFallbackImage("stay", i),
             type: "stay",
+            lat: coords?.lat ? coords.lat + (Math.random() - 0.5) * 0.05 : undefined,
+            lng: coords?.lng ? coords.lng + (Math.random() - 0.5) * 0.05 : undefined,
+          });
+        });
+
+        // Fetch hotels
+        const { data: hotels } = await supabase
+          .from("hotels")
+          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
+          .eq("availability_status", true)
+          .ilike("location", `%${displayName}%`);
+
+        hotels?.forEach((h, i) => {
+          allListings.push({
+            id: h.id,
+            title: h.title,
+            location: h.location,
+            price: `${h.currency === "INR" ? "₹" : "$"}${h.price_per_night.toLocaleString()}/night`,
+            rating: Number(h.rating),
+            image: h.images?.[0]?.startsWith('http') ? h.images[0] : getFallbackImage("hotel", i),
+            type: "hotel",
+            lat: coords?.lat ? coords.lat + (Math.random() - 0.5) * 0.05 : undefined,
+            lng: coords?.lng ? coords.lng + (Math.random() - 0.5) * 0.05 : undefined,
+          });
+        });
+
+        // Fetch resorts
+        const { data: resorts } = await supabase
+          .from("resorts")
+          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
+          .eq("availability_status", true)
+          .ilike("location", `%${displayName}%`);
+
+        resorts?.forEach((r, i) => {
+          allListings.push({
+            id: r.id,
+            title: r.title,
+            location: r.location,
+            price: `${r.currency === "INR" ? "₹" : "$"}${r.price_per_night.toLocaleString()}/night`,
+            rating: Number(r.rating),
+            image: r.images?.[0]?.startsWith('http') ? r.images[0] : getFallbackImage("resort", i),
+            type: "resort",
             lat: coords?.lat ? coords.lat + (Math.random() - 0.5) * 0.05 : undefined,
             lng: coords?.lng ? coords.lng + (Math.random() - 0.5) * 0.05 : undefined,
           });
@@ -119,7 +165,7 @@ const DestinationDetail = () => {
             location: c.location,
             price: `${c.currency === "INR" ? "₹" : "$"}${c.price_per_day.toLocaleString()}/day`,
             rating: Number(c.rating),
-            image: getFallbackImage("car", i),
+            image: c.images?.[0]?.startsWith('http') ? c.images[0] : getFallbackImage("car", i),
             type: "car",
             lat: coords?.lat ? coords.lat + (Math.random() - 0.5) * 0.05 : undefined,
             lng: coords?.lng ? coords.lng + (Math.random() - 0.5) * 0.05 : undefined,
@@ -140,7 +186,7 @@ const DestinationDetail = () => {
             location: b.location,
             price: `${b.currency === "INR" ? "₹" : "$"}${b.price_per_day.toLocaleString()}/day`,
             rating: Number(b.rating),
-            image: getFallbackImage("bike", i),
+            image: b.images?.[0]?.startsWith('http') ? b.images[0] : getFallbackImage("bike", i),
             type: "bike",
             lat: coords?.lat ? coords.lat + (Math.random() - 0.5) * 0.05 : undefined,
             lng: coords?.lng ? coords.lng + (Math.random() - 0.5) * 0.05 : undefined,
@@ -161,7 +207,7 @@ const DestinationDetail = () => {
             location: e.location,
             price: `${e.currency === "INR" ? "₹" : "$"}${e.price_per_person.toLocaleString()}/person`,
             rating: Number(e.rating),
-            image: getFallbackImage("experience", i),
+            image: e.images?.[0]?.startsWith('http') ? e.images[0] : getFallbackImage("experience", i),
             type: "experience",
             lat: coords?.lat ? coords.lat + (Math.random() - 0.5) * 0.05 : undefined,
             lng: coords?.lng ? coords.lng + (Math.random() - 0.5) * 0.05 : undefined,

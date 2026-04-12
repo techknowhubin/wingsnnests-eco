@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Stays from "./pages/Stays";
+import Hotels from "./pages/Hotels";
+import Resorts from "./pages/Resorts";
 import Experiences from "./pages/Experiences";
 import Bikes from "./pages/Bikes";
 import Cars from "./pages/Cars";
@@ -60,6 +62,10 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/stays" element={<Stays />} />
             <Route path="/stays/:id" element={<StayDetail />} />
+            <Route path="/hotels" element={<Hotels />} />
+            <Route path="/hotels/:id" element={<StayDetail />} />
+            <Route path="/resorts" element={<Resorts />} />
+            <Route path="/resorts/:id" element={<StayDetail />} />
             <Route path="/experiences" element={<Experiences />} />
             <Route path="/experiences/:id" element={<ExperienceDetail />} />
             <Route path="/bikes" element={<Bikes />} />

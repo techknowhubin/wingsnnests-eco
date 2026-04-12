@@ -1,19 +1,13 @@
 const Marquee = () => {
+  const text = "STAY. EXPLORE. DISCOVER. EXPERIENCE.";
   return (
-    <div className="h-8 bg-primary text-primary-foreground overflow-hidden flex items-center">
-      <div className="animate-marquee whitespace-nowrap flex">
-        <span className="text-xs font-semibold tracking-wider mx-8">
-          HASSLE FREE TRAVEL EXPERIENCE LIKE A FREE BIRD
-        </span>
-        <span className="text-xs font-semibold tracking-wider mx-8">
-          HASSLE FREE TRAVEL EXPERIENCE LIKE A FREE BIRD
-        </span>
-        <span className="text-xs font-semibold tracking-wider mx-8">
-          HASSLE FREE TRAVEL EXPERIENCE LIKE A FREE BIRD
-        </span>
-        <span className="text-xs font-semibold tracking-wider mx-8">
-          HASSLE FREE TRAVEL EXPERIENCE LIKE A FREE BIRD
-        </span>
+    <div className="h-8 bg-primary text-primary-foreground overflow-hidden flex items-center w-full">
+      <div className="animate-marquee whitespace-nowrap flex w-max">
+        {[...Array(20)].map((_, i) => (
+          <span key={i} className="text-xs font-semibold tracking-wider mx-8">
+            {text}
+          </span>
+        ))}
       </div>
     </div>
   );

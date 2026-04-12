@@ -7,45 +7,56 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
+import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
+import goaImage from "@/assets/stays/goa-beach-villa.jpg";
+import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
+import munnarImage from "@/assets/stays/munnar-tea-cottage.jpg";
+import udaipurImage from "@/assets/stays/udaipur-lakeside-palace.jpg";
+import kasolImage from "@/assets/stays/kasol-valley-home.jpg";
 
-const carImageMap: Record<string, string> = {
-  "honda-city.jpg": hondaCityImage,
+const imageMap: Record<string, string> = {
+  "manali-mountain-homestay.jpg": manaliImage,
+  "goa-beach-villa.jpg": goaImage,
+  "jaipur-heritage-haveli.jpg": jaipurImage,
+  "munnar-tea-cottage.jpg": munnarImage,
+  "udaipur-lakeside-palace.jpg": udaipurImage,
+  "kasol-valley-home.jpg": kasolImage,
 };
 
-interface Car {
+interface Stay {
   id: string;
   title: string;
   location: string;
-  price_per_day: number;
+  price_per_night: number;
   currency: string;
   rating: number;
   images: string[];
+  slug: string;
+  property_type: string;
 }
 
-const Cars = () => {
-  const [cars, setCars] = useState<Car[]>([]);
+const Hotels = () => {
+  const [hotels, setHotels] = useState<Stay[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchCars = async () => {
+    const fetchHotels = async () => {
       try {
         const { data, error } = await supabase
-          .from("cars")
-          .select("id, title, location, price_per_day, currency, rating, images")
+          .from("hotels")
+          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
           .eq("availability_status", true)
           .order("featured", { ascending: false })
-          .order("created_at", { ascending: false })
-          .limit(4);
+          .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setCars(data || []);
+        setHotels(data || []);
       } catch (error) {
-        console.error("Error fetching cars:", error);
+        console.error("Error fetching hotels:", error);
         toast({
           title: "Error",
-          description: "Failed to load cars. Please try again.",
+          description: "Failed to load hotels. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -53,7 +64,7 @@ const Cars = () => {
       }
     };
 
-    fetchCars();
+    fetchHotels();
   }, [toast]);
 
   return (
@@ -71,13 +82,13 @@ const Cars = () => {
             className="text-center mb-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Rent a Car for Your Adventure
+              Premium Hotels & Suites
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Drive through India with comfort and freedom
+              Luxurious accommodations across India’s best destinations
             </p>
           </motion.div>
-          <SearchBar defaultCategory="cars" />
+          <SearchBar defaultCategory="stays" />
         </div>
       </section>
 
@@ -93,22 +104,22 @@ const Cars = () => {
               </div>
             ))}
           </div>
-        ) : cars.length === 0 ? (
+        ) : hotels.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">No cars available at the moment.</p>
+            <p className="text-muted-foreground text-lg">No hotels available at the moment.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            {cars.map((car, index) => (
+            {hotels.map((hotel, index) => (
               <ListingCard
-                key={car.id}
-                id={car.id}
-                image={car.images?.[0]?.startsWith('http') ? car.images[0] : (carImageMap[car.images?.[0]] || hondaCityImage)}
-                title={car.title}
-                location={car.location}
-                price={`${car.currency === 'INR' ? '₹' : '$'}${car.price_per_day.toLocaleString()}`}
-                rating={Number(car.rating)}
-                type="car"
+                key={hotel.id}
+                image={hotel.images?.[0]?.startsWith('http') ? hotel.images[0] : (imageMap[hotel.images?.[0]] || manaliImage)}
+                title={hotel.title}
+                location={hotel.location}
+                price={`${hotel.currency === 'INR' ? '₹' : '$'}${hotel.price_per_night.toLocaleString()}`}
+                rating={Number(hotel.rating)}
+                type="hotel" as any
+                id={hotel.id}
                 delay={index * 0.05}
               />
             ))}
@@ -121,4 +132,4 @@ const Cars = () => {
   );
 };
 
-export default Cars;
+export default Hotels;
