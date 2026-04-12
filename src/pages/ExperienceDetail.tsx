@@ -7,12 +7,15 @@ import { Star, MapPin, Heart, Share2, Clock, Users, Calendar as CalendarIcon } f
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
+import { initiateRazorpayPayment } from "@/lib/razorpay";
 import experienceImage from "@/assets/experience-featured.jpg";
 
 const ExperienceDetail = () => {
   const { id } = useParams();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [guestCount, setGuestCount] = useState(1);
 
   const details = [
     { icon: Clock, label: "Duration", value: "3 hours" },
@@ -200,17 +203,35 @@ const ExperienceDetail = () => {
                   <label className="text-sm font-semibold text-foreground mb-2 block">
                     Number of Guests
                   </label>
-                  <select className="w-full p-3 rounded-xl glass-effect border text-foreground">
-                    <option>1 Guest</option>
-                    <option>2 Guests</option>
-                    <option>3 Guests</option>
-                    <option>4 Guests</option>
+                  <select 
+                    className="w-full p-3 rounded-xl glass-effect border text-foreground"
+                    value={guestCount}
+                    onChange={(e) => setGuestCount(Number(e.target.value))}
+                  >
+                    <option value={1}>1 Guest</option>
+                    <option value={2}>2 Guests</option>
+                    <option value={3}>3 Guests</option>
+                    <option value={4}>4 Guests</option>
                   </select>
                 </div>
               </div>
 
-              <Button className="w-full bg-primary hover:bg-accent" size="lg">
-                Book Experience
+              <Button 
+                className="w-full bg-primary hover:bg-accent" 
+                size="lg"
+                disabled={isProcessing}
+                onClick={() => {
+                  setIsProcessing(true);
+                  initiateRazorpayPayment({
+                    amount: 2000 * guestCount,
+                    title: "Village Cooking Experience",
+                    description: `Experience for ${guestCount} guest(s)`,
+                    onSuccess: () => setIsProcessing(false),
+                    onFailure: () => setIsProcessing(false),
+                  });
+                }}
+              >
+                {isProcessing ? "Processing..." : "Book Experience"}
               </Button>
 
               <p className="text-xs text-center text-muted-foreground mt-4">
