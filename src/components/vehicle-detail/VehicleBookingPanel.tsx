@@ -19,6 +19,7 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
   const tomorrow = useMemo(() => addDays(new Date(), 1), []);
   const [pickupDate, setPickupDate] = useState<Date>(tomorrow);
   const [dropoffDate, setDropoffDate] = useState<Date>(addDays(tomorrow, 3));
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const days = Math.max(differenceInDays(dropoffDate, pickupDate), 1);
   const subtotal = pricePerDay * days;
@@ -110,8 +111,19 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
       <Button
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10 rounded-full text-sm font-semibold"
         size="lg"
+        disabled={isProcessing}
+        onClick={() => {
+          setIsProcessing(true);
+          initiateRazorpayPayment({
+            amount: total,
+            title,
+            description: `${days} day rental of ${title}`,
+            onSuccess: () => setIsProcessing(false),
+            onFailure: () => setIsProcessing(false),
+          });
+        }}
       >
-        Book Now
+        {isProcessing ? "Processing..." : "Book Now"}
       </Button>
 
       <p className="text-[11px] text-center text-muted-foreground mt-2 mb-3">
