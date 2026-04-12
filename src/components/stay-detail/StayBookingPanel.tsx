@@ -4,6 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarDays, Users, Minus, Plus } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
+import { initiateRazorpayPayment } from "@/lib/razorpay";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
   const [guests, setGuests] = useState(1);
   const [pricingOption, setPricingOption] = useState<"daily" | "weekly" | "monthly">("weekly");
   const [guestOpen, setGuestOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const tomorrow = useMemo(() => addDays(new Date(), 1), []);
 
@@ -191,8 +193,19 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
       <Button
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10 rounded-full text-sm font-semibold"
         size="lg"
+        disabled={isProcessing}
+        onClick={() => {
+          setIsProcessing(true);
+          initiateRazorpayPayment({
+            amount: total,
+            title,
+            description: `${nights} night stay at ${title}`,
+            onSuccess: () => setIsProcessing(false),
+            onFailure: () => setIsProcessing(false),
+          });
+        }}
       >
-        Book Now
+        {isProcessing ? "Processing..." : "Book Now"}
       </Button>
 
       <p className="text-[11px] text-center text-muted-foreground mt-2 mb-3">
