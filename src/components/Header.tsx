@@ -47,39 +47,39 @@ const Header = () => {
               <MegaMenu />
               <Link
                 to="/stays"
-                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg nav-link-hover"
               >
                 Stays
               </Link>
               <Link
                 to="/hotels"
-                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg nav-link-hover"
               >
                 Hotels
               </Link>
               <Link
                 to="/resorts"
-                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg nav-link-hover"
               >
                 Resorts
               </Link>
               <Link
-                to="/experiences"
-                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
-              >
-                Experiences
-              </Link>
-              <Link
                 to="/bikes"
-                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg nav-link-hover"
               >
                 Bikes
               </Link>
               <Link
                 to="/cars"
-                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg nav-link-hover"
               >
                 Cars
+              </Link>
+              <Link
+                to="/experiences"
+                className="text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg nav-link-hover"
+              >
+                Experiences
               </Link>
             </nav>
 

@@ -48,12 +48,12 @@ All colors MUST be HSL.
     /* Glassmorphism effects */
     --glass-bg: 48 100% 99% / 0.7;
     --glass-border: 158 20% 85% / 0.3;
-    
+
     /* Shadows */
     --shadow-subtle: 0 2px 8px hsl(158 100% 10% / 0.08);
     --shadow-medium: 0 4px 16px hsl(158 100% 10% / 0.12);
     --shadow-strong: 0 8px 32px hsl(158 100% 10% / 0.16);
-    
+
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -97,12 +97,12 @@ All colors MUST be HSL.
     /* Dark mode glassmorphism */
     --glass-bg: 158 35% 12% / 0.7;
     --glass-border: 158 25% 20% / 0.3;
-    
+
     /* Dark mode shadows with glow */
     --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.3), 0 0 20px hsl(68 90% 70% / 0.1);
     --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.4), 0 0 30px hsl(68 90% 70% / 0.15);
     --shadow-strong: 0 8px 32px hsl(0 0% 0% / 0.5), 0 0 40px hsl(68 90% 70% / 0.2);
-    
+
     /* Element glow */
     --glow-subtle: 0 0 15px hsl(68 90% 70% / 0.15);
     --glow-medium: 0 0 25px hsl(68 90% 70% / 0.2);
@@ -122,41 +122,55 @@ All colors MUST be HSL.
 }
 
 @layer components {
+
   /* Glassmorphism utility */
   .glass-effect {
     background: hsl(var(--glass-bg));
     backdrop-filter: blur(12px) saturate(150%);
     border: 1px solid hsl(var(--glass-border));
   }
-  
+
   /* Smooth hover scale */
   .hover-lift {
     @apply transition-all duration-300 ease-out;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-medium);
   }
-  
+
   /* Card styles */
   .card-gradient {
     background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
   }
-  
+
   /* Dark mode glow effects */
   .dark .glow-element {
     box-shadow: var(--glow-subtle);
   }
-  
+
   .dark .glow-element:hover {
     box-shadow: var(--glow-medium);
+  }
+
+  /* Custom navigation link hover animation */
+  .nav-link-hover {
+    text-decoration: none;
+    transition: all 0.4s;
+  }
+
+  .nav-link-hover:hover {
+    text-shadow: 0 0 5px #e5f76e, 0 0 20px #e5f76e, 0 0 30px #e5f76e;
   }
 }
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

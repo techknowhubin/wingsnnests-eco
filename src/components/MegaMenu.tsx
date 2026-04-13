@@ -87,7 +87,7 @@ const MegaMenu = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg hover:bg-accent/50">
+      <button className="flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary-text transition-colors px-3 py-2 rounded-lg nav-link-hover">
         Explore
         <ChevronDown
           className={`h-3.5 w-3.5 transition-transform duration-300 ${

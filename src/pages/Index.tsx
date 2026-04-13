@@ -7,6 +7,7 @@ import DestinationCard from "@/components/DestinationCard";
 import ListingCard from "@/components/ListingCard";
 import CustomerTestimonials from "@/components/CustomerTestimonials";
 import HomeFAQ from "@/components/HomeFAQ";
+import CabFareSection from "@/components/CabFareSection";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronRight, ChevronLeft, Calendar, User } from "lucide-react";
@@ -419,6 +420,9 @@ const Index = () => {
           </motion.div>
         </section>
       )}
+
+      {/* Cab Fare Section */}
+      <CabFareSection />
 
       {/* Experiences Section */}
       {experiences.length > 0 && (
