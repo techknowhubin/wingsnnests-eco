@@ -51,7 +51,7 @@ export async function getStays(options?: {
   
   const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return attachHostNames(data ?? [], true);
 }
 
 export async function getStayById(id: string) {
@@ -464,6 +464,33 @@ export async function getHostResorts(hostId: string) {
   return data as any[];
 }
 
+async function attachHostNames(listings: any[], isAdminUser: boolean) {
+  if (!listings || listings.length === 0) return listings;
+
+  const hostIds = Array.from(new Set(listings.map((item) => item.host_id || item.user_id).filter(Boolean)));
+  if (hostIds.length === 0) return listings;
+
+  const { data: hostProfiles, error: hostError } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+    .in('id', hostIds);
+
+  if (hostError) {
+    console.error("Error fetching host profiles:", hostError);
+    return listings;
+  }
+
+  const nameById = new Map((hostProfiles ?? []).map((p) => [p.id, p.full_name || 'No name provided']));
+
+  return listings.map((listing) => {
+    const hostId = listing.host_id || listing.user_id;
+    return {
+      ...listing,
+      host_name: nameById.get(hostId) || (isAdminUser ? 'Unknown host' : undefined),
+    };
+  });
+}
+
 export async function getManagedListings(
   listingType: ListingType | 'hotel' | 'resort',
   userId: string,
@@ -490,26 +517,7 @@ export async function getManagedListings(
   if (error) throw error;
   const listings = (data ?? []) as any[];
 
-  if (!isAdminUser) {
-    return listings;
-  }
-
-  const hostIds = Array.from(new Set(listings.map((item) => item.host_id).filter(Boolean)));
-  if (hostIds.length === 0) {
-    return listings;
-  }
-
-  const { data: hostProfiles, error: hostError } = await supabase
-    .from('profiles')
-    .select('id, full_name')
-    .in('id', hostIds);
-  if (hostError) throw hostError;
-
-  const nameById = new Map((hostProfiles ?? []).map((profile) => [profile.id, profile.full_name || 'Unknown host']));
-  return listings.map((listing) => ({
-    ...listing,
-    host_name: nameById.get(listing.host_id) ?? 'Unknown host',
-  }));
+  return attachHostNames(listings, isAdminUser);
 }
 
 export async function updateMarketplaceVisibility(

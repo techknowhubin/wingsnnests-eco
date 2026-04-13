@@ -12,6 +12,7 @@ interface ListingCardProps {
   delay?: number;
   type?: "stay" | "bike" | "car" | "experience" | "hotel" | "resort";
   id?: string;
+  hostName?: string;
 }
 
 const ListingCard = ({ 
@@ -22,7 +23,8 @@ const ListingCard = ({
   rating, 
   delay = 0,
   type = "stay",
-  id = "1"
+  id = "1",
+  hostName
 }: ListingCardProps) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -77,7 +79,14 @@ const ListingCard = ({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h3 className="font-semibold text-foreground line-clamp-1">{title}</h3>
-            <p className="text-sm text-muted-foreground">{location}</p>
+            <div className="flex flex-col">
+              <p className="text-sm text-muted-foreground">{location}</p>
+              {hostName && (
+                <p className="text-[11px] text-muted-foreground/80 mt-0.5">
+                  by <span className="font-medium">{hostName}</span>
+                </p>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 fill-primary-text text-primary-text" />
@@ -87,7 +96,7 @@ const ListingCard = ({
         <p className="text-sm">
           <span className="font-semibold text-foreground">{price}</span>
           <span className="text-muted-foreground">
-            / {type === "experience" ? "person" : type === "stay" ? "night" : "day"}
+            / {type === "experience" ? "person" : (type === "stay" || type === "hotel" || type === "resort") ? "night" : "day"}
           </span>
         </p>
       </div>

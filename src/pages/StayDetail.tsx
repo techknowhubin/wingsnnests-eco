@@ -74,6 +74,7 @@ const StayDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [modalVehicleType, setModalVehicleType] = useState<"car" | "bike" | null>(null);
+  const [hostProfile, setHostProfile] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -92,6 +93,16 @@ const StayDetail = () => {
           .single();
         if (error) throw error;
         setStay(data);
+
+        // Fetch host profile
+        if (data.host_id) {
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("full_name, created_at, bio")
+            .eq("id", data.host_id)
+            .single();
+          if (profileData) setHostProfile(profileData);
+        }
       } catch (error) {
         console.error("Error fetching stay:", error);
         toast({ title: "Error", description: "Failed to load homestay details.", variant: "destructive" });
@@ -248,8 +259,8 @@ const StayDetail = () => {
                       H
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Host Name</h4>
-                      <p className="text-xs text-muted-foreground">Joined in March 2020</p>
+                      <h4 className="font-semibold text-foreground">{hostProfile?.full_name || "Host Name"}</h4>
+                      <p className="text-xs text-muted-foreground">Joined in {hostProfile?.created_at ? new Date(hostProfile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "March 2020"}</p>
                     </div>
                   </div>
                 </div>
@@ -398,8 +409,8 @@ const StayDetail = () => {
                   H
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-foreground">Hosted by Host Name</h3>
-                  <p className="text-sm text-muted-foreground">Joined in March 2020</p>
+                  <h3 className="text-xl font-semibold text-foreground">Hosted by {hostProfile?.full_name || "Host Name"}</h3>
+                  <p className="text-sm text-muted-foreground">Joined in {hostProfile?.created_at ? new Date(hostProfile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : "March 2020"}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                     <span className="text-sm font-semibold">Superhost</span>
@@ -407,7 +418,7 @@ const StayDetail = () => {
                 </div>
               </div>
               <p className="text-muted-foreground mb-4">
-                I love hosting travelers and sharing the beauty of our region. I'm always available to help make your stay memorable!
+                {hostProfile?.bio || "I love hosting travelers and sharing the beauty of our region. I'm always available to help make your stay memorable!"}
               </p>
               <Button variant="outline" className="w-full">Contact host</Button>
             </Card>

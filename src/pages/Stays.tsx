@@ -18,6 +18,9 @@ interface Stay {
   rating: number;
   images: string[];
   slug: string;
+  profiles?: {
+    full_name: string;
+  };
 }
 
 const Stays = () => {
@@ -30,14 +33,35 @@ const Stays = () => {
       try {
         const { data, error } = await supabase
           .from("stays")
-          .select("id, title, location, price_per_night, currency, rating, images, slug")
+          .select("*")
           .eq("availability_status", true)
           .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setStays(data || []);
+        
+        // Fetch host names
+        const hostIds = Array.from(new Set((data || []).map(s => s.host_id).filter(Boolean)));
+        if (hostIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", hostIds);
+          
+          if (profiles) {
+            const nameMap = new Map(profiles.map(p => [p.id, p.full_name]));
+            const staysWithNames = (data || []).map(s => ({
+              ...s,
+              host_name: nameMap.get(s.host_id)
+            }));
+            setStays(staysWithNames);
+          } else {
+            setStays(data || []);
+          }
+        } else {
+          setStays(data || []);
+        }
       } catch (error) {
         console.error("Error fetching stays:", error);
         toast({
@@ -68,10 +92,10 @@ const Stays = () => {
             className="text-center mb-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Find Your Perfect Homestay
+              Find Your Perfect Home Away From Home
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Experience authentic local hospitality across India
+              Authentic homestays for an unforgettable Indian experience
             </p>
           </motion.div>
           <SearchBar defaultCategory="stays" />
@@ -81,7 +105,7 @@ const Stays = () => {
       {/* Listings Section */}
       <section className="container mx-auto px-4 py-16 flex-grow">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6">
             {[...Array(12)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-muted rounded-2xl aspect-square mb-3" />
@@ -92,10 +116,10 @@ const Stays = () => {
           </div>
         ) : stays.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">No homestays available at the moment.</p>
+            <p className="text-muted-foreground text-lg">No stays available at the moment.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6">
             {stays.map((stay, index) => (
               <ListingCard
                 key={stay.id}
@@ -107,6 +131,7 @@ const Stays = () => {
                 type="stay"
                 id={stay.id}
                 delay={index * 0.05}
+                hostName={(stay as any).host_name}
               />
             ))}
           </div>

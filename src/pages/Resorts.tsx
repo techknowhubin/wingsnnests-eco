@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { resolveListingCardImage } from "@/lib/listing-images";
 
-interface Stay {
+interface Resort {
   id: string;
   title: string;
   location: string;
@@ -17,28 +17,58 @@ interface Stay {
   currency: string;
   rating: number;
   images: string[];
-  slug: string;
-  property_type: string;
+  slug?: string;
+  property_type?: string;
+  host_id?: string;
+  user_id?: string;
+  host_name?: string;
 }
 
 const Resorts = () => {
-  const [resorts, setResorts] = useState<Stay[]>([]);
+  const [resorts, setResorts] = useState<Resort[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchResorts = async () => {
       try {
-        const { data, error } = await supabase
+        // Using "as any" because resorts are not in the generated Supabase types
+        const { data, error } = await (supabase as any)
           .from("resorts")
-          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
+          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type, host_id, user_id")
           .eq("availability_status", true)
           .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
-          .order("created_at", { ascending: false });
+          .order("created_at", { ascending: false })
+          .limit(20);
 
         if (error) throw error;
-        setResorts(data || []);
+
+        const rows: any[] = data || [];
+
+        // Collect host IDs — resorts may use host_id or user_id
+        const hostIds = Array.from(
+          new Set(rows.map((s) => s.host_id || s.user_id).filter(Boolean))
+        ) as string[];
+
+        if (hostIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", hostIds);
+
+          if (profiles) {
+            const nameMap = new Map(profiles.map((p) => [p.id, p.full_name]));
+            const withNames: Resort[] = rows.map((s) => ({
+              ...s,
+              host_name: nameMap.get(s.host_id || s.user_id) || undefined,
+            }));
+            setResorts(withNames);
+            return;
+          }
+        }
+
+        setResorts(rows as Resort[]);
       } catch (error) {
         console.error("Error fetching resorts:", error);
         toast({
@@ -69,7 +99,7 @@ const Resorts = () => {
             className="text-center mb-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Premium Resorts & Retreats
+              Premium Resorts &amp; Retreats
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Unwind in the most exclusive resort destinations
@@ -103,11 +133,12 @@ const Resorts = () => {
                 image={resolveListingCardImage(resort.images, "resort")}
                 title={resort.title}
                 location={resort.location}
-                price={`${resort.currency === 'INR' ? '₹' : '$'}${resort.price_per_night.toLocaleString()}`}
+                price={`${resort.currency === "INR" ? "₹" : "$"}${resort.price_per_night.toLocaleString()}`}
                 rating={Number(resort.rating)}
-                type="resort" as any
+                type="resort"
                 id={resort.id}
                 delay={index * 0.05}
+                hostName={resort.host_name}
               />
             ))}
           </div>

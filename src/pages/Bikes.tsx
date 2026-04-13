@@ -17,6 +17,7 @@ interface Bike {
   currency: string;
   rating: number;
   images: string[];
+  host_name?: string;
 }
 
 const Bikes = () => {
@@ -29,14 +30,35 @@ const Bikes = () => {
       try {
         const { data, error } = await supabase
           .from("bikes")
-          .select("id, title, location, price_per_day, currency, rating, images")
+          .select("id, title, location, price_per_day, currency, rating, images, host_id")
           .eq("availability_status", true)
           .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setBikes(data || []);
+        
+        // Fetch host names
+        const hostIds = Array.from(new Set((data || []).map(s => (s as any).host_id).filter(Boolean)));
+        if (hostIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", hostIds);
+          
+          if (profiles) {
+            const nameMap = new Map(profiles.map(p => [p.id, p.full_name]));
+            const bikesWithNames = (data || []).map(s => ({
+              ...s,
+              host_name: nameMap.get((s as any).host_id)
+            }));
+            setBikes(bikesWithNames as any);
+          } else {
+            setBikes(data || []);
+          }
+        } else {
+          setBikes(data || []);
+        }
       } catch (error) {
         console.error("Error fetching bikes:", error);
         toast({
@@ -106,6 +128,7 @@ const Bikes = () => {
                 rating={Number(bike.rating)}
                 type="bike"
                 delay={index * 0.05}
+                hostName={(bike as any).host_name}
               />
             ))}
           </div>

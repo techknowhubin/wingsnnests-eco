@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { resolveListingCardImage } from "@/lib/listing-images";
 
-interface Stay {
+interface Hotel {
   id: string;
   title: string;
   location: string;
@@ -17,28 +17,58 @@ interface Stay {
   currency: string;
   rating: number;
   images: string[];
-  slug: string;
-  property_type: string;
+  slug?: string;
+  property_type?: string;
+  host_id?: string;
+  user_id?: string;
+  host_name?: string;
 }
 
 const Hotels = () => {
-  const [hotels, setHotels] = useState<Stay[]>([]);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const { data, error } = await supabase
+        // Using "as any" because hotels/resorts are not in the generated Supabase types
+        const { data, error } = await (supabase as any)
           .from("hotels")
-          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
+          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type, host_id, user_id")
           .eq("availability_status", true)
           .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
-          .order("created_at", { ascending: false });
+          .order("created_at", { ascending: false })
+          .limit(20);
 
         if (error) throw error;
-        setHotels(data || []);
+
+        const rows: any[] = data || [];
+
+        // Collect host IDs — hotels may use host_id or user_id
+        const hostIds = Array.from(
+          new Set(rows.map((s) => s.host_id || s.user_id).filter(Boolean))
+        ) as string[];
+
+        if (hostIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", hostIds);
+
+          if (profiles) {
+            const nameMap = new Map(profiles.map((p) => [p.id, p.full_name]));
+            const withNames: Hotel[] = rows.map((s) => ({
+              ...s,
+              host_name: nameMap.get(s.host_id || s.user_id) || undefined,
+            }));
+            setHotels(withNames);
+            return;
+          }
+        }
+
+        setHotels(rows as Hotel[]);
       } catch (error) {
         console.error("Error fetching hotels:", error);
         toast({
@@ -69,10 +99,10 @@ const Hotels = () => {
             className="text-center mb-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Premium Hotels & Suites
+              Premium Hotels &amp; Suites
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Luxurious accommodations across India’s best destinations
+              Luxurious accommodations across India's best destinations
             </p>
           </motion.div>
           <SearchBar defaultCategory="stays" />
@@ -103,11 +133,12 @@ const Hotels = () => {
                 image={resolveListingCardImage(hotel.images, "hotel")}
                 title={hotel.title}
                 location={hotel.location}
-                price={`${hotel.currency === 'INR' ? '₹' : '$'}${hotel.price_per_night.toLocaleString()}`}
+                price={`${hotel.currency === "INR" ? "₹" : "$"}${hotel.price_per_night.toLocaleString()}`}
                 rating={Number(hotel.rating)}
-                type="hotel" as any
+                type="hotel"
                 id={hotel.id}
                 delay={index * 0.05}
+                hostName={hotel.host_name}
               />
             ))}
           </div>

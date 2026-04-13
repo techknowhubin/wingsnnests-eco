@@ -17,6 +17,7 @@ interface Experience {
   currency: string;
   rating: number;
   images: string[];
+  host_name?: string;
 }
 
 const Experiences = () => {
@@ -29,14 +30,35 @@ const Experiences = () => {
       try {
         const { data, error } = await supabase
           .from("experiences")
-          .select("id, title, location, price_per_person, currency, rating, images")
+          .select("id, title, location, price_per_person, currency, rating, images, host_id")
           .eq("availability_status", true)
           .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false });
 
         if (error) throw error;
-        setExperiences(data || []);
+        
+        // Fetch host names
+        const hostIds = Array.from(new Set((data || []).map(s => (s as any).host_id).filter(Boolean)));
+        if (hostIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", hostIds);
+          
+          if (profiles) {
+            const nameMap = new Map(profiles.map(p => [p.id, p.full_name]));
+            const experiencesWithNames = (data || []).map(s => ({
+              ...s,
+              host_name: nameMap.get((s as any).host_id)
+            }));
+            setExperiences(experiencesWithNames as any);
+          } else {
+            setExperiences(data || []);
+          }
+        } else {
+          setExperiences(data || []);
+        }
       } catch (error) {
         console.error("Error fetching experiences:", error);
         toast({
@@ -106,6 +128,7 @@ const Experiences = () => {
                 rating={Number(experience.rating)}
                 type="experience"
                 delay={index * 0.05}
+                hostName={(experience as any).host_name}
               />
             ))}
           </div>

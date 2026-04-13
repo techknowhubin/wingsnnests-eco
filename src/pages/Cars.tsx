@@ -17,6 +17,7 @@ interface Car {
   currency: string;
   rating: number;
   images: string[];
+  host_name?: string;
 }
 
 const Cars = () => {
@@ -29,7 +30,7 @@ const Cars = () => {
       try {
         const { data, error } = await supabase
           .from("cars")
-          .select("id, title, location, price_per_day, currency, rating, images")
+          .select("id, title, location, price_per_day, currency, rating, images, host_id")
           .eq("availability_status", true)
           .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
@@ -37,7 +38,28 @@ const Cars = () => {
           .limit(4);
 
         if (error) throw error;
-        setCars(data || []);
+        
+        // Fetch host names
+        const hostIds = Array.from(new Set((data || []).map(s => (s as any).host_id).filter(Boolean)));
+        if (hostIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", hostIds);
+          
+          if (profiles) {
+            const nameMap = new Map(profiles.map(p => [p.id, p.full_name]));
+            const carsWithNames = (data || []).map(s => ({
+              ...s,
+              host_name: nameMap.get((s as any).host_id)
+            }));
+            setCars(carsWithNames as any);
+          } else {
+            setCars(data || []);
+          }
+        } else {
+          setCars(data || []);
+        }
       } catch (error) {
         console.error("Error fetching cars:", error);
         toast({
@@ -107,6 +129,7 @@ const Cars = () => {
                 rating={Number(car.rating)}
                 type="car"
                 delay={index * 0.05}
+                hostName={(car as any).host_name}
               />
             ))}
           </div>

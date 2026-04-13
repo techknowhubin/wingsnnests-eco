@@ -20,6 +20,8 @@ import {
   Edit,
   Eye,
   Sparkles,
+  Upload,
+  Camera,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,10 +39,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile, useHostStays, useHostHotels, useHostResorts, useHostCars, useHostBikes, useHostExperiences, useLinkInBioPage, useUpsertLinkInBioPage } from '@/hooks/useListings';
+import { useProfile, useHostStays, useHostHotels, useHostResorts, useHostCars, useHostBikes, useHostExperiences, useLinkInBioPage, useUpsertLinkInBioPage, useUpdateProfile } from '@/hooks/useListings';
 import { generateSlug, formatPrice } from '@/lib/supabase-helpers';
 import { parseListingDiscountConfig } from '@/lib/discounts';
 import { toast } from 'sonner';
+import { useRef } from 'react';
+import logo from '@/assets/logo.png';
+import logoLight from '@/assets/logo-light.png';
 
 interface LinkInBioSettings {
   businessName: string;
@@ -93,12 +98,17 @@ export function LinkInBioGenerator() {
   const { data: profile } = useProfile(user?.id);
   const { data: linkInBioPage } = useLinkInBioPage(user?.id);
   const upsertLinkInBioPage = useUpsertLinkInBioPage();
+  const updateProfile = useUpdateProfile();
   const { data: stays = [] } = useHostStays(user?.id);
   const { data: hotels = [] } = useHostHotels(user?.id);
   const { data: resorts = [] } = useHostResorts(user?.id);
   const { data: cars = [] } = useHostCars(user?.id);
   const { data: bikes = [] } = useHostBikes(user?.id);
   const { data: experiences = [] } = useHostExperiences(user?.id);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   const [copied, setCopied] = useState(false);
   const [settings, setSettings] = useState<LinkInBioSettings>({
@@ -179,6 +189,46 @@ export function LinkInBioGenerator() {
       toast.success('Link-in-Bio settings saved.');
     } catch (error) {
       toast.error('Failed to save Link-in-Bio settings.');
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image must be under 2MB.');
+      return;
+    }
+
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    setPreviewImageUrl(localUrl);
+    setUploadingImage(true);
+
+    try {
+      // Convert to base64 for storage in profile (simple approach without Supabase Storage bucket)
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        try {
+          await updateProfile.mutateAsync({
+            userId: user.id,
+            updates: { profile_image: base64 },
+          });
+          toast.success('Profile image updated!');
+        } catch {
+          toast.error('Failed to save profile image.');
+          setPreviewImageUrl(null);
+        } finally {
+          setUploadingImage(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      toast.error('Failed to upload image.');
+      setPreviewImageUrl(null);
+      setUploadingImage(false);
     }
   };
 
@@ -266,6 +316,44 @@ export function LinkInBioGenerator() {
             <TabsContent value="profile" className="space-y-4 mt-4">
               <Card>
                 <CardContent className="p-6 space-y-4">
+
+                  {/* Profile Image Upload */}
+                  <div>
+                    <Label className="mb-2 block">Profile Photo</Label>
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-20 rounded-full border-4 border-border overflow-hidden bg-secondary shrink-0 flex items-center justify-center text-2xl font-bold text-muted-foreground">
+                        {(previewImageUrl || profile?.profile_image) ? (
+                          <img
+                            src={previewImageUrl || profile?.profile_image || ''}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span>{settings.businessName.charAt(0) || 'X'}</span>
+                        )}
+                      </div>
+                      <div className="space-y-1">
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/gif,image/webp"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploadingImage}
+                        >
+                          <Camera className="h-4 w-4 mr-2" />
+                          {uploadingImage ? 'Uploading...' : 'Upload Photo'}
+                        </Button>
+                        <p className="text-xs text-muted-foreground">JPG, PNG, GIF or WebP · Max 2MB</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <Label htmlFor="businessName">Business Name</Label>
                     <Input
@@ -589,8 +677,15 @@ export function LinkInBioGenerator() {
                   </div>
 
                   {/* Footer */}
-                  <div className="p-4 text-center border-t border-white/10">
-                    <p className="text-xs opacity-50">Powered by Xplorwing</p>
+                  <div className="p-4 text-center border-t border-white/10 space-y-1">
+                    <div className="flex items-center justify-center gap-1.5 opacity-60">
+                      <span className="text-[10px]">Powered by</span>
+                      <img src={logo} alt="Xplorwing" className="h-3.5 dark:hidden" />
+                      <img src={logoLight} alt="Xplorwing" className="h-3.5 hidden dark:block" />
+                    </div>
+                    <p className="text-[9px] opacity-40">
+                      © {new Date().getFullYear()} WINGSNNESTS ECO SOLUTIONS PVT LTD. All rights reserved.
+                    </p>
                   </div>
                 </div>
               </div>
