@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,8 +11,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/components/ThemeProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { DynamicLogo } from "@/components/DynamicLogo";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 
 // ======================== Types ========================
@@ -381,6 +385,7 @@ function DocVerificationStep({
 
 export default function UserOnboarding() {
   const { user, loading: authLoading } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [aadhaar, setAadhaar] = useState<DocState>({ status: "pending" });
@@ -428,10 +433,11 @@ export default function UserOnboarding() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Xplorwing</h1>
-          <p className="text-sm text-muted-foreground">Identity Verification</p>
+          <button onClick={() => navigate("/")} className="transition-transform hover:scale-105 active:scale-95 mb-1">
+            <DynamicLogo className="justify-center" />
+          </button>
+          <p className="text-sm text-muted-foreground">User Onboarding</p>
         </div>
 
         <StepIndicator currentStep={step} totalSteps={5} />

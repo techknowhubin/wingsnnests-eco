@@ -1,11 +1,22 @@
-import { useState } from "react";
-import { Moon, Sun, Menu, User, Heart, X, Home, Car, Bike, Compass, MapPin, ChevronRight, Building, Palmtree } from "lucide-react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { Moon, Sun, Menu, User, Heart, X, Home, Car, Bike, Compass, MapPin, ChevronRight, Building, Palmtree, LogOut, LayoutDashboard, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/ThemeProvider";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MegaMenu from "./MegaMenu";
-import logo from "@/assets/logo.png";
+import { DynamicLogo } from "./DynamicLogo";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const mobileNavLinks = [
   { label: "Stays", icon: Home, to: "/stays" },
@@ -20,6 +31,22 @@ const mobileNavLinks = [
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut, getUserRole } = useAuth();
+  const [role, setRole] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      getUserRole().then(setRole);
+    } else {
+      setRole(null);
+    }
+  }, [user, getUserRole]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <>
@@ -38,7 +65,7 @@ const Header = () => {
                 whileTap={{ scale: 0.95 }}
                 className="transition-all duration-300"
               >
-                <img src={logo} alt="Xplorwing" className="h-8 w-auto" />
+                <DynamicLogo />
               </motion.div>
             </Link>
 
@@ -108,14 +135,71 @@ const Header = () => {
                 <Heart className="h-5 w-5" />
               </Button>
 
-              <Link to="/login">
-                <Button variant="ghost" className="gap-2 rounded-full p-1 pr-3 hover:bg-muted/60">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden">
-                    <User className="h-4 w-4 text-primary-text" />
-                  </div>
-                  <span className="hidden md:inline text-sm font-medium text-foreground">Login</span>
-                </Button>
-              </Link>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="gap-2 rounded-full p-1 pr-1 md:pr-3 hover:bg-muted/60 transition-all">
+                      <Avatar className="h-8 w-8 border border-border">
+                        <AvatarImage src={user.user_metadata?.avatar_url || ""} />
+                        <AvatarFallback className="bg-primary/10 text-primary-text text-xs">
+                          {user.email?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden md:inline text-sm font-medium text-foreground max-w-[100px] truncate">
+                        {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 mt-1 rounded-xl shadow-xl border-border/50 backdrop-blur-md">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-semibold leading-none text-foreground">
+                          {user.user_metadata?.full_name || "My Account"}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild className="rounded-lg cursor-pointer focus:bg-primary/10 focus:text-primary-dark">
+                      <Link to="/profile" className="flex w-full items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>My Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-lg cursor-pointer focus:bg-primary/10 focus:text-primary-dark">
+                      <Link to={role === "host" || role === "admin" ? "/host/dashboard" : "/profile/bookings"} className="flex w-full items-center">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-lg cursor-pointer focus:bg-primary/10 focus:text-primary-dark">
+                      <Link to="/profile/security" className="flex w-full items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={handleSignOut}
+                      className="rounded-lg cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link to="/login">
+                  <Button variant="ghost" className="gap-2 rounded-full p-1 pr-3 hover:bg-muted/60">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden">
+                      <User className="h-4 w-4 text-primary-text" />
+                    </div>
+                    <span className="hidden md:inline text-sm font-medium text-foreground">Login</span>
+                  </Button>
+                </Link>
+              )}
 
               <Button
                 variant="ghost"
@@ -155,7 +239,7 @@ const Header = () => {
             >
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
-                <img src={logo} alt="Xplorwing" className="h-7 w-auto" />
+                <DynamicLogo lightHeightClass="h-7" darkHeightClass="h-[36px]" />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -196,17 +280,62 @@ const Header = () => {
 
               {/* Bottom actions */}
               <div className="p-4 border-t border-border space-y-3">
-                <Link to="/login" onClick={() => setMobileOpen(false)}>
-                  <Button variant="gradient" className="w-full rounded-full gap-2">
-                    <User className="h-4 w-4" />
-                    Login / Sign Up
-                  </Button>
-                </Link>
-                <Link to="/host/dashboard" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="w-full rounded-full mt-2">
-                    Become a Host
-                  </Button>
-                </Link>
+                {user ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+                      <Avatar className="h-10 w-10 border border-border">
+                        <AvatarImage src={user.user_metadata?.avatar_url || ""} />
+                        <AvatarFallback className="bg-primary/10 text-primary-text">
+                          {user.email?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col overflow-hidden">
+                        <p className="text-sm font-semibold text-foreground truncate">
+                          {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link to="/profile" className="w-full" onClick={() => setMobileOpen(false)}>
+                        <Button variant="outline" className="w-full rounded-xl text-xs gap-2 py-5">
+                          <User className="h-4 w-4" />
+                          Profile
+                        </Button>
+                      </Link>
+                      <Link to={role === "host" || role === "admin" ? "/host/dashboard" : "/profile/bookings"} className="w-full" onClick={() => setMobileOpen(false)}>
+                        <Button variant="outline" className="w-full rounded-xl text-xs gap-2 py-5">
+                          <LayoutDashboard className="h-4 w-4" />
+                          Dashboard
+                        </Button>
+                      </Link>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => { handleSignOut(); setMobileOpen(false); }} 
+                      className="w-full rounded-xl text-destructive hover:bg-destructive/10 gap-2 py-5"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setMobileOpen(false)}>
+                      <Button variant="gradient" className="w-full rounded-full gap-2">
+                        <User className="h-4 w-4" />
+                        Login / Sign Up
+                      </Button>
+                    </Link>
+                    <Link to="/host/dashboard" onClick={() => setMobileOpen(false)}>
+                      <Button variant="outline" className="w-full rounded-full mt-2">
+                        Become a Host
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.div>
           </>

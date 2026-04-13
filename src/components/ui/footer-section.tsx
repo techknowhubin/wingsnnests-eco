@@ -1,4 +1,5 @@
 import * as React from "react";
+import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Facebook, Instagram, Linkedin, Moon, Send, Sun, Twitter } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
-import logo from "@/assets/logo.png";
+import { DynamicLogo } from "../DynamicLogo";
 
 function Footerdemo() {
   const { theme, toggleTheme } = useTheme();
@@ -21,11 +22,11 @@ function Footerdemo() {
   return (
     <footer className="relative border-t border-border bg-[hsl(48,100%,99%)] dark:bg-card text-foreground transition-colors duration-300">
       <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
           {/* Newsletter Section */}
           <div className="relative">
             <Link to="/">
-              <img src={logo} alt="Xplorwing" className="h-10 w-auto mb-4" />
+              <DynamicLogo lightHeightClass="h-10" darkHeightClass="h-[53px]" className="mb-4" />
             </Link>
             <h2 className="mb-4 text-lg font-semibold tracking-tight">Stay Connected</h2>
             <p className="mb-6 text-muted-foreground">
@@ -66,6 +67,19 @@ function Footerdemo() {
               </Link>
               <Link to="/help" className="block text-muted-foreground transition-colors hover:text-primary-text">
                 Help Center
+              </Link>
+            </nav>
+          </div>
+
+          {/* Service Providers */}
+          <div>
+            <h3 className="mb-6 text-lg font-semibold">Service Providers</h3>
+            <nav className="space-y-3 text-sm">
+              <Link to="/link-in-bio" className="block text-muted-foreground transition-colors hover:text-primary-text">
+                Link in Bio
+              </Link>
+              <Link to="/onboarding/host" className="block text-muted-foreground transition-colors hover:text-primary-text">
+                Become a Host
               </Link>
             </nav>
           </div>

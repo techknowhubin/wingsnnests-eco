@@ -35,8 +35,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/components/ThemeProvider';
 import { useIsAdmin, useProfile, useUnreadNotificationCount } from '@/hooks/useListings';
 import { cn } from '@/lib/utils';
+import { DynamicLogo } from '../DynamicLogo';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -72,6 +74,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [listingsOpen, setListingsOpen] = useState(isListingRoute);
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { theme } = useTheme();
   const { data: profile } = useProfile(user?.id);
   const { data: isAdminUser = false } = useIsAdmin(user?.id);
   const { data: unreadCount } = useUnreadNotificationCount(user?.id);
@@ -132,10 +135,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Logo */}
       <div className="px-5 pt-6 pb-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-md">
-            X
-          </div>
-          <span className="text-base font-bold text-foreground tracking-tight">Xplorwing</span>
+          <DynamicLogo />
         </Link>
       </div>
 
@@ -221,7 +221,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => setMobileMenuOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <span className="text-lg font-bold text-foreground">Xplorwing</span>
+          <DynamicLogo lightHeightClass="h-7" darkHeightClass="h-[36px]" />
         </div>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="relative rounded-xl">

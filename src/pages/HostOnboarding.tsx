@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -16,8 +17,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/components/ThemeProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { DynamicLogo } from "@/components/DynamicLogo";
 
 // ======================== Types ========================
 
@@ -204,6 +208,7 @@ function MaskedInput({
 
 export default function HostOnboarding() {
   const { user, loading: authLoading } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -462,7 +467,9 @@ export default function HostOnboarding() {
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Xplorwing</h1>
+          <button onClick={() => navigate("/")} className="transition-transform hover:scale-105 active:scale-95 mb-1">
+            <DynamicLogo className="justify-center" />
+          </button>
           <p className="text-sm text-muted-foreground">Host Onboarding</p>
         </div>
 

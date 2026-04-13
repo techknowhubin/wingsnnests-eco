@@ -10,9 +10,30 @@ export const useAuth = () => {
   useEffect(() => {
     // Set up auth state listener BEFORE getSession
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
+        if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
+          const storedRole = localStorage.getItem('pending_role') as 'user' | 'host' | null;
+          if (storedRole) {
+            // Check if role already exists
+            const { data: existingRole } = await supabase
+              .from('user_roles')
+              .select('role')
+              .eq('user_id', session.user.id)
+              .maybeSingle();
+
+            if (!existingRole) {
+              await supabase.from('user_roles').insert({
+                user_id: session.user.id,
+                role: storedRole,
+              });
+            }
+            localStorage.removeItem('pending_role');
+          }
+        }
+        
         setLoading(false);
       }
     );
@@ -60,11 +81,17 @@ export const useAuth = () => {
     return { error };
   };
 
-  const signInWithProvider = async (provider: 'google' | 'apple' | 'facebook' | 'linkedin_oidc') => {
+  const signInWithProvider = async (provider: 'google' | 'apple' | 'facebook' | 'linkedin_oidc', role: 'user' | 'host' = 'user') => {
+    // Store role so it can be assigned after redirect
+    localStorage.setItem('pending_role', role);
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/`
+        redirectTo: `${window.location.origin}/`,
+        queryParams: {
+          prompt: 'select_account'
+        }
       }
     });
     return { error };

@@ -19,8 +19,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile, useUpdateProfile } from "@/hooks/useListings";
+import { useTheme } from "@/components/ThemeProvider";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { DynamicLogo } from "@/components/DynamicLogo";
 
 // ======================== Types ========================
 
@@ -88,6 +90,7 @@ function PasswordStrength({ password }: { password: string }) {
 
 export default function UserProfile() {
   const { user, loading: authLoading, signOut } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { data: profile, isLoading: profileLoading } = useProfile(user?.id);
@@ -223,7 +226,9 @@ export default function UserProfile() {
       {/* Header */}
       <div className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="text-xl font-bold text-foreground">Xplorwing</button>
+          <button onClick={() => navigate("/")} className="transition-transform hover:scale-105 active:scale-95">
+            <DynamicLogo />
+          </button>
           <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-muted-foreground">
             <LogOut className="h-4 w-4 mr-2" /> Sign Out
           </Button>
