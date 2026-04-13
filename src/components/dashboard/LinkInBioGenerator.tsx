@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
   Link2,
   Copy,
@@ -36,8 +37,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile, useHostStays, useHostCars, useHostBikes, useHostExperiences } from '@/hooks/useListings';
+import { useProfile, useHostStays, useHostHotels, useHostResorts, useHostCars, useHostBikes, useHostExperiences, useLinkInBioPage, useUpsertLinkInBioPage } from '@/hooks/useListings';
 import { generateSlug, formatPrice } from '@/lib/supabase-helpers';
+import { parseListingDiscountConfig } from '@/lib/discounts';
 import { toast } from 'sonner';
 
 interface LinkInBioSettings {
@@ -89,7 +91,11 @@ const themes = {
 export function LinkInBioGenerator() {
   const { user } = useAuth();
   const { data: profile } = useProfile(user?.id);
+  const { data: linkInBioPage } = useLinkInBioPage(user?.id);
+  const upsertLinkInBioPage = useUpsertLinkInBioPage();
   const { data: stays = [] } = useHostStays(user?.id);
+  const { data: hotels = [] } = useHostHotels(user?.id);
+  const { data: resorts = [] } = useHostResorts(user?.id);
   const { data: cars = [] } = useHostCars(user?.id);
   const { data: bikes = [] } = useHostBikes(user?.id);
   const { data: experiences = [] } = useHostExperiences(user?.id);
@@ -110,15 +116,44 @@ export function LinkInBioGenerator() {
     featuredListings: [],
   });
 
+  useEffect(() => {
+    if (!profile) return;
+    setSettings((prev) => ({
+      ...prev,
+      businessName: profile.full_name || prev.businessName,
+    }));
+  }, [profile]);
+
+  useEffect(() => {
+    if (!linkInBioPage?.settings || typeof linkInBioPage.settings !== 'object' || Array.isArray(linkInBioPage.settings)) {
+      return;
+    }
+    const savedSettings = linkInBioPage.settings as Partial<LinkInBioSettings>;
+    setSettings((prev) => ({
+      ...prev,
+      ...savedSettings,
+    }));
+  }, [linkInBioPage]);
+
+  const withDiscount = (basePrice: number, rawDiscounts: unknown) => {
+    const { hostDiscountPercent } = parseListingDiscountConfig(rawDiscounts as any);
+    const discountedPrice = Math.max(0, basePrice - (basePrice * hostDiscountPercent) / 100);
+    return { price: basePrice, discountedPrice, hostDiscountPercent };
+  };
+
   const allListings = useMemo(() => [
-    ...stays.map((s) => ({ ...s, type: 'stay' as const, price: s.price_per_night, unit: '/night' })),
-    ...cars.map((c) => ({ ...c, type: 'car' as const, price: c.price_per_day, unit: '/day' })),
-    ...bikes.map((b) => ({ ...b, type: 'bike' as const, price: b.price_per_day, unit: '/day' })),
-    ...experiences.map((e) => ({ ...e, type: 'experience' as const, price: e.price_per_person, unit: '/person' })),
-  ], [stays, cars, bikes, experiences]);
+    ...stays.map((s) => ({ ...s, type: 'stay' as const, unit: '/night', ...withDiscount(s.price_per_night, (s as any).discounts) })),
+    ...hotels.map((h) => ({ ...h, type: 'hotel' as const, unit: '/night', ...withDiscount(h.price_per_night, (h as any).discounts) })),
+    ...resorts.map((r) => ({ ...r, type: 'resort' as const, unit: '/night', ...withDiscount(r.price_per_night, (r as any).discounts) })),
+    ...cars.map((c) => ({ ...c, type: 'car' as const, unit: '/day', ...withDiscount(c.price_per_day, (c as any).discounts) })),
+    ...bikes.map((b) => ({ ...b, type: 'bike' as const, unit: '/day', ...withDiscount(b.price_per_day, (b as any).discounts) })),
+    ...experiences.map((e) => ({ ...e, type: 'experience' as const, unit: '/person', ...withDiscount(e.price_per_person, (e as any).discounts) })),
+  ], [stays, hotels, resorts, cars, bikes, experiences]);
 
   const slug = generateSlug(settings.businessName || 'my-page');
-  const linkUrl = `https://xplorwing.com/p/${slug}`;
+  const publishedSlug = linkInBioPage?.slug || slug;
+  const appOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://xplorwing.com';
+  const linkUrl = `${appOrigin}/p/${publishedSlug}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(linkUrl);
@@ -128,6 +163,24 @@ export function LinkInBioGenerator() {
   };
 
   const selectedTheme = themes[settings.theme];
+
+  const handleSaveSettings = async () => {
+    if (!user) {
+      toast.error('Please sign in to save your Link-in-Bio settings.');
+      return;
+    }
+    try {
+      await upsertLinkInBioPage.mutateAsync({
+        user_id: user.id,
+        slug,
+        settings,
+        is_active: true,
+      });
+      toast.success('Link-in-Bio settings saved.');
+    } catch (error) {
+      toast.error('Failed to save Link-in-Bio settings.');
+    }
+  };
 
   return (
     <motion.div
@@ -148,9 +201,11 @@ export function LinkInBioGenerator() {
             {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
             {copied ? 'Copied!' : 'Copy Link'}
           </Button>
-          <Button>
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Preview
+          <Button asChild>
+            <Link to={`/p/${publishedSlug}`} target="_blank" rel="noreferrer">
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Preview
+            </Link>
           </Button>
         </div>
       </div>
@@ -220,7 +275,7 @@ export function LinkInBioGenerator() {
                       placeholder="Your business or personal name"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Your link: xplorwing.com/p/{slug}
+                      Your link: {appOrigin.replace(/^https?:\/\//, '')}/p/{publishedSlug}
                     </p>
                   </div>
 
@@ -415,9 +470,15 @@ export function LinkInBioGenerator() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">{listing.title}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {formatPrice(listing.price)}{listing.unit}
-                            </p>
+                            <div className="text-sm text-muted-foreground flex items-center gap-2">
+                              <span className="font-semibold text-foreground">{formatPrice(listing.discountedPrice)}{listing.unit}</span>
+                              {listing.hostDiscountPercent > 0 ? (
+                                <>
+                                  <span className="line-through">{formatPrice(listing.price)}</span>
+                                  <span className="text-emerald-600 font-semibold">-{listing.hostDiscountPercent}%</span>
+                                </>
+                              ) : null}
+                            </div>
                           </div>
                           <Badge variant="outline" className="capitalize shrink-0">
                             {listing.type}
@@ -431,7 +492,7 @@ export function LinkInBioGenerator() {
             </TabsContent>
           </Tabs>
 
-          <Button className="w-full" size="lg">
+          <Button className="w-full" size="lg" onClick={handleSaveSettings} disabled={upsertLinkInBioPage.isPending}>
             Save Changes
           </Button>
         </div>
@@ -510,9 +571,17 @@ export function LinkInBioGenerator() {
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm truncate">{listing.title}</p>
                             <p className="text-xs opacity-70 truncate">{listing.location}</p>
-                            <p className="text-sm font-bold mt-1">
-                              {formatPrice(listing.price)}{listing.unit}
-                            </p>
+                            <div className="text-sm mt-1 flex items-center gap-2">
+                              <p className="font-bold">
+                                {formatPrice(listing.discountedPrice)}{listing.unit}
+                              </p>
+                              {listing.hostDiscountPercent > 0 ? (
+                                <>
+                                  <p className="text-xs opacity-70 line-through">{formatPrice(listing.price)}</p>
+                                  <p className="text-xs font-semibold text-emerald-300">-{listing.hostDiscountPercent}%</p>
+                                </>
+                              ) : null}
+                            </div>
                           </div>
                         </div>
                       </div>

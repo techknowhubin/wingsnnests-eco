@@ -14,6 +14,7 @@ export type Profile = Tables<'profiles'>;
 export type UserRole = Tables<'user_roles'>;
 export type Wishlist = Tables<'wishlists'>;
 export type Notification = Tables<'notifications'>;
+export type LinkInBioPage = Tables<'link_in_bio_pages'>;
 export type BlogPost = Tables<'blog_posts'>;
 export type BlogCategory = Tables<'blog_categories'>;
 

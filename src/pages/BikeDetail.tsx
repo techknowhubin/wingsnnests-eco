@@ -13,6 +13,7 @@ import StayImageGallery from "@/components/stay-detail/StayImageGallery";
 import StaySelectionModal from "@/components/vehicle-detail/StaySelectionModal";
 import royalEnfieldImage from "@/assets/vehicles/royal-enfield-classic.jpg";
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
+import { parseListingDiscountConfig } from "@/lib/discounts";
 
 const BikeDetail = () => {
   const { id } = useParams();
@@ -106,6 +107,7 @@ const BikeDetail = () => {
     
   const price = bike.price_per_day;
   const currencySymbol = bike.currency === "INR" ? "₹" : (bike.currency || "$");
+  const discountConfig = parseListingDiscountConfig(bike.discounts);
 
   const specs = [
     { icon: Users, label: "Capacity", value: `${bike.max_guests || 2} Seats` },
@@ -276,6 +278,11 @@ const BikeDetail = () => {
               title={bike.title}
               currencySymbol={currencySymbol}
               requirements="Valid driving license, ID proof, security deposit"
+              imageUrl={resolvedImages[0]}
+              hostId={bike.host_id}
+              listingCouponType="bikes"
+              hostDiscountPercent={discountConfig.hostDiscountPercent}
+              availableCoupons={discountConfig.coupons}
             />
           </div>
         </div>

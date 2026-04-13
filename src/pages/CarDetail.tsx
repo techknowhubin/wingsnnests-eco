@@ -13,6 +13,7 @@ import StayImageGallery from "@/components/stay-detail/StayImageGallery";
 import StaySelectionModal from "@/components/vehicle-detail/StaySelectionModal";
 import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
+import { parseListingDiscountConfig } from "@/lib/discounts";
 
 const CarDetail = () => {
   const { id } = useParams();
@@ -107,6 +108,7 @@ const CarDetail = () => {
     
   const price = car.price_per_day;
   const currencySymbol = car.currency === "INR" ? "₹" : (car.currency || "$");
+  const discountConfig = parseListingDiscountConfig(car.discounts);
 
   const specs = [
     { icon: Users, label: "Capacity", value: `${car.max_guests || 5} Seats` },
@@ -277,6 +279,11 @@ const CarDetail = () => {
               title={car.title}
               currencySymbol={currencySymbol}
               requirements="Valid driving license, ID proof, refundable deposit"
+              imageUrl={resolvedImages[0]}
+              hostId={car.host_id}
+              listingCouponType="cars"
+              hostDiscountPercent={discountConfig.hostDiscountPercent}
+              availableCoupons={discountConfig.coupons}
             />
           </div>
         </div>

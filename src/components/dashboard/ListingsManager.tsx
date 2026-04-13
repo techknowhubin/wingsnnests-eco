@@ -6,8 +6,8 @@ import {
   Search,
   Filter,
   MoreVertical,
+  Pencil,
   Eye,
-  Edit,
   Trash2,
   Star,
   MapPin,
@@ -36,16 +36,21 @@ import {
 import { formatPrice } from '@/lib/supabase-helpers';
 import type { Stay, Car, Bike, Experience, ListingType } from '@/types/database';
 import { format } from 'date-fns';
+import { useDeleteListing } from '@/hooks/useListings';
+import { useUpdateMarketplaceRequest, useUpdateMarketplaceVisibility } from '@/hooks/useListings';
+import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
 
 interface ListingsManagerProps {
   title: string;
   description: string;
-  listingType: ListingType;
+  listingType: ListingType | 'hotel' | 'resort';
   listings: (Stay | Car | Bike | Experience)[];
   isLoading: boolean;
   priceKey: 'price_per_night' | 'price_per_day' | 'price_per_person';
   priceLabel: string;
   emptyIcon: React.ReactNode;
+  isAdminUser?: boolean;
 }
 
 export function ListingsManager({
@@ -57,14 +62,19 @@ export function ListingsManager({
   priceKey,
   priceLabel,
   emptyIcon,
+  isAdminUser = false,
 }: ListingsManagerProps) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<'grid' | 'table'>('grid');
+  const deleteListing = useDeleteListing();
+  const updateMarketplaceRequest = useUpdateMarketplaceRequest();
+  const updateMarketplaceVisibility = useUpdateMarketplaceVisibility();
 
   const filteredListings = listings.filter((listing) =>
     listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    listing.location.toLowerCase().includes(searchQuery.toLowerCase())
+    listing.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (((listing as any).host_name as string | undefined)?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   const getPrice = (listing: Stay | Car | Bike | Experience) => {
@@ -72,6 +82,55 @@ export function ListingsManager({
     if (priceKey === 'price_per_day') return (listing as Car | Bike).price_per_day;
     return (listing as Experience).price_per_person;
   };
+
+  const getPublicPath = (listing: Stay | Car | Bike | Experience) => {
+    const prefixMap: Record<ListingType | 'hotel' | 'resort', string> = {
+      stay: '/stays',
+      car: '/cars',
+      bike: '/bikes',
+      experience: '/experiences',
+      hotel: '/hotels',
+      resort: '/resorts',
+    };
+    return `${prefixMap[listingType]}/${listing.id}`;
+  };
+
+  const handleDelete = async (listingId: string) => {
+    const confirmed = window.confirm('Are you sure you want to delete this listing? This action cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+      await deleteListing.mutateAsync({ listingType, listingId });
+      toast.success('Listing deleted successfully.');
+    } catch (error) {
+      toast.error('Failed to delete listing.');
+    }
+  };
+
+  const handleMarketplaceToggle = async (listingId: string, nextValue: boolean) => {
+    try {
+      if (isAdminUser) {
+        await updateMarketplaceVisibility.mutateAsync({
+          listingType,
+          listingId,
+          marketplaceVisible: nextValue,
+        });
+        toast.success(nextValue ? 'Listing approved for marketplace.' : 'Listing removed from marketplace.');
+        return;
+      }
+
+      await updateMarketplaceRequest.mutateAsync({
+        listingType,
+        listingId,
+        marketplaceRequested: nextValue,
+      });
+      toast.success(nextValue ? 'Marketplace request sent for admin approval.' : 'Marketplace request withdrawn.');
+    } catch {
+      toast.error('Failed to update marketplace status.');
+    }
+  };
+
+  const editPathBase = `/host/${listingType === 'experience' ? 'experiences' : listingType + 's'}`;
 
   return (
     <motion.div
@@ -85,7 +144,7 @@ export function ListingsManager({
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">{title}</h1>
           <p className="text-muted-foreground mt-1">{description}</p>
         </div>
-        <Button className="w-full lg:w-auto" onClick={() => navigate(`/host/${listingType === 'experience' ? 'experiences' : listingType + 's'}/add`)}>
+        <Button className="w-full lg:w-auto" onClick={() => navigate(`/host/${listingType === 'experience' ? 'experiences' : listingType + 's'}?mode=add`)}>
           <Plus className="h-4 w-4 mr-2" />
           Add New {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
         </Button>
@@ -150,7 +209,7 @@ export function ListingsManager({
             <p className="text-muted-foreground mb-4">
               Start by adding your first {listingType} listing
             </p>
-            <Button onClick={() => navigate(`/host/${listingType === 'experience' ? 'experiences' : listingType + 's'}/add`)}>
+            <Button onClick={() => navigate(`/host/${listingType === 'experience' ? 'experiences' : listingType + 's'}?mode=add`)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Your First {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
             </Button>
@@ -205,19 +264,19 @@ export function ListingsManager({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(`${editPathBase}?mode=edit&id=${listing.id}`)}>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(getPublicPath(listing))}>
                         <Eye className="h-4 w-4 mr-2" />
                         View
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => window.open(getPublicPath(listing), '_blank')}>
                         <ExternalLink className="h-4 w-4 mr-2" />
                         Preview
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">
+                      <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(listing.id)}>
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete
                       </DropdownMenuItem>
@@ -242,6 +301,25 @@ export function ListingsManager({
                     <p className="text-xs text-muted-foreground">
                       {listing.views_count || 0} views
                     </p>
+                    {!!(listing as any).host_name && isAdminUser && (
+                      <p className="text-[11px] text-muted-foreground mt-2">
+                        Host: {(listing as any).host_name}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 mt-2 justify-end">
+                      <span className="text-[11px] text-muted-foreground">
+                        {isAdminUser ? 'Marketplace Live' : 'Request Marketplace'}
+                      </span>
+                      <Switch
+                        checked={isAdminUser ? ((listing as any).marketplace_visible ?? false) : ((listing as any).marketplace_requested ?? false)}
+                        onCheckedChange={(value) => handleMarketplaceToggle(listing.id, value)}
+                      />
+                    </div>
+                    {isAdminUser && (
+                      <p className="text-[11px] text-muted-foreground mt-1 text-right">
+                        Request: {(listing as any).marketplace_requested ? 'Pending/Requested' : 'Not requested'}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -259,6 +337,8 @@ export function ListingsManager({
                 <TableHead>Status</TableHead>
                 <TableHead>Views</TableHead>
                 <TableHead>Rating</TableHead>
+                {isAdminUser && <TableHead>Host</TableHead>}
+                <TableHead>{isAdminUser ? 'Marketplace Live' : 'Marketplace Request'}</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -310,6 +390,15 @@ export function ListingsManager({
                       '-'
                     )}
                   </TableCell>
+                  {isAdminUser && (
+                    <TableCell>{(listing as any).host_name || 'Unknown host'}</TableCell>
+                  )}
+                  <TableCell>
+                    <Switch
+                      checked={isAdminUser ? ((listing as any).marketplace_visible ?? false) : ((listing as any).marketplace_requested ?? false)}
+                      onCheckedChange={(value) => handleMarketplaceToggle(listing.id, value)}
+                    />
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -318,15 +407,15 @@ export function ListingsManager({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate(`${editPathBase}?mode=edit&id=${listing.id}`)}>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate(getPublicPath(listing))}>
                           <Eye className="h-4 w-4 mr-2" />
                           View
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(listing.id)}>
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
                         </DropdownMenuItem>

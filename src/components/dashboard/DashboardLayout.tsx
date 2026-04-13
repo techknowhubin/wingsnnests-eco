@@ -10,12 +10,15 @@ import {
 import {
   LayoutDashboard,
   Home,
+  Building,
+  Palmtree,
   Car,
   Bike,
   Compass,
   Calendar,
   DollarSign,
   Link2,
+  TicketPercent,
   Settings,
   LogOut,
   Menu,
@@ -26,12 +29,13 @@ import {
   Mail,
   ChevronDown,
   Package,
+  PenSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
-import { useProfile, useUnreadNotificationCount } from '@/hooks/useListings';
+import { useIsAdmin, useProfile, useUnreadNotificationCount } from '@/hooks/useListings';
 import { cn } from '@/lib/utils';
 
 interface DashboardLayoutProps {
@@ -39,13 +43,15 @@ interface DashboardLayoutProps {
 }
 
 const mainMenuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/host' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/host/dashboard' },
   { icon: Bell, label: 'Notifications', path: '/host/bookings', badge: true },
   { icon: Calendar, label: 'Reservations', path: '/host/bookings' },
 ];
 
 const listingMenuItems = [
   { icon: Home, label: 'Stays', path: '/host/stays' },
+  { icon: Building, label: 'Hotels', path: '/host/hotels' },
+  { icon: Palmtree, label: 'Resorts', path: '/host/resorts' },
   { icon: Car, label: 'Cars', path: '/host/cars' },
   { icon: Bike, label: 'Bikes', path: '/host/bikes' },
   { icon: Compass, label: 'Experiences', path: '/host/experiences' },
@@ -54,6 +60,7 @@ const listingMenuItems = [
 const generalMenuItems = [
   { icon: DollarSign, label: 'Financials', path: '/host/earnings' },
   { icon: Link2, label: 'Link-in-Bio', path: '/host/link' },
+  { icon: TicketPercent, label: 'Coupon Codes', path: '/host/coupons' },
   { icon: Settings, label: 'Settings', path: '/host/settings' },
   { icon: HelpCircle, label: 'Help', path: '/help' },
 ];
@@ -61,12 +68,16 @@ const generalMenuItems = [
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const isListingRoute = ['/host/stays', '/host/cars', '/host/bikes', '/host/experiences'].some(p => location.pathname.startsWith(p));
+  const isListingRoute = ['/host/stays', '/host/hotels', '/host/resorts', '/host/cars', '/host/bikes', '/host/experiences'].some(p => location.pathname.startsWith(p));
   const [listingsOpen, setListingsOpen] = useState(isListingRoute);
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { data: profile } = useProfile(user?.id);
+  const { data: isAdminUser = false } = useIsAdmin(user?.id);
   const { data: unreadCount } = useUnreadNotificationCount(user?.id);
+  const roleAwareGeneralItems = isAdminUser
+    ? [...generalMenuItems, { icon: PenSquare, label: 'Blog Posts', path: '/host/blog' }]
+    : generalMenuItems;
 
   const handleSignOut = async () => {
     await signOut();
@@ -74,7 +85,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   const isActivePath = (path: string) => {
-    if (path === '/host') return location.pathname === '/host';
+    if (path === '/host/dashboard') return location.pathname === '/host' || location.pathname === '/host/dashboard';
     return location.pathname.startsWith(path);
   };
 
@@ -180,7 +191,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </Collapsible>
         </div>
 
-        {renderNavGroup(generalMenuItems, 'General')}
+        {renderNavGroup(roleAwareGeneralItems, isAdminUser ? 'Admin' : 'General')}
       </nav>
 
       {/* Sign Out */}

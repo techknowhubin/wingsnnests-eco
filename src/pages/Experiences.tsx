@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import experienceImage from "@/assets/experience-featured.jpg";
+import { resolveListingCardImage } from "@/lib/listing-images";
 
 interface Experience {
   id: string;
@@ -31,6 +31,7 @@ const Experiences = () => {
           .from("experiences")
           .select("id, title, location, price_per_person, currency, rating, images")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false });
 
@@ -98,7 +99,7 @@ const Experiences = () => {
               <ListingCard
                 key={experience.id}
                 id={experience.id}
-                image={experienceImage}
+                image={resolveListingCardImage(experience.images, "experience")}
                 title={experience.title}
                 location={experience.location}
                 price={`${experience.currency === 'INR' ? '₹' : '$'}${experience.price_per_person.toLocaleString()}`}

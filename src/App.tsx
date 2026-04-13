@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
@@ -29,22 +29,14 @@ import DestinationDetail from "./pages/DestinationDetail";
 import UserOnboarding from "./pages/UserOnboarding";
 import HostOnboarding from "./pages/HostOnboarding";
 import UserProfile from "./pages/UserProfile";
+import ConfirmAndPay from "./pages/ConfirmAndPay";
+import BookingConfirmation from "./pages/BookingConfirmation";
+import TransactionFailed from "./pages/TransactionFailed";
+import PublicLinkInBio from "./pages/PublicLinkInBio";
 
 // Host Dashboard
 import HostLayout from "./pages/HostLayout";
-import HostDashboard from "./pages/HostDashboard";
-import HostStays from "./pages/HostStays";
-import HostCars from "./pages/HostCars";
-import HostBikes from "./pages/HostBikes";
-import HostExperiences from "./pages/HostExperiences";
-import HostBookings from "./pages/HostBookings";
-import HostEarnings from "./pages/HostEarnings";
-import HostLinkInBio from "./pages/HostLinkInBio";
-import HostSettings from "./pages/HostSettings";
-import HostAddStay from "./pages/HostAddStay";
-import HostAddCar from "./pages/HostAddCar";
-import HostAddBike from "./pages/HostAddBike";
-import HostAddExperience from "./pages/HostAddExperience";
+import HostSection from "./pages/HostSection";
 
 const queryClient = new QueryClient();
 
@@ -77,28 +69,27 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/link-in-bio" element={<LinkInBioLanding />} />
+            <Route path="/p/:slug" element={<PublicLinkInBio />} />
             <Route path="/destinations" element={<Destinations />} />
             <Route path="/destinations/:name" element={<DestinationDetail />} />
             <Route path="/onboarding/user" element={<UserOnboarding />} />
             <Route path="/onboarding/host" element={<HostOnboarding />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/profile/:section" element={<UserProfile />} />
+            <Route path="/confirm-and-pay" element={<ConfirmAndPay />} />
+            <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+            <Route path="/transaction-failed" element={<TransactionFailed />} />
             
             {/* Host Dashboard — shared layout, only content transitions */}
             <Route path="/host" element={<HostLayout />}>
-              <Route index element={<HostDashboard />} />
-              <Route path="stays" element={<HostStays />} />
-              <Route path="stays/add" element={<HostAddStay />} />
-              <Route path="cars" element={<HostCars />} />
-              <Route path="cars/add" element={<HostAddCar />} />
-              <Route path="bikes" element={<HostBikes />} />
-              <Route path="bikes/add" element={<HostAddBike />} />
-              <Route path="experiences" element={<HostExperiences />} />
-              <Route path="experiences/add" element={<HostAddExperience />} />
-              <Route path="bookings" element={<HostBookings />} />
-              <Route path="earnings" element={<HostEarnings />} />
-              <Route path="link" element={<HostLinkInBio />} />
-              <Route path="settings" element={<HostSettings />} />
+              <Route index element={<HostSection />} />
+              <Route path="stays/add" element={<Navigate to="/host/stays?mode=add" replace />} />
+              <Route path="hotels/add" element={<Navigate to="/host/hotels?mode=add" replace />} />
+              <Route path="resorts/add" element={<Navigate to="/host/resorts?mode=add" replace />} />
+              <Route path="cars/add" element={<Navigate to="/host/cars?mode=add" replace />} />
+              <Route path="bikes/add" element={<Navigate to="/host/bikes?mode=add" replace />} />
+              <Route path="experiences/add" element={<Navigate to="/host/experiences?mode=add" replace />} />
+              <Route path=":section" element={<HostSection />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

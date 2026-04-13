@@ -93,6 +93,7 @@ const DestinationDetail = () => {
           .from("stays")
           .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .ilike("location", `%${displayName}%`);
 
         stays?.forEach((s, i) => {
@@ -114,6 +115,7 @@ const DestinationDetail = () => {
           .from("hotels")
           .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .ilike("location", `%${displayName}%`);
 
         hotels?.forEach((h, i) => {
@@ -135,6 +137,7 @@ const DestinationDetail = () => {
           .from("resorts")
           .select("id, title, location, price_per_night, currency, rating, images, slug, property_type")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .ilike("location", `%${displayName}%`);
 
         resorts?.forEach((r, i) => {
@@ -156,6 +159,7 @@ const DestinationDetail = () => {
           .from("cars")
           .select("id, title, location, price_per_day, currency, rating, images, slug")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .ilike("location", `%${displayName}%`);
 
         cars?.forEach((c, i) => {
@@ -177,6 +181,7 @@ const DestinationDetail = () => {
           .from("bikes")
           .select("id, title, location, price_per_day, currency, rating, images, slug")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .ilike("location", `%${displayName}%`);
 
         bikes?.forEach((b, i) => {
@@ -198,6 +203,7 @@ const DestinationDetail = () => {
           .from("experiences")
           .select("id, title, location, price_per_person, currency, rating, images, slug")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .ilike("location", `%${displayName}%`);
 
         experiences?.forEach((e, i) => {

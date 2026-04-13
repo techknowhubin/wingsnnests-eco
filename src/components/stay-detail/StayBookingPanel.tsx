@@ -2,25 +2,40 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarDays, Users, Minus, Plus } from "lucide-react";
+import { CalendarDays, Minus, Plus } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
-import { initiateRazorpayPayment } from "@/lib/razorpay";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import type { BookingDetails } from "@/types/booking";
+import type { CouponOffer } from "@/lib/discounts";
 
 interface StayBookingPanelProps {
   pricePerNight: number;
   currencySymbol: string;
   maxGuests: number;
   title: string;
+  imageUrl?: string;
+  hostId?: string;
+  listingCouponType?: "stays" | "hotels" | "resorts";
+  hostDiscountPercent?: number;
+  availableCoupons?: CouponOffer[];
 }
 
-const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: StayBookingPanelProps) => {
+const StayBookingPanel = ({
+  pricePerNight,
+  currencySymbol,
+  maxGuests,
+  title,
+  imageUrl,
+  hostId,
+  listingCouponType = "stays",
+  hostDiscountPercent = 0,
+  availableCoupons = [],
+}: StayBookingPanelProps) => {
+  const navigate = useNavigate();
   const [guests, setGuests] = useState(1);
   const [pricingOption, setPricingOption] = useState<"daily" | "weekly" | "monthly">("weekly");
-  const [guestOpen, setGuestOpen] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-
   const tomorrow = useMemo(() => addDays(new Date(), 1), []);
 
   const getDurationDays = (option: "daily" | "weekly" | "monthly") => {
@@ -42,7 +57,7 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
 
   const nights = Math.max(differenceInDays(checkOut, checkIn), 1);
   const subtotal = pricePerNight * nights;
-  const discount = Math.round(subtotal * 0.1);
+  const discount = Math.round((subtotal * hostDiscountPercent) / 100);
   const serviceFee = 0;
   const total = subtotal - discount + serviceFee;
 
@@ -196,19 +211,34 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
       <Button
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10 rounded-full text-sm font-semibold"
         size="lg"
-        disabled={isProcessing}
         onClick={() => {
-          setIsProcessing(true);
-          initiateRazorpayPayment({
-            amount: total,
-            title,
+          const booking: BookingDetails = {
+            listingType: "stay",
+            listingCouponType,
+            hostId,
+            listingTitle: title,
+            listingImage: imageUrl,
+            currencySymbol,
+            unitLabel: nights === 1 ? "night" : "nights",
+            unitPrice: pricePerNight,
+            quantity: nights,
+            startDate: checkIn.toISOString(),
+            endDate: checkOut.toISOString(),
             description: `${nights} night stay at ${title}`,
-            onSuccess: () => setIsProcessing(false),
-            onFailure: () => setIsProcessing(false),
+            subtotal,
+            discount,
+            serviceFee,
+            total,
+            hostDiscountPercent,
+            availableCoupons,
+          };
+
+          navigate("/confirm-and-pay", {
+            state: { booking },
           });
         }}
       >
-        {isProcessing ? "Processing..." : "Book Now"}
+        Book Now
       </Button>
 
       <p className="text-[11px] text-center text-muted-foreground mt-2 mb-3">
@@ -221,10 +251,12 @@ const StayBookingPanel = ({ pricePerNight, currencySymbol, maxGuests, title }: S
           <span className="text-muted-foreground">{currencySymbol}{pricePerNight} × {nights} nights</span>
           <span className="text-foreground font-medium">{currencySymbol}{subtotal.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">10% campaign discount</span>
-          <span className="text-accent font-medium">-{currencySymbol}{discount}</span>
-        </div>
+        {hostDiscountPercent > 0 ? (
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Host discount ({hostDiscountPercent}%)</span>
+            <span className="text-accent font-medium">-{currencySymbol}{discount}</span>
+          </div>
+        ) : null}
         <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">Service fee</span>
           <span className="text-foreground font-medium">{currencySymbol}{serviceFee}</span>

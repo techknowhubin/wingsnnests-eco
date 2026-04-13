@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import {
   Home,
+  Building,
+  Palmtree,
   Car,
   Bike,
   Compass,
@@ -18,6 +20,8 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import {
   useHostStays,
+  useHostHotels,
+  useHostResorts,
   useHostCars,
   useHostBikes,
   useHostExperiences,
@@ -33,12 +37,14 @@ export function DashboardOverview() {
   const { user } = useAuth();
   const { data: profile } = useProfile(user?.id);
   const { data: stays = [] } = useHostStays(user?.id);
+  const { data: hotels = [] } = useHostHotels(user?.id);
+  const { data: resorts = [] } = useHostResorts(user?.id);
   const { data: cars = [] } = useHostCars(user?.id);
   const { data: bikes = [] } = useHostBikes(user?.id);
   const { data: experiences = [] } = useHostExperiences(user?.id);
   const { data: bookings = [] } = useHostBookings(user?.id);
 
-  const totalListings = stays.length + cars.length + bikes.length + experiences.length;
+  const totalListings = stays.length + hotels.length + resorts.length + cars.length + bikes.length + experiences.length;
   const pendingBookings = bookings.filter((b) => b.booking_status === 'pending').length;
   const confirmedBookings = bookings.filter((b) => b.booking_status === 'confirmed').length;
   const completedBookings = bookings.filter((b) => b.booking_status === 'completed').length;
@@ -63,7 +69,7 @@ export function DashboardOverview() {
       return sum + hostEarnings;
     }, 0);
 
-  const totalViews = [...stays, ...cars, ...bikes, ...experiences].reduce(
+  const totalViews = [...stays, ...hotels, ...resorts, ...cars, ...bikes, ...experiences].reduce(
     (sum, listing) => sum + (listing.views_count || 0),
     0
   );
@@ -103,6 +109,8 @@ export function DashboardOverview() {
 
   const listingTypes = [
     { icon: Home, label: 'Stays', count: stays.length, path: '/host/stays', color: 'bg-primary/10 text-primary-text' },
+    { icon: Building, label: 'Hotels', count: hotels.length, path: '/host/hotels', color: 'bg-accent/10 text-accent' },
+    { icon: Palmtree, label: 'Resorts', count: resorts.length, path: '/host/resorts', color: 'bg-primary/10 text-primary-text' },
     { icon: Car, label: 'Cars', count: cars.length, path: '/host/cars', color: 'bg-accent/10 text-accent' },
     { icon: Bike, label: 'Bikes', count: bikes.length, path: '/host/bikes', color: 'bg-primary/10 text-primary-text' },
     { icon: Compass, label: 'Experiences', count: experiences.length, path: '/host/experiences', color: 'bg-accent/10 text-accent' },
@@ -120,7 +128,7 @@ export function DashboardOverview() {
         </div>
         <div className="flex items-center gap-2">
           <Button asChild className="rounded-xl h-10 shadow-md">
-            <Link to="/host/stays/add">
+            <Link to="/host/stays?mode=add">
               <span className="mr-1">+</span> Add Listing
             </Link>
           </Button>

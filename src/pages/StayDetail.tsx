@@ -14,6 +14,7 @@ import StayImageGallery from "@/components/stay-detail/StayImageGallery";
 import VehicleSelectionModal from "@/components/stay-detail/VehicleSelectionModal";
 import StayFeatureHighlights from "@/components/stay-detail/StayFeatureHighlights";
 import StayBookingPanel from "@/components/stay-detail/StayBookingPanel";
+import { parseListingDiscountConfig } from "@/lib/discounts";
 import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
 import goaImage from "@/assets/stays/goa-beach-villa.jpg";
 import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
@@ -48,6 +49,7 @@ const getAmenityIcon = (amenity: string): LucideIcon => {
 
 interface Stay {
   id: string;
+  host_id?: string;
   title: string;
   description: string;
   location: string;
@@ -137,19 +139,23 @@ const StayDetail = () => {
     ? stay.images.map((img: string) => img.startsWith('http') ? img : (imageMap[img] || manaliImage))
     : [manaliImage];
   const currencySymbol = stay.currency === 'INR' ? '₹' : '$';
+  const discountConfig = parseListingDiscountConfig(stay.discounts);
 
   const isHotel = window.location.pathname.includes("/hotels");
   const isResort = window.location.pathname.includes("/resorts");
   
   let categoryName = "Homestays";
   let categoryLink = "/stays";
+  let listingCouponType: "stays" | "hotels" | "resorts" = "stays";
   
   if (isHotel) {
     categoryName = "Hotels";
     categoryLink = "/hotels";
+    listingCouponType = "hotels";
   } else if (isResort) {
     categoryName = "Resorts";
     categoryLink = "/resorts";
+    listingCouponType = "resorts";
   }
 
   return (
@@ -455,6 +461,11 @@ const StayDetail = () => {
               currencySymbol={currencySymbol}
               maxGuests={stay.max_guests}
               title={stay.title}
+              imageUrl={resolvedImages[0]}
+              hostId={stay.host_id}
+              listingCouponType={listingCouponType}
+              hostDiscountPercent={discountConfig.hostDiscountPercent}
+              availableCoupons={discountConfig.coupons}
             />
           </div>
         </div>

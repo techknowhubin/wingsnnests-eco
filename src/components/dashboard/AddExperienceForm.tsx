@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateExperience } from '@/hooks/useListings';
 import { toast } from 'sonner';
+import { createDiscountConfig } from '@/lib/discounts';
 
 const categories = ['Adventure', 'Cultural', 'Food & Drink', 'Nature', 'Wellness', 'Photography', 'Water Sports', 'Trekking', 'Wildlife'];
 
@@ -25,6 +26,7 @@ export function AddExperienceForm() {
     category: '', duration: '', group_size: '',
     inclusions: [''] as string[], exclusions: [''] as string[],
     availability_status: true, images: [] as string[], imageInput: '',
+    hostDiscountPercent: '',
   });
 
   const handleAddImage = () => {
@@ -54,6 +56,8 @@ export function AddExperienceForm() {
     const inclusions = form.inclusions.filter(i => i.trim());
     const exclusions = form.exclusions.filter(i => i.trim());
     try {
+      const hostDiscountPercent = Number(form.hostDiscountPercent || 0);
+      const discountsConfig = createDiscountConfig(hostDiscountPercent, []);
       await createExperience.mutateAsync({
         host_id: user.id, title: form.title, description: form.description || null,
         location: form.location, price_per_person: Number(form.price_per_person),
@@ -63,7 +67,12 @@ export function AddExperienceForm() {
         exclusions: exclusions.length > 0 ? exclusions : null,
         availability_status: form.availability_status,
         images: form.images.length > 0 ? form.images : null,
-        currency: 'INR', discounts: null, itinerary: null,
+        currency: 'INR',
+        discounts:
+          discountsConfig.hostDiscountPercent > 0 || discountsConfig.coupons.length > 0
+            ? discountsConfig
+            : null,
+        itinerary: null,
         latitude: null, longitude: null, slug: null, tags: null,
       });
       toast.success('Experience listing created!');
@@ -74,6 +83,7 @@ export function AddExperienceForm() {
   };
 
   const set = (key: string, val: any) => setForm(p => ({ ...p, [key]: val }));
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -162,10 +172,22 @@ export function AddExperienceForm() {
         <div className="space-y-6">
           <Card>
             <CardHeader><CardTitle>Settings</CardTitle></CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label>Available for booking</Label>
                 <Switch checked={form.availability_status} onCheckedChange={v => set('availability_status', v)} />
+              </div>
+              <div>
+                <Label htmlFor="host-discount">Host Discount (%)</Label>
+                <Input
+                  id="host-discount"
+                  type="number"
+                  min={0}
+                  max={90}
+                  value={form.hostDiscountPercent}
+                  onChange={(e) => set('hostDiscountPercent', e.target.value)}
+                  placeholder="0"
+                />
               </div>
             </CardContent>
           </Card>

@@ -7,12 +7,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import bikeImage from "@/assets/bike-featured.jpg";
-import royalEnfieldImage from "@/assets/vehicles/royal-enfield-classic.jpg";
-
-const bikeImageMap: Record<string, string> = {
-  "royal-enfield-classic.jpg": royalEnfieldImage,
-};
+import { resolveListingCardImage } from "@/lib/listing-images";
 
 interface Bike {
   id: string;
@@ -36,6 +31,7 @@ const Bikes = () => {
           .from("bikes")
           .select("id, title, location, price_per_day, currency, rating, images")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false });
 
@@ -103,7 +99,7 @@ const Bikes = () => {
               <ListingCard
                 key={bike.id}
                 id={bike.id}
-                image={bikeImageMap[bike.images?.[0]] || bikeImage}
+                image={resolveListingCardImage(bike.images, "bike")}
                 title={bike.title}
                 location={bike.location}
                 price={`${bike.currency === 'INR' ? '₹' : '$'}${bike.price_per_day.toLocaleString()}`}

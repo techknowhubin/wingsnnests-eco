@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { 
-  Bike, Car, Stay, Experience, Booking, Review, Profile, 
+  Bike, Car, Stay, Experience, Booking, Review, Profile, LinkInBioPage,
   ListingType, AppRole, BookingStatus
 } from '@/types/database';
 
@@ -44,7 +44,10 @@ export async function getStays(options?: {
   if (options?.location) query = query.ilike('location', `%${options.location}%`);
   if (options?.limit) query = query.limit(options.limit);
   
-  query = query.eq('availability_status', true).order('created_at', { ascending: false });
+  query = query
+    .eq('availability_status', true)
+    .eq('marketplace_visible', true)
+    .order('created_at', { ascending: false });
   
   const { data, error } = await query;
   if (error) throw error;
@@ -86,7 +89,10 @@ export async function getCars(options?: {
   if (options?.location) query = query.ilike('location', `%${options.location}%`);
   if (options?.limit) query = query.limit(options.limit);
   
-  query = query.eq('availability_status', true).order('created_at', { ascending: false });
+  query = query
+    .eq('availability_status', true)
+    .eq('marketplace_visible', true)
+    .order('created_at', { ascending: false });
   
   const { data, error } = await query;
   if (error) throw error;
@@ -128,7 +134,10 @@ export async function getBikes(options?: {
   if (options?.location) query = query.ilike('location', `%${options.location}%`);
   if (options?.limit) query = query.limit(options.limit);
   
-  query = query.eq('availability_status', true).order('created_at', { ascending: false });
+  query = query
+    .eq('availability_status', true)
+    .eq('marketplace_visible', true)
+    .order('created_at', { ascending: false });
   
   const { data, error } = await query;
   if (error) throw error;
@@ -172,7 +181,10 @@ export async function getExperiences(options?: {
   if (options?.category) query = query.eq('category', options.category);
   if (options?.limit) query = query.limit(options.limit);
   
-  query = query.eq('availability_status', true).order('created_at', { ascending: false });
+  query = query
+    .eq('availability_status', true)
+    .eq('marketplace_visible', true)
+    .order('created_at', { ascending: false });
   
   const { data, error } = await query;
   if (error) throw error;
@@ -430,6 +442,122 @@ export async function getHostExperiences(hostId: string) {
   return data;
 }
 
+export async function getHostHotels(hostId: string) {
+  const { data, error } = await supabase
+    .from('hotels' as any)
+    .select('*')
+    .eq('host_id', hostId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as any[];
+}
+
+export async function getHostResorts(hostId: string) {
+  const { data, error } = await supabase
+    .from('resorts' as any)
+    .select('*')
+    .eq('host_id', hostId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data as any[];
+}
+
+export async function getManagedListings(
+  listingType: ListingType | 'hotel' | 'resort',
+  userId: string,
+  isAdminUser: boolean,
+) {
+  const tableMap: Record<ListingType | 'hotel' | 'resort', 'stays' | 'cars' | 'bikes' | 'experiences' | 'hotels' | 'resorts'> = {
+    stay: 'stays',
+    car: 'cars',
+    bike: 'bikes',
+    experience: 'experiences',
+    hotel: 'hotels',
+    resort: 'resorts',
+  };
+  let query = supabase
+    .from(tableMap[listingType] as any)
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (!isAdminUser) {
+    query = query.eq('host_id', userId);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  const listings = (data ?? []) as any[];
+
+  if (!isAdminUser) {
+    return listings;
+  }
+
+  const hostIds = Array.from(new Set(listings.map((item) => item.host_id).filter(Boolean)));
+  if (hostIds.length === 0) {
+    return listings;
+  }
+
+  const { data: hostProfiles, error: hostError } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+    .in('id', hostIds);
+  if (hostError) throw hostError;
+
+  const nameById = new Map((hostProfiles ?? []).map((profile) => [profile.id, profile.full_name || 'Unknown host']));
+  return listings.map((listing) => ({
+    ...listing,
+    host_name: nameById.get(listing.host_id) ?? 'Unknown host',
+  }));
+}
+
+export async function updateMarketplaceVisibility(
+  listingType: ListingType | 'hotel' | 'resort',
+  listingId: string,
+  marketplaceVisible: boolean,
+) {
+  const tableMap: Record<ListingType | 'hotel' | 'resort', 'stays' | 'cars' | 'bikes' | 'experiences' | 'hotels' | 'resorts'> = {
+    stay: 'stays',
+    car: 'cars',
+    bike: 'bikes',
+    experience: 'experiences',
+    hotel: 'hotels',
+    resort: 'resorts',
+  };
+  const { data, error } = await supabase
+    .from(tableMap[listingType] as any)
+    .update({ marketplace_visible: marketplaceVisible })
+    .eq('id', listingId)
+    .select('id')
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateMarketplaceRequest(
+  listingType: ListingType | 'hotel' | 'resort',
+  listingId: string,
+  marketplaceRequested: boolean,
+) {
+  const tableMap: Record<ListingType | 'hotel' | 'resort', 'stays' | 'cars' | 'bikes' | 'experiences' | 'hotels' | 'resorts'> = {
+    stay: 'stays',
+    car: 'cars',
+    bike: 'bikes',
+    experience: 'experiences',
+    hotel: 'hotels',
+    resort: 'resorts',
+  };
+  const { data, error } = await supabase
+    .from(tableMap[listingType] as any)
+    .update({ marketplace_requested: marketplaceRequested })
+    .eq('id', listingId)
+    .select('id')
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 // ============ Create Listing Helpers ============
 
 export async function createStay(stay: Omit<Stay, 'id' | 'created_at' | 'updated_at' | 'rating' | 'total_reviews' | 'views_count' | 'booking_count' | 'last_booked_at' | 'is_verified' | 'verified_by' | 'featured'>) {
@@ -474,6 +602,123 @@ export async function createExperience(experience: Omit<Experience, 'id' | 'crea
     .single();
   if (error) throw error;
   return data;
+}
+
+export async function createHotel(hotel: any) {
+  const slug = generateSlug(hotel.title);
+  const { data, error } = await supabase
+    .from('hotels' as any)
+    .insert({ ...hotel, slug })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function createResort(resort: any) {
+  const slug = generateSlug(resort.title);
+  const { data, error } = await supabase
+    .from('resorts' as any)
+    .insert({ ...resort, slug })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ============ Link-in-Bio Helpers ============
+
+export async function getLinkInBioPage(userId: string) {
+  const { data, error } = await supabase
+    .from('link_in_bio_pages')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertLinkInBioPage(
+  page: Pick<LinkInBioPage, 'user_id' | 'slug' | 'settings' | 'is_active'>,
+) {
+  const { data, error } = await supabase
+    .from('link_in_bio_pages')
+    .upsert(page, { onConflict: 'user_id' })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getLinkInBioPageBySlug(slug: string) {
+  const { data, error } = await supabase
+    .from('link_in_bio_pages')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_active', true)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteListing(listingType: ListingType | 'hotel' | 'resort', listingId: string) {
+  const tableMap: Record<ListingType | 'hotel' | 'resort', 'stays' | 'cars' | 'bikes' | 'experiences' | 'hotels' | 'resorts'> = {
+    stay: 'stays',
+    car: 'cars',
+    bike: 'bikes',
+    experience: 'experiences',
+    hotel: 'hotels',
+    resort: 'resorts',
+  };
+  const tableName = tableMap[listingType];
+
+  const { error } = await supabase
+    .from(tableName)
+    .delete()
+    .eq('id', listingId);
+
+  if (error) throw error;
+}
+
+export async function getBlogPosts() {
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createBlogPost(payload: any) {
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .insert(payload)
+    .select('*')
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateBlogPost(postId: string, payload: any) {
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .update(payload)
+    .eq('id', postId)
+    .select('*')
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteBlogPost(postId: string) {
+  const { error } = await supabase
+    .from('blog_posts')
+    .delete()
+    .eq('id', postId);
+  if (error) throw error;
 }
 
 // ============ Utility Functions ============

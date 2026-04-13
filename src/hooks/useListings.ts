@@ -9,13 +9,14 @@ import {
   getUserWishlist, addToWishlist, removeFromWishlist, isInWishlist,
   getProfile, updateProfile,
   getUserNotifications, getUnreadNotificationCount, markNotificationAsRead,
-  getHostStays, getHostCars, getHostBikes, getHostExperiences,
+  getHostStays, getHostCars, getHostBikes, getHostExperiences, getHostHotels, getHostResorts,
+  getManagedListings, updateMarketplaceRequest, updateMarketplaceVisibility,
   isAdmin, isHost, isModerator,
-  createStay, createCar, createBike, createExperience,
+  createStay, createCar, createBike, createExperience, createHotel, createResort,
+  deleteListing,
+  getBlogPosts, createBlogPost, updateBlogPost, deleteBlogPost,
+  getLinkInBioPage, upsertLinkInBioPage,
 } from '@/lib/supabase-helpers';
-import {
-  DEMO_STAYS, DEMO_CARS, DEMO_BIKES, DEMO_EXPERIENCES, DEMO_BOOKINGS, DEMO_PROFILE,
-} from '@/lib/demo-data';
 import type { ListingType, BookingStatus } from '@/types/database';
 
 // ============ Stays Hooks ============
@@ -131,12 +132,8 @@ export function useUserBookings(userId: string | undefined) {
 export function useHostBookings(hostId: string | undefined) {
   return useQuery({
     queryKey: ['bookings', 'host', hostId],
-    queryFn: async () => {
-      if (!hostId) return DEMO_BOOKINGS;
-      const data = await getHostBookings(hostId);
-      return data.length > 0 ? data : DEMO_BOOKINGS;
-    },
-    enabled: true,
+    queryFn: () => getHostBookings(hostId!),
+    enabled: !!hostId,
   });
 }
 
@@ -242,16 +239,8 @@ export function useRemoveFromWishlist() {
 export function useProfile(userId: string | undefined) {
   return useQuery({
     queryKey: ['profile', userId],
-    queryFn: async () => {
-      if (!userId) return DEMO_PROFILE;
-      try {
-        const data = await getProfile(userId);
-        return data;
-      } catch {
-        return DEMO_PROFILE;
-      }
-    },
-    enabled: true,
+    queryFn: () => getProfile(userId!),
+    enabled: !!userId,
   });
 }
 
@@ -280,15 +269,8 @@ export function useNotifications(userId: string | undefined) {
 export function useUnreadNotificationCount(userId: string | undefined) {
   return useQuery({
     queryKey: ['notifications', userId, 'unread-count'],
-    queryFn: async () => {
-      if (!userId) return 3; // Demo notification count
-      try {
-        return await getUnreadNotificationCount(userId);
-      } catch {
-        return 3;
-      }
-    },
-    enabled: true,
+    queryFn: () => getUnreadNotificationCount(userId!),
+    enabled: !!userId,
   });
 }
 
@@ -308,48 +290,60 @@ export function useMarkNotificationAsRead() {
 export function useHostStays(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'stays', hostId],
-    queryFn: async () => {
-      if (!hostId) return DEMO_STAYS;
-      const data = await getHostStays(hostId);
-      return data.length > 0 ? data : DEMO_STAYS;
-    },
-    enabled: true,
+    queryFn: () => getHostStays(hostId!),
+    enabled: !!hostId,
   });
 }
 
 export function useHostCars(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'cars', hostId],
-    queryFn: async () => {
-      if (!hostId) return DEMO_CARS;
-      const data = await getHostCars(hostId);
-      return data.length > 0 ? data : DEMO_CARS;
-    },
-    enabled: true,
+    queryFn: () => getHostCars(hostId!),
+    enabled: !!hostId,
   });
 }
 
 export function useHostBikes(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'bikes', hostId],
-    queryFn: async () => {
-      if (!hostId) return DEMO_BIKES;
-      const data = await getHostBikes(hostId);
-      return data.length > 0 ? data : DEMO_BIKES;
-    },
-    enabled: true,
+    queryFn: () => getHostBikes(hostId!),
+    enabled: !!hostId,
   });
 }
 
 export function useHostExperiences(hostId: string | undefined) {
   return useQuery({
     queryKey: ['host', 'experiences', hostId],
-    queryFn: async () => {
-      if (!hostId) return DEMO_EXPERIENCES;
-      const data = await getHostExperiences(hostId);
-      return data.length > 0 ? data : DEMO_EXPERIENCES;
-    },
-    enabled: true,
+    queryFn: () => getHostExperiences(hostId!),
+    enabled: !!hostId,
+  });
+}
+
+export function useHostHotels(hostId: string | undefined) {
+  return useQuery({
+    queryKey: ['host', 'hotels', hostId],
+    queryFn: () => getHostHotels(hostId!),
+    enabled: !!hostId,
+  });
+}
+
+export function useHostResorts(hostId: string | undefined) {
+  return useQuery({
+    queryKey: ['host', 'resorts', hostId],
+    queryFn: () => getHostResorts(hostId!),
+    enabled: !!hostId,
+  });
+}
+
+export function useManagedListings(
+  listingType: ListingType | 'hotel' | 'resort',
+  userId: string | undefined,
+  isAdminUser: boolean,
+) {
+  return useQuery({
+    queryKey: ['managed-listings', listingType, userId, isAdminUser],
+    queryFn: () => getManagedListings(listingType, userId!, isAdminUser),
+    enabled: !!userId,
   });
 }
 
@@ -421,6 +415,133 @@ export function useCreateExperience() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['host', 'experiences'] });
       queryClient.invalidateQueries({ queryKey: ['experiences'] });
+    },
+  });
+}
+
+export function useCreateHotel() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createHotel,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['host', 'hotels'] });
+      queryClient.invalidateQueries({ queryKey: ['hotels'] });
+    },
+  });
+}
+
+export function useCreateResort() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createResort,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['host', 'resorts'] });
+      queryClient.invalidateQueries({ queryKey: ['resorts'] });
+    },
+  });
+}
+
+export function useDeleteListing() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ listingType, listingId }: { listingType: ListingType | 'hotel' | 'resort'; listingId: string }) =>
+      deleteListing(listingType, listingId),
+    onSuccess: (_, { listingType }) => {
+      const plural = listingType === 'experience' ? 'experiences' : `${listingType}s`;
+      queryClient.invalidateQueries({ queryKey: ['host', plural] });
+      queryClient.invalidateQueries({ queryKey: [plural] });
+    },
+  });
+}
+
+export function useUpdateMarketplaceVisibility() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      listingType,
+      listingId,
+      marketplaceVisible,
+    }: {
+      listingType: ListingType | 'hotel' | 'resort';
+      listingId: string;
+      marketplaceVisible: boolean;
+    }) => updateMarketplaceVisibility(listingType, listingId, marketplaceVisible),
+    onSuccess: (_, { listingType }) => {
+      const plural = listingType === 'experience' ? 'experiences' : `${listingType}s`;
+      queryClient.invalidateQueries({ queryKey: ['host', plural] });
+      queryClient.invalidateQueries({ queryKey: ['managed-listings'] });
+      queryClient.invalidateQueries({ queryKey: [plural] });
+    },
+  });
+}
+
+export function useUpdateMarketplaceRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      listingType,
+      listingId,
+      marketplaceRequested,
+    }: {
+      listingType: ListingType | 'hotel' | 'resort';
+      listingId: string;
+      marketplaceRequested: boolean;
+    }) => updateMarketplaceRequest(listingType, listingId, marketplaceRequested),
+    onSuccess: (_, { listingType }) => {
+      const plural = listingType === 'experience' ? 'experiences' : `${listingType}s`;
+      queryClient.invalidateQueries({ queryKey: ['host', plural] });
+      queryClient.invalidateQueries({ queryKey: ['managed-listings'] });
+      queryClient.invalidateQueries({ queryKey: [plural] });
+    },
+  });
+}
+
+export function useBlogPosts(enabled = true) {
+  return useQuery({
+    queryKey: ['blog-posts-admin'],
+    queryFn: getBlogPosts,
+    enabled,
+  });
+}
+
+export function useCreateBlogPost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createBlogPost,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blog-posts-admin'] }),
+  });
+}
+
+export function useUpdateBlogPost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ postId, payload }: { postId: string; payload: any }) => updateBlogPost(postId, payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blog-posts-admin'] }),
+  });
+}
+
+export function useDeleteBlogPost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteBlogPost,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blog-posts-admin'] }),
+  });
+}
+
+export function useLinkInBioPage(userId: string | undefined) {
+  return useQuery({
+    queryKey: ['link-in-bio', userId],
+    queryFn: () => getLinkInBioPage(userId!),
+    enabled: !!userId,
+  });
+}
+
+export function useUpsertLinkInBioPage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: upsertLinkInBioPage,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['link-in-bio', variables.user_id] });
     },
   });
 }

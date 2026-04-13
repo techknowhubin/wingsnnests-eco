@@ -4,18 +4,36 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarDays } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
-import { initiateRazorpayPayment } from "@/lib/razorpay";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import type { BookingDetails } from "@/types/booking";
+import type { CouponOffer } from "@/lib/discounts";
 
 interface VehicleBookingPanelProps {
   pricePerDay: number;
   currencySymbol?: string;
   title: string;
   requirements?: string;
+  imageUrl?: string;
+  hostId?: string;
+  listingCouponType?: "cars" | "bikes";
+  hostDiscountPercent?: number;
+  availableCoupons?: CouponOffer[];
 }
 
-const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requirements }: VehicleBookingPanelProps) => {
+const VehicleBookingPanel = ({
+  pricePerDay,
+  currencySymbol = "₹",
+  title,
+  requirements,
+  imageUrl,
+  hostId,
+  listingCouponType = "cars",
+  hostDiscountPercent = 0,
+  availableCoupons = [],
+}: VehicleBookingPanelProps) => {
+  const navigate = useNavigate();
   const tomorrow = useMemo(() => addDays(new Date(), 1), []);
   const [pricingOption, setPricingOption] = useState<"daily" | "weekly" | "monthly">("daily");
   
@@ -27,7 +45,6 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
 
   const [pickupDate, setPickupDate] = useState<Date>(tomorrow);
   const [dropoffDate, setDropoffDate] = useState<Date>(addDays(tomorrow, getDurationDays("daily")));
-  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     setDropoffDate(addDays(pickupDate, getDurationDays(pricingOption)));
@@ -38,7 +55,7 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
 
   const days = Math.max(differenceInDays(dropoffDate, pickupDate), 1);
   const subtotal = pricePerDay * days;
-  const discount = Math.round(subtotal * 0.1);
+  const discount = Math.round((subtotal * hostDiscountPercent) / 100);
   const serviceFee = 0;
   const total = subtotal - discount + serviceFee;
 
@@ -162,19 +179,34 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
       <Button
         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10 rounded-full text-sm font-semibold"
         size="lg"
-        disabled={isProcessing}
         onClick={() => {
-          setIsProcessing(true);
-          initiateRazorpayPayment({
-            amount: total,
-            title,
+          const booking: BookingDetails = {
+            listingType: "vehicle",
+            listingCouponType,
+            hostId,
+            listingTitle: title,
+            listingImage: imageUrl,
+            currencySymbol,
+            unitLabel: days === 1 ? "day" : "days",
+            unitPrice: pricePerDay,
+            quantity: days,
+            startDate: pickupDate.toISOString(),
+            endDate: dropoffDate.toISOString(),
             description: `${days} day rental of ${title}`,
-            onSuccess: () => setIsProcessing(false),
-            onFailure: () => setIsProcessing(false),
+            subtotal,
+            discount,
+            serviceFee,
+            total,
+            hostDiscountPercent,
+            availableCoupons,
+          };
+
+          navigate("/confirm-and-pay", {
+            state: { booking },
           });
         }}
       >
-        {isProcessing ? "Processing..." : "Book Now"}
+        Book Now
       </Button>
 
       <p className="text-[11px] text-center text-muted-foreground mt-2 mb-3">
@@ -186,10 +218,12 @@ const VehicleBookingPanel = ({ pricePerDay, currencySymbol = "₹", title, requi
           <span className="text-muted-foreground">{currencySymbol}{pricePerDay.toLocaleString()} × {days} day{days > 1 ? "s" : ""}</span>
           <span className="text-foreground font-medium">{currencySymbol}{subtotal.toLocaleString()}</span>
         </div>
-        <div className="flex justify-between text-xs">
-          <span className="text-muted-foreground">10% discount</span>
-          <span className="text-accent font-medium">-{currencySymbol}{discount}</span>
-        </div>
+        {hostDiscountPercent > 0 ? (
+          <div className="flex justify-between text-xs">
+            <span className="text-muted-foreground">Host discount ({hostDiscountPercent}%)</span>
+            <span className="text-accent font-medium">-{currencySymbol}{discount}</span>
+          </div>
+        ) : null}
         <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">Service fee</span>
           <span className="text-foreground font-medium">{currencySymbol}{serviceFee}</span>

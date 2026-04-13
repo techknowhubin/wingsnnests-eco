@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Marquee from "@/components/Marquee";
@@ -7,14 +7,15 @@ import { Star, MapPin, Heart, Share2, Clock, Users, Calendar as CalendarIcon } f
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { initiateRazorpayPayment } from "@/lib/razorpay";
+import { addDays } from "date-fns";
 import experienceImage from "@/assets/experience-featured.jpg";
+import type { BookingDetails } from "@/types/booking";
 
 const ExperienceDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [guestCount, setGuestCount] = useState(1);
 
   const details = [
@@ -219,19 +220,35 @@ const ExperienceDetail = () => {
               <Button 
                 className="w-full bg-primary hover:bg-accent" 
                 size="lg"
-                disabled={isProcessing}
                 onClick={() => {
-                  setIsProcessing(true);
-                  initiateRazorpayPayment({
-                    amount: 2000 * guestCount,
-                    title: "Village Cooking Experience",
+                  const startDate = selectedDate ?? new Date();
+                  const unitPrice = 2000;
+                  const subtotal = unitPrice * guestCount;
+                  const discount = 0;
+                  const serviceFee = 0;
+                  const booking: BookingDetails = {
+                    listingType: "experience",
+                    listingTitle: "Village Cooking Experience",
+                    listingImage: experienceImage,
+                    currencySymbol: "₹",
+                    unitLabel: guestCount === 1 ? "guest" : "guests",
+                    unitPrice,
+                    quantity: guestCount,
+                    startDate: startDate.toISOString(),
+                    endDate: addDays(startDate, 1).toISOString(),
                     description: `Experience for ${guestCount} guest(s)`,
-                    onSuccess: () => setIsProcessing(false),
-                    onFailure: () => setIsProcessing(false),
+                    subtotal,
+                    discount,
+                    serviceFee,
+                    total: subtotal - discount + serviceFee,
+                  };
+
+                  navigate("/confirm-and-pay", {
+                    state: { booking },
                   });
                 }}
               >
-                {isProcessing ? "Processing..." : "Book Experience"}
+                Book Experience
               </Button>
 
               <p className="text-xs text-center text-muted-foreground mt-4">

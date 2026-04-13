@@ -7,21 +7,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
-import goaImage from "@/assets/stays/goa-beach-villa.jpg";
-import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
-import munnarImage from "@/assets/stays/munnar-tea-cottage.jpg";
-import udaipurImage from "@/assets/stays/udaipur-lakeside-palace.jpg";
-import kasolImage from "@/assets/stays/kasol-valley-home.jpg";
-
-const imageMap: Record<string, string> = {
-  "manali-mountain-homestay.jpg": manaliImage,
-  "goa-beach-villa.jpg": goaImage,
-  "jaipur-heritage-haveli.jpg": jaipurImage,
-  "munnar-tea-cottage.jpg": munnarImage,
-  "udaipur-lakeside-palace.jpg": udaipurImage,
-  "kasol-valley-home.jpg": kasolImage,
-};
+import { resolveListingCardImage } from "@/lib/listing-images";
 
 interface Stay {
   id: string;
@@ -46,6 +32,7 @@ const Stays = () => {
           .from("stays")
           .select("id, title, location, price_per_night, currency, rating, images, slug")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false });
 
@@ -112,7 +99,7 @@ const Stays = () => {
             {stays.map((stay, index) => (
               <ListingCard
                 key={stay.id}
-                image={imageMap[stay.images[0]] || manaliImage}
+                image={resolveListingCardImage(stay.images, "stay")}
                 title={stay.title}
                 location={stay.location}
                 price={`${stay.currency === 'INR' ? '₹' : '$'}${stay.price_per_night.toLocaleString()}`}

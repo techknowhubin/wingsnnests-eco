@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useUpdateProfile } from '@/hooks/useListings';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function HostSettings() {
@@ -29,7 +29,7 @@ export default function HostSettings() {
   });
 
   // Initialize form data when profile loads
-  useState(() => {
+  useEffect(() => {
     if (profile) {
       setFormData({
         full_name: profile.full_name || '',
@@ -41,7 +41,7 @@ export default function HostSettings() {
         country: profile.country || 'India',
       });
     }
-  });
+  }, [profile]);
 
   if (profileLoading) return null;
 

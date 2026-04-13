@@ -49,7 +49,7 @@ export const useAuth = () => {
       });
     }
 
-    return { error };
+    return { data, error };
   };
 
   const signIn = async (email: string, password: string) => {

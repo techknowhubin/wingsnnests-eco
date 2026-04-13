@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateCar } from '@/hooks/useListings';
 import { toast } from 'sonner';
+import { createDiscountConfig } from '@/lib/discounts';
 
 const fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG'];
 const transmissionTypes = ['Manual', 'Automatic'];
@@ -27,6 +28,7 @@ export function AddCarForm() {
     brand: '', model: '', year: '', fuel_type: '', transmission: '',
     vehicle_type: '', seating_capacity: '', mileage_limit: '',
     availability_status: true, images: [] as string[], imageInput: '',
+    hostDiscountPercent: '',
   });
 
   const handleAddImage = () => {
@@ -42,6 +44,8 @@ export function AddCarForm() {
       toast.error('Please fill in all required fields'); return;
     }
     try {
+      const hostDiscountPercent = Number(form.hostDiscountPercent || 0);
+      const discountsConfig = createDiscountConfig(hostDiscountPercent, []);
       await createCar.mutateAsync({
         host_id: user.id, title: form.title, description: form.description || null,
         location: form.location, price_per_day: Number(form.price_per_day),
@@ -53,7 +57,12 @@ export function AddCarForm() {
         mileage_limit: form.mileage_limit ? Number(form.mileage_limit) : null,
         availability_status: form.availability_status,
         images: form.images.length > 0 ? form.images : null,
-        amenities: null, currency: 'INR', discounts: null,
+        amenities: null,
+        currency: 'INR',
+        discounts:
+          discountsConfig.hostDiscountPercent > 0 || discountsConfig.coupons.length > 0
+            ? discountsConfig
+            : null,
         latitude: null, longitude: null, slug: null, tags: null,
       });
       toast.success('Car listing created!');
@@ -64,6 +73,7 @@ export function AddCarForm() {
   };
 
   const set = (key: string, val: any) => setForm(p => ({ ...p, [key]: val }));
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -139,10 +149,22 @@ export function AddCarForm() {
         <div className="space-y-6">
           <Card>
             <CardHeader><CardTitle>Settings</CardTitle></CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label>Available for booking</Label>
                 <Switch checked={form.availability_status} onCheckedChange={v => set('availability_status', v)} />
+              </div>
+              <div>
+                <Label htmlFor="host-discount">Host Discount (%)</Label>
+                <Input
+                  id="host-discount"
+                  type="number"
+                  min={0}
+                  max={90}
+                  value={form.hostDiscountPercent}
+                  onChange={(e) => set('hostDiscountPercent', e.target.value)}
+                  placeholder="0"
+                />
               </div>
             </CardContent>
           </Card>

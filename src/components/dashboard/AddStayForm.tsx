@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateStay } from '@/hooks/useListings';
 import { toast } from 'sonner';
+import { createDiscountConfig } from '@/lib/discounts';
 
 const propertyTypes = ['Villa', 'Apartment', 'Cottage', 'Homestay', 'Farmhouse', 'Treehouse', 'Houseboat'];
 
@@ -35,6 +36,7 @@ export function AddStayForm() {
     availability_status: true,
     images: [] as string[],
     imageInput: '',
+    hostDiscountPercent: '',
   });
 
   const handleAddImage = () => {
@@ -64,6 +66,8 @@ export function AddStayForm() {
     }
 
     try {
+      const hostDiscountPercent = Number(form.hostDiscountPercent || 0);
+      const discountsConfig = createDiscountConfig(hostDiscountPercent, []);
       await createStay.mutateAsync({
         host_id: user.id,
         title: form.title,
@@ -81,7 +85,10 @@ export function AddStayForm() {
         images: form.images.length > 0 ? form.images : null,
         amenities: null,
         currency: 'INR',
-        discounts: null,
+        discounts:
+          discountsConfig.hostDiscountPercent > 0 || discountsConfig.coupons.length > 0
+            ? discountsConfig
+            : null,
         latitude: null,
         longitude: null,
         slug: null,
@@ -93,6 +100,7 @@ export function AddStayForm() {
       toast.error(error.message || 'Failed to create listing');
     }
   };
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -214,6 +222,18 @@ export function AddStayForm() {
                     <SelectItem value="strict">Strict</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="host-discount">Host Discount (%)</Label>
+                <Input
+                  id="host-discount"
+                  type="number"
+                  min={0}
+                  max={90}
+                  value={form.hostDiscountPercent}
+                  onChange={(e) => setForm((p) => ({ ...p, hostDiscountPercent: e.target.value }))}
+                  placeholder="0"
+                />
               </div>
             </CardContent>
           </Card>

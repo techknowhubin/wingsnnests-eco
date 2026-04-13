@@ -25,40 +25,16 @@ import cabsIcon from "@/assets/categories/cabs-icon.png";
 import experiencesIcon from "@/assets/categories/experiences-icon.png";
 import hotelsIcon from "@/assets/categories/hotels-icon.png";
 import resortsIcon from "@/assets/categories/resorts-icon.png";
-import manaliImage from "@/assets/stays/manali-mountain-homestay.jpg";
-import goaImage from "@/assets/stays/goa-beach-villa.jpg";
-import jaipurImage from "@/assets/stays/jaipur-heritage-haveli.jpg";
-import munnarImage from "@/assets/stays/munnar-tea-cottage.jpg";
-import udaipurImage from "@/assets/stays/udaipur-lakeside-palace.jpg";
-import kasolImage from "@/assets/stays/kasol-valley-home.jpg";
-import royalEnfieldImage from "@/assets/vehicles/royal-enfield-classic.jpg";
-import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
 import bikeImage from "@/assets/bike-featured.jpg";
 import experienceImage from "@/assets/experience-featured.jpg";
 import homestayImage from "@/assets/homestay-featured.jpg";
+import { resolveListingCardImage } from "@/lib/listing-images";
 import goaDestImage from "@/assets/destinations/goa.jpg";
 import manaliDestImage from "@/assets/destinations/manali.jpg";
 import jaipurDestImage from "@/assets/destinations/jaipur.jpg";
 import udaipurDestImage from "@/assets/destinations/udaipur.jpg";
 import munnarDestImage from "@/assets/destinations/munnar.jpg";
 import rishikeshDestImage from "@/assets/destinations/rishikesh.jpg";
-
-const stayImageMap: Record<string, string> = {
-  "manali-mountain-homestay.jpg": manaliImage,
-  "goa-beach-villa.jpg": goaImage,
-  "jaipur-heritage-haveli.jpg": jaipurImage,
-  "munnar-tea-cottage.jpg": munnarImage,
-  "udaipur-lakeside-palace.jpg": udaipurImage,
-  "kasol-valley-home.jpg": kasolImage,
-};
-
-const bikeImageMap: Record<string, string> = {
-  "royal-enfield-classic.jpg": royalEnfieldImage,
-};
-
-const carImageMap: Record<string, string> = {
-  "honda-city.jpg": hondaCityImage,
-};
 
 const categories = [
   {
@@ -210,19 +186,19 @@ const Index = () => {
     : categories;
 
   const fetchStays = async () => {
-    const { data } = await supabase.from("stays").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
+    const { data } = await supabase.from("stays").select("*").eq("availability_status", true).eq("marketplace_visible", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
     return data || [];
   };
   const fetchBikes = async () => {
-    const { data } = await supabase.from("bikes").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
+    const { data } = await supabase.from("bikes").select("*").eq("availability_status", true).eq("marketplace_visible", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
     return data || [];
   };
   const fetchCars = async () => {
-    const { data } = await supabase.from("cars").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false }).limit(4);
+    const { data } = await supabase.from("cars").select("*").eq("availability_status", true).eq("marketplace_visible", true).order("featured", { ascending: false }).order("created_at", { ascending: false }).limit(4);
     return data || [];
   };
   const fetchExperiences = async () => {
-    const { data } = await supabase.from("experiences").select("*").eq("availability_status", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
+    const { data } = await supabase.from("experiences").select("*").eq("availability_status", true).eq("marketplace_visible", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
     return data || [];
   };
 
@@ -386,7 +362,7 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-foreground mb-8">Featured Homestays</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {stays.map((stay, index) => (
-                <ListingCard key={stay.id} id={stay.id} image={stayImageMap[stay.images?.[0]] || manaliImage} title={stay.title} location={stay.location} price={`₹${stay.price_per_night}`} rating={Number(stay.rating) || 0} type="stay" delay={index * 0.05} />
+                <ListingCard key={stay.id} id={stay.id} image={resolveListingCardImage(stay.images, "stay")} title={stay.title} location={stay.location} price={`₹${stay.price_per_night}`} rating={Number(stay.rating) || 0} type="stay" delay={index * 0.05} />
               ))}
             </div>
           </motion.div>
@@ -400,7 +376,7 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-foreground mb-8">Bike Rentals</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {bikes.map((bike, index) => (
-                <ListingCard key={bike.id} id={bike.id} image={bikeImageMap[bike.images?.[0]] || bikeImage} title={bike.title} location={bike.location} price={`₹${bike.price_per_day}`} rating={Number(bike.rating) || 0} type="bike" delay={index * 0.05} />
+                <ListingCard key={bike.id} id={bike.id} image={resolveListingCardImage(bike.images, "bike")} title={bike.title} location={bike.location} price={`₹${bike.price_per_day}`} rating={Number(bike.rating) || 0} type="bike" delay={index * 0.05} />
               ))}
             </div>
           </motion.div>
@@ -414,7 +390,7 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-foreground mb-8">Car Rentals</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {cars.map((car, index) => (
-                <ListingCard key={car.id} id={car.id} image={car.images?.[0]?.startsWith('http') ? car.images[0] : (carImageMap[car.images?.[0]] || hondaCityImage)} title={car.title} location={car.location} price={`₹${car.price_per_day}`} rating={Number(car.rating) || 0} type="car" delay={index * 0.05} />
+                <ListingCard key={car.id} id={car.id} image={resolveListingCardImage(car.images, "car")} title={car.title} location={car.location} price={`₹${car.price_per_day}`} rating={Number(car.rating) || 0} type="car" delay={index * 0.05} />
               ))}
             </div>
           </motion.div>
@@ -431,7 +407,7 @@ const Index = () => {
             <h2 className="text-3xl font-bold text-foreground mb-8">Experiences</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
               {experiences.map((experience, index) => (
-                <ListingCard key={experience.id} id={experience.id} image={experienceImage} title={experience.title} location={experience.location} price={`₹${experience.price_per_person}`} rating={Number(experience.rating) || 0} type="experience" delay={index * 0.05} />
+                <ListingCard key={experience.id} id={experience.id} image={resolveListingCardImage(experience.images, "experience")} title={experience.title} location={experience.location} price={`₹${experience.price_per_person}`} rating={Number(experience.rating) || 0} type="experience" delay={index * 0.05} />
               ))}
             </div>
           </motion.div>

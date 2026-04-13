@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateBike } from '@/hooks/useListings';
 import { toast } from 'sonner';
+import { createDiscountConfig } from '@/lib/discounts';
 
 const bikeTypes = ['Sport', 'Cruiser', 'Adventure', 'Scooter', 'Commuter', 'Electric'];
 
@@ -25,6 +26,7 @@ export function AddBikeForm() {
     brand: '', model: '', year: '', engine_capacity: '',
     vehicle_type: '', mileage_limit: '', helmet_included: true,
     availability_status: true, images: [] as string[], imageInput: '',
+    hostDiscountPercent: '',
   });
 
   const handleAddImage = () => {
@@ -40,6 +42,8 @@ export function AddBikeForm() {
       toast.error('Please fill in all required fields'); return;
     }
     try {
+      const hostDiscountPercent = Number(form.hostDiscountPercent || 0);
+      const discountsConfig = createDiscountConfig(hostDiscountPercent, []);
       await createBike.mutateAsync({
         host_id: user.id, title: form.title, description: form.description || null,
         location: form.location, price_per_day: Number(form.price_per_day),
@@ -51,7 +55,11 @@ export function AddBikeForm() {
         helmet_included: form.helmet_included,
         availability_status: form.availability_status,
         images: form.images.length > 0 ? form.images : null,
-        currency: 'INR', discounts: null,
+        currency: 'INR',
+        discounts:
+          discountsConfig.hostDiscountPercent > 0 || discountsConfig.coupons.length > 0
+            ? discountsConfig
+            : null,
         latitude: null, longitude: null, slug: null, tags: null,
       });
       toast.success('Bike listing created!');
@@ -62,6 +70,7 @@ export function AddBikeForm() {
   };
 
   const set = (key: string, val: any) => setForm(p => ({ ...p, [key]: val }));
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
@@ -135,6 +144,18 @@ export function AddBikeForm() {
               <div className="flex items-center justify-between">
                 <Label>Helmet included</Label>
                 <Switch checked={form.helmet_included} onCheckedChange={v => set('helmet_included', v)} />
+              </div>
+              <div>
+                <Label htmlFor="host-discount">Host Discount (%)</Label>
+                <Input
+                  id="host-discount"
+                  type="number"
+                  min={0}
+                  max={90}
+                  value={form.hostDiscountPercent}
+                  onChange={(e) => set('hostDiscountPercent', e.target.value)}
+                  placeholder="0"
+                />
               </div>
             </CardContent>
           </Card>

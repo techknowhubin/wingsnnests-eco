@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
@@ -22,15 +22,9 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"user" | "host">("user");
   const [loading, setLoading] = useState(false);
-  const { signUp, signInWithProvider, user } = useAuth();
+  const { signUp, signInWithProvider } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      navigate(role === "host" ? "/onboarding/host" : "/onboarding/user");
-    }
-  }, [user, navigate, role]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +33,7 @@ const Signup = () => {
       signupSchema.parse({ fullName, email, password });
       setLoading(true);
 
-      const { error } = await signUp(email, password, fullName, role);
+      const { data, error } = await signUp(email, password, fullName, role);
 
       if (error) {
         toast({
@@ -48,10 +42,19 @@ const Signup = () => {
           description: error.message,
         });
       } else {
-        toast({
-          title: "Account Created!",
-          description: "Please check your email to verify your account.",
-        });
+        if (data.session) {
+          toast({
+            title: "Account Created!",
+            description: "Let's complete your onboarding.",
+          });
+          navigate(role === "host" ? "/onboarding/host" : "/onboarding/user");
+        } else {
+          toast({
+            title: "Account Created!",
+            description: "Please check your email to verify your account.",
+          });
+          navigate("/login");
+        }
       }
     } catch (error) {
       if (error instanceof z.ZodError) {

@@ -7,11 +7,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import hondaCityImage from "@/assets/vehicles/honda-city.jpg";
-
-const carImageMap: Record<string, string> = {
-  "honda-city.jpg": hondaCityImage,
-};
+import { resolveListingCardImage } from "@/lib/listing-images";
 
 interface Car {
   id: string;
@@ -35,6 +31,7 @@ const Cars = () => {
           .from("cars")
           .select("id, title, location, price_per_day, currency, rating, images")
           .eq("availability_status", true)
+          .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
           .order("created_at", { ascending: false })
           .limit(4);
@@ -103,7 +100,7 @@ const Cars = () => {
               <ListingCard
                 key={car.id}
                 id={car.id}
-                image={car.images?.[0]?.startsWith('http') ? car.images[0] : (carImageMap[car.images?.[0]] || hondaCityImage)}
+                image={resolveListingCardImage(car.images, "car")}
                 title={car.title}
                 location={car.location}
                 price={`${car.currency === 'INR' ? '₹' : '$'}${car.price_per_day.toLocaleString()}`}
