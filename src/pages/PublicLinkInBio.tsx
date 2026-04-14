@@ -6,7 +6,7 @@ import { getLinkInBioPageBySlug, formatPrice } from "@/lib/supabase-helpers";
 import { parseListingDiscountConfig } from "@/lib/discounts";
 import type { BookingDetails } from "@/types/booking";
 import {
-  Globe, Instagram, Facebook, Twitter, Mail, Phone, MapPin,
+  Globe, Instagram, Facebook, Twitter, Mail, Phone, MapPin, Youtube,
   ArrowUpRight, ChevronLeft, Star, Users, BedDouble, Bath,
   CalendarDays, Minus, Plus, Share2, Heart, MoreHorizontal,
   Wifi, Tv, Coffee, Wind, Utensils, Snowflake, Dumbbell, ParkingCircle, Camera,
@@ -27,6 +27,7 @@ interface LinkInBioSettings {
   theme: "forest" | "minimal" | "sunset" | "ocean";
   showEmail: boolean; showPhone: boolean; showLocation: boolean;
   instagram: string; facebook: string; twitter: string; website: string;
+  youtube: string; email: string;
   featuredListings: string[];
 }
 
@@ -43,10 +44,10 @@ interface Listing {
 // ── Themes ────────────────────────────────────────────────────────────────
 
 const themes = {
-  forest: { bg: "bg-gradient-to-br from-[#013220] to-[#0a4a32]", text: "text-white", socialChip: "bg-white/10 border-white/20", card: "bg-white/10 backdrop-blur-sm border-white/20", muted: "text-white/75", footer: "text-white/70 border-white/20" },
-  minimal: { bg: "bg-white", text: "text-gray-900", socialChip: "bg-gray-100 border-gray-200", card: "bg-gray-50 border-gray-200", muted: "text-gray-500", footer: "text-gray-600 border-gray-200" },
-  sunset: { bg: "bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600", text: "text-white", socialChip: "bg-white/10 border-white/20", card: "bg-white/10 backdrop-blur-sm border-white/20", muted: "text-white/75", footer: "text-white/70 border-white/20" },
-  ocean: { bg: "bg-gradient-to-br from-blue-400 via-teal-500 to-emerald-600", text: "text-white", socialChip: "bg-white/10 border-white/20", card: "bg-white/10 backdrop-blur-sm border-white/20", muted: "text-white/75", footer: "text-white/70 border-white/20" },
+  forest: { bg: "bg-gradient-to-br from-[#013220] to-[#0a4a32]", text: "text-white", socialChip: "bg-white/10 border-white/20", card: "bg-white/10 backdrop-blur-sm border-white/20", muted: "text-white/75", footer: "text-white/70 border-white/20", discount: "text-[#e5f76e]" },
+  minimal: { bg: "bg-white", text: "text-gray-900", socialChip: "bg-gray-100 border-gray-200", card: "bg-gray-100/50 border-gray-200", muted: "text-gray-500", footer: "text-gray-600 border-gray-200", discount: "text-[#065f46]" },
+  luxury: { bg: "bg-[#0a0a0a]", text: "text-white", socialChip: "bg-zinc-800 border-zinc-700", card: "bg-zinc-900 border-zinc-800", muted: "text-zinc-400", footer: "text-zinc-500 border-zinc-900", discount: "text-[#e5f76e]" },
+  electric: { bg: "bg-[#e5f76e]", text: "text-[#065f46]", socialChip: "bg-[#065f46]/10 border-[#065f46]/20", card: "bg-white/50 border-[#065f46]/10", muted: "text-[#065f46]/70", footer: "text-[#065f46]/40 border-[#065f46]/10", discount: "text-[#065f46]" },
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -549,9 +550,21 @@ export default function PublicLinkInBio() {
 
   const T = themes[settings.theme] ?? themes.forest;
 
+  const formatSocialLink = (val: string, type: "ig" | "fb" | "tw" | "yt" | "email" | "web") => {
+    if (!val) return "";
+    if (val.startsWith("http") || val.startsWith("mailto:")) return val;
+    const clean = val.startsWith("@") ? val.slice(1) : val;
+    if (type === "ig") return `https://instagram.com/${clean}`;
+    if (type === "fb") return `https://facebook.com/${clean}`;
+    if (type === "tw") return `https://twitter.com/${clean}`;
+    if (type === "yt") return `https://youtube.com/@${clean}`;
+    if (type === "email") return `mailto:${val}`;
+    return val.startsWith("www") ? `https://${val}` : `https://${val}`;
+  };
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-6">
-      <div className="w-full max-w-[375px] h-[667px] rounded-3xl border-8 border-gray-900 overflow-hidden shadow-2xl relative">
+    <div className="sm:min-h-screen sm:bg-stone-100 sm:dark:bg-stone-900 sm:flex sm:items-center sm:justify-center sm:p-6">
+      <div className="w-full h-screen sm:h-[667px] sm:max-w-[375px] sm:rounded-3xl sm:border-[8px] sm:border-gray-900/90 overflow-hidden sm:shadow-2xl shadow-none relative bg-background">
         <div className={`w-full h-full flex flex-col ${T.bg} ${T.text} relative`}>
 
           {/* ── Detail screen overlaid ── */}
@@ -565,9 +578,9 @@ export default function PublicLinkInBio() {
 
           {/* ── Scrollable list area ── */}
           <div className={`flex-1 ${selectedListing ? "overflow-hidden" : "overflow-y-auto"}`}>
-            <div className="px-4 py-8">
+            <div className="px-3 py-5">
             {/* Profile */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-5">
               <div className="w-24 h-24 mx-auto rounded-full bg-white/20 border-4 border-white/30 overflow-hidden mb-4 flex items-center justify-center text-3xl font-bold">
                 {hostProfile?.profile_image
                   ? <img src={hostProfile.profile_image} alt={settings.businessName} className="w-full h-full object-cover" />
@@ -583,15 +596,41 @@ export default function PublicLinkInBio() {
                 </p>
               </div>
               <div className="flex items-center justify-center gap-3 mt-3">
-                {settings.instagram && <div className={`p-2 rounded-full border ${T.socialChip}`}><Instagram className="h-4 w-4" /></div>}
-                {settings.facebook  && <div className={`p-2 rounded-full border ${T.socialChip}`}><Facebook  className="h-4 w-4" /></div>}
-                {settings.twitter   && <div className={`p-2 rounded-full border ${T.socialChip}`}><Twitter   className="h-4 w-4" /></div>}
-                {settings.website   && <div className={`p-2 rounded-full border ${T.socialChip}`}><Globe     className="h-4 w-4" /></div>}
+                {settings.instagram && (
+                  <a href={formatSocialLink(settings.instagram, "ig")} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-full border ${T.socialChip} hover:opacity-80 transition-opacity`}>
+                    <Instagram className="h-4 w-4" />
+                  </a>
+                )}
+                {settings.facebook && (
+                  <a href={formatSocialLink(settings.facebook, "fb")} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-full border ${T.socialChip} hover:opacity-80 transition-opacity`}>
+                    <Facebook className="h-4 w-4" />
+                  </a>
+                )}
+                {settings.twitter && (
+                  <a href={formatSocialLink(settings.twitter, "tw")} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-full border ${T.socialChip} hover:opacity-80 transition-opacity`}>
+                    <Twitter className="h-4 w-4" />
+                  </a>
+                )}
+                {settings.youtube && (
+                  <a href={formatSocialLink(settings.youtube, "yt")} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-full border ${T.socialChip} hover:opacity-80 transition-opacity`}>
+                    <Youtube className="h-4 w-4" />
+                  </a>
+                )}
+                {settings.email && (
+                  <a href={formatSocialLink(settings.email, "email")} className={`p-2 rounded-full border ${T.socialChip} hover:opacity-80 transition-opacity`}>
+                    <Mail className="h-4 w-4" />
+                  </a>
+                )}
+                {settings.website && (
+                  <a href={formatSocialLink(settings.website, "web")} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-full border ${T.socialChip} hover:opacity-80 transition-opacity`}>
+                    <Globe className="h-4 w-4" />
+                  </a>
+                )}
               </div>
             </div>
 
             {/* Listings */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               {listings.map((listing) => (
                 <button
                   key={`${listing.type}-${listing.id}`}
@@ -612,10 +651,15 @@ export default function PublicLinkInBio() {
                       <div className="flex-1 min-w-0 flex flex-col justify-center">
                         <p className="font-semibold text-sm leading-snug truncate">{listing.title}</p>
                         <p className={`text-[10px] truncate ${T.muted}`}>{listing.location}</p>
-                        <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-                          <p className="text-sm font-bold">{formatPrice(listing.discountedPrice)}</p>
+                        <div className="mt-1 flex flex-col">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-bold">{formatPrice(listing.discountedPrice)}</p>
+                            {listing.hostDiscountPercent > 0 && (
+                               <p className={`text-[10px] font-bold ${T.discount}`}>−{listing.hostDiscountPercent}%</p>
+                            )}
+                          </div>
                           {listing.hostDiscountPercent > 0 && (
-                            <p className="text-[10px] font-semibold text-emerald-300">−{listing.hostDiscountPercent}%</p>
+                            <p className={`text-[10px] line-through ${T.muted}`}>{formatPrice(listing.price)}</p>
                           )}
                         </div>
                       </div>

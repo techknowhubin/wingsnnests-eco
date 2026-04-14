@@ -22,6 +22,8 @@ import {
   Sparkles,
   Upload,
   Camera,
+  Youtube,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,7 +53,7 @@ interface LinkInBioSettings {
   businessName: string;
   tagline: string;
   bio: string;
-  theme: 'forest' | 'minimal' | 'sunset' | 'ocean';
+  theme: 'forest' | 'minimal' | 'luxury' | 'electric';
   showEmail: boolean;
   showPhone: boolean;
   showLocation: boolean;
@@ -59,6 +61,8 @@ interface LinkInBioSettings {
   facebook: string;
   twitter: string;
   website: string;
+  youtube?: string;
+  email?: string;
   featuredListings: string[];
 }
 
@@ -69,6 +73,7 @@ const themes = {
     text: 'text-white',
     accent: 'bg-[#FFFEF5]',
     card: 'bg-white/10 backdrop-blur-sm border-white/20',
+    discount: 'text-[#e5f76e]',
   },
   minimal: {
     name: 'Minimal',
@@ -76,20 +81,23 @@ const themes = {
     text: 'text-gray-900',
     accent: 'bg-gray-900',
     card: 'bg-gray-50 border-gray-200',
+    discount: 'text-[#065f46]',
   },
-  sunset: {
-    name: 'Sunset',
-    bg: 'bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600',
+  luxury: {
+    name: 'Luxury',
+    bg: 'bg-[#0a0a0a]',
     text: 'text-white',
-    accent: 'bg-white',
-    card: 'bg-white/10 backdrop-blur-sm border-white/20',
+    accent: 'bg-zinc-100',
+    card: 'bg-zinc-900 border-zinc-800',
+    discount: 'text-[#e5f76e]',
   },
-  ocean: {
-    name: 'Ocean',
-    bg: 'bg-gradient-to-br from-blue-400 via-teal-500 to-emerald-600',
-    text: 'text-white',
-    accent: 'bg-white',
-    card: 'bg-white/10 backdrop-blur-sm border-white/20',
+  electric: {
+    name: 'Electric',
+    bg: 'bg-[#e5f76e]',
+    text: 'text-[#065f46]',
+    accent: 'bg-[#065f46]',
+    card: 'bg-white/50 border-[#065f46]/10',
+    discount: 'text-[#065f46]',
   },
 };
 
@@ -123,6 +131,8 @@ export function LinkInBioGenerator() {
     facebook: '',
     twitter: '',
     website: '',
+    youtube: '',
+    email: '',
     featuredListings: [],
   });
 
@@ -494,6 +504,30 @@ export function LinkInBioGenerator() {
                     />
                   </div>
                   <div>
+                    <Label htmlFor="youtube" className="flex items-center gap-2">
+                      <Youtube className="h-4 w-4" />
+                      YouTube
+                    </Label>
+                    <Input
+                      id="youtube"
+                      value={settings.youtube}
+                      onChange={(e) => setSettings({ ...settings, youtube: e.target.value })}
+                      placeholder="youtube.com/@username"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email_link" className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Contact Email (Icon)
+                    </Label>
+                    <Input
+                      id="email_link"
+                      value={settings.email}
+                      onChange={(e) => setSettings({ ...settings, email: e.target.value })}
+                      placeholder="contact@yourbusiness.com"
+                    />
+                  </div>
+                  <div>
                     <Label htmlFor="website" className="flex items-center gap-2">
                       <Globe className="h-4 w-4" />
                       Website
@@ -598,96 +632,92 @@ export function LinkInBioGenerator() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="mx-auto w-full max-w-[375px] h-[667px] rounded-3xl border-8 border-gray-900 overflow-hidden shadow-2xl">
-                <div className={`w-full h-full overflow-y-auto ${selectedTheme.bg} ${selectedTheme.text}`}>
-                  {/* Profile Section */}
-                  <div className="p-6 text-center">
-                    <div className="w-24 h-24 mx-auto rounded-full bg-white/20 border-4 border-white/30 overflow-hidden mb-4">
-                      {profile?.profile_image ? (
-                        <img
-                          src={profile.profile_image}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-3xl font-bold">
-                          {settings.businessName.charAt(0) || 'X'}
+              <div className="mx-auto w-full max-w-[375px] h-[667px] rounded-3xl border-8 border-gray-900 overflow-hidden shadow-2xl">                <div className={`w-full h-full flex flex-col ${selectedTheme.bg} ${selectedTheme.text}`}>
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="px-3 py-5">
+                      {/* Profile Section */}
+                      <div className="text-center mb-5">
+                        <div className="w-24 h-24 mx-auto rounded-full bg-white/20 border-4 border-white/30 overflow-hidden mb-4 flex items-center justify-center text-3xl font-bold">
+                          {profile?.profile_image ? (
+                            <img src={profile.profile_image} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            settings.businessName?.charAt(0) || 'X'
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <h1 className="text-xl font-bold">{settings.businessName || 'Your Business'}</h1>
-                    <p className="text-sm opacity-80 mt-1">{settings.tagline}</p>
-                    <p className="text-sm opacity-70 mt-3 px-4">{settings.bio}</p>
+                        <h1 className="text-xl font-bold">{settings.businessName || 'Your Business'}</h1>
+                        <p className="text-sm opacity-80 mt-1">{settings.tagline}</p>
+                        <p className="text-sm opacity-70 mt-3 px-4">{settings.bio}</p>
+                        
+                        <div className="flex items-center justify-center gap-1.5 mt-3">
+                          <p className="text-[10px] flex items-center gap-1.5 opacity-60">
+                            <Phone className="h-3 w-3" />
+                            Phone available after booking
+                          </p>
+                        </div>
 
-                    {/* Social Icons */}
-                    <div className="flex justify-center gap-4 mt-4">
-                      {settings.instagram && (
-                        <div className="p-2 rounded-full bg-white/10">
-                          <Instagram className="h-5 w-5" />
-                        </div>
-                      )}
-                      {settings.facebook && (
-                        <div className="p-2 rounded-full bg-white/10">
-                          <Facebook className="h-5 w-5" />
-                        </div>
-                      )}
-                      {settings.twitter && (
-                        <div className="p-2 rounded-full bg-white/10">
-                          <Twitter className="h-5 w-5" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Listings */}
-                  <div className="px-4 pb-6 space-y-3">
-                    {allListings.slice(0, 4).map((listing) => (
-                      <div
-                        key={listing.id}
-                        className={`p-3 rounded-xl ${selectedTheme.card} border`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-16 h-16 rounded-lg bg-white/10 overflow-hidden shrink-0">
-                            {listing.images?.[0] && (
-                              <img
-                                src={listing.images[0]}
-                                alt=""
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">{listing.title}</p>
-                            <p className="text-xs opacity-70 truncate">{listing.location}</p>
-                            <div className="text-sm mt-1 flex items-center gap-2">
-                              <p className="font-bold">
-                                {formatPrice(listing.discountedPrice)}{listing.unit}
-                              </p>
-                              {listing.hostDiscountPercent > 0 ? (
-                                <>
-                                  <p className="text-xs opacity-70 line-through">{formatPrice(listing.price)}</p>
-                                  <p className="text-xs font-semibold text-emerald-300">-{listing.hostDiscountPercent}%</p>
-                                </>
-                              ) : null}
+                        {/* Social Icons */}
+                        <div className="flex justify-center gap-3 mt-4">
+                          {[
+                            { val: settings.instagram, icon: Instagram },
+                            { val: settings.facebook, icon: Facebook },
+                            { val: settings.twitter, icon: Twitter },
+                            { val: settings.youtube, icon: Youtube },
+                            { val: settings.email, icon: Mail },
+                            { val: settings.website, icon: Globe },
+                          ].map((social, i) => social.val && (
+                            <div key={i} className={`p-2 rounded-full border ${selectedTheme.card} opacity-80 hover:opacity-100 transition-opacity`}>
+                              <social.icon className="h-4 w-4" />
                             </div>
-                          </div>
+                          ))}
                         </div>
                       </div>
-                    ))}
+
+                      {/* Listings */}
+                      <div className="space-y-2">
+                        {allListings.slice(0, 4).map((listing, i) => (
+                          <div key={i} className={`p-2 border rounded-2xl relative shadow-sm ${selectedTheme.card}`}>
+                             <span className="absolute top-2 right-2 inline-flex items-center justify-center rounded-full border-none p-1.5 shadow-sm bg-[#e5f76e] text-black">
+                               <ArrowUpRight className="h-3.5 w-3.5" />
+                             </span>
+                             <div className="flex gap-2 pr-8">
+                               <div className="h-16 w-16 rounded-xl overflow-hidden bg-white/10 shrink-0">
+                                 {listing.images?.[0] && <img src={listing.images[0]} alt="" className="h-full w-full object-cover" />}
+                               </div>
+                               <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                 <p className="font-semibold text-sm leading-snug truncate">{listing.title}</p>
+                                 <p className="text-[10px] truncate opacity-60">{listing.location}</p>
+                                 <div className="mt-1 flex flex-col">
+                                   <div className="flex items-center gap-1.5">
+                                     <p className="text-sm font-bold">{formatPrice(listing.discountedPrice)}</p>
+                                     {listing.hostDiscountPercent > 0 && (
+                                       <p className={`text-[10px] font-bold ${selectedTheme.discount}`}>-{listing.hostDiscountPercent}%</p>
+                                     )}
+                                   </div>
+                                   {listing.hostDiscountPercent > 0 && (
+                                     <p className="text-[10px] opacity-60 line-through">{formatPrice(listing.price)}</p>
+                                   )}
+                                 </div>
+                               </div>
+                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Footer */}
-                  <div className="p-4 text-center border-t border-white/10 space-y-1">
-                    <div className="flex items-center justify-center gap-1.5 opacity-60">
+                  {/* Fixed Footer */}
+                  <div className="py-3 text-center border-t border-white/10 opacity-60">
+                    <div className="flex items-center justify-center gap-1.5">
                       <span className="text-[10px]">Powered by</span>
                       <img src={logo} alt="Xplorwing" className="h-3.5 dark:hidden" />
                       <img src={logoLight} alt="Xplorwing" className="h-3.5 hidden dark:block" />
                     </div>
-                    <p className="text-[9px] opacity-40">
-                      © {new Date().getFullYear()} WINGSNNESTS ECO SOLUTIONS PVT LTD. All rights reserved.
+                    <p className="text-[9px] mt-0.5">
+                      © {new Date().getFullYear()} WINGSNNESTS ECO SOLUTIONS PVT LTD.
                     </p>
                   </div>
                 </div>
+
               </div>
             </CardContent>
           </Card>
