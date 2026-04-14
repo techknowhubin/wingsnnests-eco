@@ -202,12 +202,12 @@ const Login = () => {
 
             {/* Forgot Password */}
             <div className="flex justify-end">
-              <a
-                href="#"
+              <Link
+                to="/forgot-password"
                 className="text-sm text-primary-text hover:text-accent transition-colors"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Sign In Button */}

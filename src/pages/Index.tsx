@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-travel.jpg";
 import heroXplorwing from "@/assets/hero-xplorwing.jpg";
 import heroTajmahal from "@/assets/hero-tajmahal.jpg";
+import { format } from "date-fns";
+import { BookOpen } from "lucide-react";
 
 import heroOutstationCabs from "@/assets/hero-outstation-cabs.jpg";
 import homestaysIcon from "@/assets/categories/homestays-icon.png";
@@ -121,6 +123,7 @@ const Index = () => {
   const [bikes, setBikes] = useState<any[]>([]);
   const [cars, setCars] = useState<any[]>([]);
   const [experiences, setExperiences] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [categoryPage, setCategoryPage] = useState(0);
   const [heroSlide, setHeroSlide] = useState(0);
@@ -201,17 +204,46 @@ const Index = () => {
     const { data } = await supabase.from("experiences").select("*").eq("availability_status", true).eq("marketplace_visible", true).order("featured", { ascending: false }).order("created_at", { ascending: false });
     return data || [];
   };
+  const fetchBlogs = async () => {
+    const { data } = await supabase
+      .from("blog_posts")
+      .select(`
+        id,
+        title,
+        excerpt,
+        featured_image,
+        published_at,
+        slug,
+        profiles:author_id ( full_name ),
+        blog_categories:category_id ( name )
+      `)
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .limit(3);
+    
+    return (data || []).map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      excerpt: p.excerpt,
+      image: p.featured_image,
+      date: p.published_at ? format(new Date(p.published_at), "MMMM d, yyyy") : "",
+      author: p.profiles?.full_name || "Xplorwing Team",
+      category: p.blog_categories?.name || "Travel",
+      slug: p.slug
+    }));
+  };
 
   useEffect(() => {
     const loadInitialData = async () => {
       setLoading(true);
-      const [staysData, bikesData, carsData, experiencesData] = await Promise.all([
-        fetchStays(), fetchBikes(), fetchCars(), fetchExperiences(),
+      const [staysData, bikesData, carsData, experiencesData, blogsData] = await Promise.all([
+        fetchStays(), fetchBikes(), fetchCars(), fetchExperiences(), fetchBlogs(),
       ]);
       setStays(staysData);
       setBikes(bikesData);
       setCars(carsData);
       setExperiences(experiencesData);
+      setBlogs(blogsData);
       setLoading(false);
     };
     loadInitialData();
@@ -424,27 +456,29 @@ const Index = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { image: homestayImage, title: "10 Hidden Gems: Homestays in Himachal Pradesh", excerpt: "Discover authentic mountain living in these carefully curated homestays across Himachal.", author: "Priya Sharma", date: "March 15, 2025", category: "Stays" },
-              { image: bikeImage, title: "The Ultimate Leh-Ladakh Bike Trip Guide", excerpt: "Everything you need to know for your dream motorcycle journey through the Himalayas.", author: "Rahul Mehta", date: "March 12, 2025", category: "Bikes" },
-              { image: experienceImage, title: "5 Unique Cultural Experiences in Rajasthan", excerpt: "Immerse yourself in Rajasthani culture through these authentic local experiences.", author: "Anjali Verma", date: "March 10, 2025", category: "Experiences" },
-            ].map((post, index) => (
+            {blogs.map((post, index) => (
               <motion.article
-                key={index}
+                key={post.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 className="glass-effect rounded-2xl overflow-hidden hover-lift cursor-pointer group"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+                <div className="relative h-48 overflow-hidden bg-muted">
+                  {post.image ? (
+                    <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <BookOpen className="h-10 w-10 text-muted-foreground/40" />
+                    </div>
+                  )}
                   <div className="absolute top-4 left-4">
                     <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">{post.category}</span>
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary-text transition-colors line-clamp-2">{post.title}</h3>
+                  <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">{post.title}</h3>
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{post.excerpt}</p>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{post.author}</span>

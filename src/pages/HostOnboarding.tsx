@@ -436,7 +436,27 @@ export default function HostOnboarding() {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      const addressString = [biz.street, biz.city, biz.state, biz.pin].filter(Boolean).join(", ");
+
+      const { error: profileError } = await supabase
+        .from("host_profiles")
+        .upsert({
+          id: user.id,
+          business_name: biz.hostType === "business" ? biz.businessName : biz.fullName,
+          business_type: biz.hostType === "business" ? biz.businessType : "Individual",
+          gst_number: biz.gstNumber || null,
+          bank_account_holder: bank.accountHolderName,
+          bank_account_number: bank.accountNumber,
+          bank_ifsc: bank.ifscCode,
+          aadhaar_last_four: identity.aadhaarNumber ? identity.aadhaarNumber.slice(-4) : null,
+          pan_number: identity.panNumber || null,
+          service_types: biz.serviceTypes,
+          address: addressString || null,
+        });
+
+      if (profileError) throw profileError;
+
+      const { error: roleError } = await supabase
         .from("user_roles")
         .upsert(
           {
@@ -446,11 +466,12 @@ export default function HostOnboarding() {
           { onConflict: "user_id,role", ignoreDuplicates: true },
         );
 
-      if (error) throw error;
+      if (roleError) throw roleError;
 
       toast.success("Host profile submitted for review!");
       navigate("/host");
     } catch (error) {
+      console.error(error);
       toast.error("Could not complete onboarding. Please try again.");
     }
   };

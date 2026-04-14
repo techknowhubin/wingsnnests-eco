@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -33,6 +34,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -45,7 +47,6 @@ import { useProfile, useHostStays, useHostHotels, useHostResorts, useHostCars, u
 import { generateSlug, formatPrice } from '@/lib/supabase-helpers';
 import { parseListingDiscountConfig } from '@/lib/discounts';
 import { toast } from 'sonner';
-import { useRef } from 'react';
 import logo from '@/assets/logo.png';
 import logoLight from '@/assets/logo-light.png';
 
@@ -119,6 +120,8 @@ export function LinkInBioGenerator() {
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   const [copied, setCopied] = useState(false);
+  const qrCanvasRef = useRef<HTMLDivElement>(null);
+
   const [settings, setSettings] = useState<LinkInBioSettings>({
     businessName: profile?.full_name || '',
     tagline: 'Your trusted travel partner',
@@ -174,6 +177,23 @@ export function LinkInBioGenerator() {
   const publishedSlug = linkInBioPage?.slug || slug;
   const appOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://xplorwing.com';
   const linkUrl = `${appOrigin}/p/${publishedSlug}`;
+
+  const handleDownloadQr = useCallback(() => {
+    const canvas = document.getElementById('qr-download-canvas') as HTMLCanvasElement | null;
+    if (!canvas) { toast.error('QR canvas not ready'); return; }
+    canvas.toBlob((blob) => {
+      if (!blob) { toast.error('Failed to generate QR image'); return; }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `qr-${publishedSlug}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    }, 'image/png');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [publishedSlug]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(linkUrl);
@@ -287,6 +307,19 @@ export function LinkInBioGenerator() {
         </CardContent>
       </Card>
 
+      {/* Hidden QR canvas — always mounted, used for PNG download */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', pointerEvents: 'none' }} aria-hidden="true">
+        <QRCodeCanvas
+          id="qr-download-canvas"
+          value={linkUrl}
+          size={400}
+          bgColor="#ffffff"
+          fgColor="#013220"
+          level="H"
+          includeMargin={true}
+        />
+      </div>
+
       {/* Your Link */}
       <Card>
         <CardHeader>
@@ -305,9 +338,53 @@ export function LinkInBioGenerator() {
             <Button variant="outline" size="icon" onClick={handleCopyLink}>
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
-            <Button variant="outline" size="icon">
-              <QrCode className="h-4 w-4" />
-            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="icon" title="Show QR Code">
+                  <QrCode className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent side="bottom" align="end" className="w-72 p-5">
+                <div className="flex flex-col items-center gap-4">
+                  <div>
+                    <h3 className="text-base font-bold text-foreground text-center">QR Code</h3>
+                    <p className="text-xs text-muted-foreground text-center mt-0.5 truncate max-w-[220px]">{linkUrl}</p>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl shadow-inner">
+                    <QRCodeCanvas
+                      value={linkUrl}
+                      size={200}
+                      bgColor="#ffffff"
+                      fgColor="#013220"
+                      level="H"
+                      includeMargin={false}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Scan to open your Link-in-Bio page
+                  </p>
+                  <div className="flex gap-2 w-full">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={handleCopyLink}
+                    >
+                      {copied ? <Check className="h-3.5 w-3.5 mr-1" /> : <Copy className="h-3.5 w-3.5 mr-1" />}
+                      {copied ? 'Copied!' : 'Copy'}
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      onClick={handleDownloadQr}
+                    >
+                      <svg className="h-3.5 w-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Download
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </CardContent>
       </Card>

@@ -8,6 +8,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Stays from "./pages/Stays";
 import Hotels from "./pages/Hotels";
 import Resorts from "./pages/Resorts";
@@ -52,6 +54,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/stays" element={<Stays />} />
             <Route path="/stays/:id" element={<StayDetail />} />
             <Route path="/hotels" element={<Hotels />} />

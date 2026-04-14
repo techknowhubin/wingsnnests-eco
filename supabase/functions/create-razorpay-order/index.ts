@@ -9,7 +9,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const RAZORPAY_KEY_ID = Deno.env.get("RAZORPAY_KEY_ID") ?? "rzp_live_ScWwVsMkd4ManN";
+    const RAZORPAY_KEY_ID = Deno.env.get("RAZORPAY_KEY_ID");
+    if (!RAZORPAY_KEY_ID) {
+      throw new Error("RAZORPAY_KEY_ID is not configured");
+    }
     const RAZORPAY_KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET");
     if (!RAZORPAY_KEY_SECRET) {
       throw new Error("RAZORPAY_KEY_SECRET is not configured");

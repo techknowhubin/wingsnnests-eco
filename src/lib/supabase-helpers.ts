@@ -467,7 +467,7 @@ export async function getHostResorts(hostId: string) {
 async function attachHostNames(listings: any[], isAdminUser: boolean) {
   if (!listings || listings.length === 0) return listings;
 
-  const hostIds = Array.from(new Set(listings.map((item) => item.host_id || item.user_id).filter(Boolean)));
+  const hostIds = Array.from(new Set(listings.map((item) => item.host_id).filter(Boolean)));
   if (hostIds.length === 0) return listings;
 
   const { data: hostProfiles, error: hostError } = await supabase
@@ -483,7 +483,7 @@ async function attachHostNames(listings: any[], isAdminUser: boolean) {
   const nameById = new Map((hostProfiles ?? []).map((p) => [p.id, p.full_name || 'No name provided']));
 
   return listings.map((listing) => {
-    const hostId = listing.host_id || listing.user_id;
+    const hostId = listing.host_id;
     return {
       ...listing,
       host_name: nameById.get(hostId) || (isAdminUser ? 'Unknown host' : undefined),

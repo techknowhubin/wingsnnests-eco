@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, ShieldCheck, Clock, ChevronRight, ChevronLeft,
@@ -14,9 +14,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/components/ThemeProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { DynamicLogo } from "@/components/DynamicLogo";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { useQueryClient } from "@tanstack/react-query";
 
 // ======================== Types ========================
 
@@ -31,12 +30,15 @@ interface DocState {
   otp?: string;
   phone?: string;
   otpSent?: boolean;
+  docNumber?: string;
+  frontUrl?: string;
+  backUrl?: string;
 }
 
 // ======================== Step Indicator ========================
 
 function StepIndicator({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
-  const labels = ["Welcome", "Aadhaar", "PAN Card", "Driving License", "Complete"];
+  const labels = ["Welcome", "Basic Info", "Aadhaar", "PAN Card", "Driving License", "Complete"];
   return (
     <div className="w-full max-w-2xl mx-auto mb-8">
       <Progress value={(currentStep / (totalSteps - 1)) * 100} className="h-2 mb-4" />
@@ -92,7 +94,7 @@ function FileUploadZone({
           <FileText className="h-5 w-5 text-accent" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{file.name}</p>
-            <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
+            <p className="text-xs text-muted-foreground text-[10px]">{(file.size / 1024).toFixed(1)} KB</p>
           </div>
           {preview && (
             <button type="button" onClick={() => window.open(preview, '_blank')} className="text-muted-foreground hover:text-foreground">
@@ -122,7 +124,7 @@ function FileUploadZone({
         >
           <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Drag & drop or click to upload</p>
-          <p className="text-xs text-muted-foreground mt-1">Max 5MB • JPG, PNG, PDF</p>
+          <p className="text-xs text-muted-foreground mt-1 text-[10px]">Max 5MB • JPG, PNG, PDF</p>
         </div>
       )}
     </div>
@@ -237,6 +239,7 @@ function DocVerificationStep({
   setDocState,
   isRequired,
   onVerified,
+  userId,
   onSkip,
 }: {
   docName: string;
@@ -246,23 +249,80 @@ function DocVerificationStep({
   setDocState: (s: DocState) => void;
   isRequired: boolean;
   onVerified: () => void;
+  userId: string;
   onSkip?: () => void;
 }) {
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const uploadFile = async (file: File, path: string) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `${userId}/${path}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('user-documents')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+    
+    const { data: { publicUrl } } = supabase.storage
+      .from('user-documents')
+      .getPublicUrl(filePath);
+      
+    return publicUrl;
+  };
 
   const handleUploadVerify = async () => {
     if (!docState.frontFile) {
       toast.error("Please upload the front side of your document");
       return;
     }
+    if (!docState.docNumber) {
+      toast.error(`Please enter your ${docName} number`);
+      return;
+    }
     setLoading(true);
     setDocState({ ...docState, status: "uploading" });
-    // Simulate upload + verification
-    await new Promise((r) => setTimeout(r, 2000));
-    setDocState({ ...docState, status: "verified" });
-    setLoading(false);
-    toast.success(`${docName} verified successfully!`);
-    onVerified();
+    
+    try {
+      const frontUrl = await uploadFile(docState.frontFile, `${docName.toLowerCase().replace(/\s+/g, '_')}_front`);
+      let backUrl = "";
+      if (docState.backFile) {
+         backUrl = await uploadFile(docState.backFile, `${docName.toLowerCase().replace(/\s+/g, '_')}_back`);
+      }
+
+      setDocState({ 
+        ...docState, 
+        status: "verified", 
+        frontUrl, 
+        backUrl 
+      });
+      
+      // 3. Persist to DB immediately so it shows in profile
+      const { error: dbError } = await (supabase as any).from("user_documents").upsert({
+        user_id: userId,
+        document_type: docName.toLowerCase().includes('aadhaar') ? 'aadhaar' : 
+                       docName.toLowerCase().includes('pan') ? 'pan' : 'driving_license',
+        document_number: docState.docNumber,
+        verification_status: "verified",
+        front_file_url: frontUrl,
+        back_file_url: backUrl,
+      }, { onConflict: 'user_id, document_type' });
+
+      if (dbError) throw dbError;
+
+      queryClient.invalidateQueries({ queryKey: ["user-kyc-docs", userId] });
+
+      toast.success(`${docName} uploaded and saved!`);
+      onVerified();
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      toast.error(err.message || "Failed to upload document");
+      setDocState({ ...docState, status: "pending" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSendOTP = async () => {
@@ -274,6 +334,10 @@ function DocVerificationStep({
   };
 
   const handleVerifyOTP = async () => {
+    if (!docState.docNumber && !docState.phone) {
+      toast.error("Document reference or phone required for verification");
+      return;
+    }
     setLoading(true);
     await new Promise((r) => setTimeout(r, 2000));
     setDocState({ ...docState, status: "verified" });
@@ -304,25 +368,36 @@ function DocVerificationStep({
         <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
           {docIcon}
         </div>
-        <div>
-          <h3 className="font-semibold text-foreground">{docName}</h3>
-          <p className="text-sm text-muted-foreground">{docDescription}</p>
+        <div className="flex-1">
+          <h3 className="font-semibold text-foreground text-sm">{docName}</h3>
+          <p className="text-xs text-muted-foreground">{docDescription}</p>
         </div>
         {isRequired && (
-          <span className="ml-auto text-xs font-medium px-2 py-1 rounded-full bg-destructive/10 text-destructive">Required</span>
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-destructive/10 text-destructive shrink-0">Required</span>
         )}
         {!isRequired && (
-          <span className="ml-auto text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">Optional</span>
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">Optional</span>
         )}
       </div>
 
       <Tabs defaultValue="upload" className="w-full">
-        <TabsList className="w-full grid grid-cols-2">
-          <TabsTrigger value="upload">Upload Docs</TabsTrigger>
-          <TabsTrigger value="digilocker">Use DigiLocker</TabsTrigger>
+        <TabsList className="w-full grid grid-cols-2 mb-4">
+          <TabsTrigger value="upload" className="text-xs">Upload Docs</TabsTrigger>
+          <TabsTrigger value="digilocker" className="text-xs">DigiLocker</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="upload" className="space-y-4 mt-4">
+        <div className="space-y-2 mb-4">
+          <label className="text-sm font-medium text-foreground">{docName} Number</label>
+          <input 
+            type="text" 
+            value={docState.docNumber || ""} 
+            onChange={(e) => setDocState({ ...docState, docNumber: e.target.value })} 
+            placeholder={`Enter your ${docName} ID/Number`}
+            className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+          />
+        </div>
+
+        <TabsContent value="upload" className="space-y-4">
           <FileUploadZone
             label="Front Side"
             file={docState.frontFile}
@@ -346,15 +421,15 @@ function DocVerificationStep({
           <Button
             type="button"
             onClick={handleUploadVerify}
-            disabled={!docState.frontFile || loading}
+            disabled={!docState.frontFile || !docState.docNumber || loading}
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-            {docState.status === "uploading" ? "Verifying..." : "Upload & Verify"}
+            {docState.status === "uploading" ? "Uploading..." : "Upload & Verify"}
           </Button>
         </TabsContent>
 
-        <TabsContent value="digilocker" className="mt-4">
+        <TabsContent value="digilocker" className="mt-0">
           <DigiLockerOTP
             phone={docState.phone || ""}
             setPhone={(p) => setDocState({ ...docState, phone: p })}
@@ -372,7 +447,7 @@ function DocVerificationStep({
         <button
           type="button"
           onClick={onSkip}
-          className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+          className="w-full text-center text-[11px] text-muted-foreground hover:text-foreground transition-colors py-2"
         >
           Skip, I'll do this later
         </button>
@@ -385,34 +460,120 @@ function DocVerificationStep({
 
 export default function UserOnboarding() {
   const { user, loading: authLoading } = useAuth();
-  const { theme } = useTheme();
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
+  const [searchParams] = useSearchParams();
+  const initialStep = parseInt(searchParams.get("step") || "0", 10);
+  const [step, setStep] = useState(initialStep);
   const [aadhaar, setAadhaar] = useState<DocState>({ status: "pending" });
   const [pan, setPan] = useState<DocState>({ status: "pending" });
   const [dl, setDl] = useState<DocState>({ status: "pending" });
 
-  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
+  const [basicInfo, setBasicInfo] = useState({
+    full_name: user?.user_metadata?.full_name || "",
+    phone: "",
+    address: "",
+    dietary_requirements: "",
+    travel_styles: [] as string[],
+  });
+
+  const firstName = basicInfo.full_name.split(" ")[0] || "there";
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/login");
+    } else if (user) {
+      if (!basicInfo.full_name) {
+        setBasicInfo(prev => ({ ...prev, full_name: user.user_metadata?.full_name || "" }));
+      }
+      
+      // Load existing KYC data
+      const loadKycData = async () => {
+        const [docsRes, profileRes] = await Promise.all([
+          (supabase as any).from("user_documents").select("*").eq("user_id", user.id),
+          supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
+        ]);
+
+        if (profileRes.data) {
+          setBasicInfo({
+            full_name: profileRes.data.full_name || user.user_metadata?.full_name || "",
+            phone: profileRes.data.phone || "",
+            address: profileRes.data.address || "",
+            dietary_requirements: profileRes.data.dietary_requirements || "",
+            travel_styles: profileRes.data.travel_styles || [],
+          });
+        }
+
+        if (docsRes.data) {
+          docsRes.data.forEach((doc: any) => {
+            const state = {
+              status: doc.verification_status,
+              docNumber: doc.document_number,
+              frontUrl: doc.front_file_url,
+              backUrl: doc.back_file_url,
+            };
+            if (doc.document_type === 'aadhaar') setAadhaar(state);
+            else if (doc.document_type === 'pan') setPan(state);
+            else if (doc.document_type === 'driving_license') setDl(state);
+          });
+        }
+      };
+      loadKycData();
     }
   }, [user, authLoading, navigate]);
 
   const saveKycStatus = async () => {
     if (!user) return;
-    // Save KYC completion status to profile
     try {
       await supabase
         .from("profiles")
         .update({ 
-          // We use a simple flag approach — the onboarding_completed field
-          // will be added via the migration
+          full_name: basicInfo.full_name,
+          phone: basicInfo.phone || aadhaar.phone,
+          address: basicInfo.address,
+          dietary_requirements: basicInfo.dietary_requirements,
+          travel_styles: basicInfo.travel_styles,
+          kyc_status: "submitted"
         })
         .eq("id", user.id);
+
+      // Save user documents
+      const docsToUpsert = [];
+      if (aadhaar.status !== "pending") {
+        docsToUpsert.push({
+          user_id: user.id,
+          document_type: 'aadhaar' as const,
+          document_number: aadhaar.docNumber || aadhaar.phone,
+          verification_status: aadhaar.status,
+          front_file_url: aadhaar.frontUrl,
+          back_file_url: aadhaar.backUrl,
+        });
+      }
+      if (pan.status !== "pending") {
+        docsToUpsert.push({
+          user_id: user.id,
+          document_type: 'pan' as const,
+          document_number: pan.docNumber,
+          verification_status: pan.status,
+          front_file_url: pan.frontUrl,
+          back_file_url: pan.backUrl,
+        });
+      }
+      if (dl.status !== "pending") {
+        docsToUpsert.push({
+          user_id: user.id,
+          document_type: 'driving_license' as const,
+          document_number: dl.docNumber,
+          verification_status: dl.status,
+          front_file_url: dl.frontUrl,
+          back_file_url: dl.backUrl,
+        });
+      }
+      
+      if (docsToUpsert.length > 0) {
+        await (supabase as any).from("user_documents").upsert(docsToUpsert, { onConflict: 'user_id, document_type' });
+      }
     } catch (err) {
-      // Silently handle — profile may not have the column yet
+      console.error("Profile save error:", err);
     }
   };
 
@@ -431,23 +592,23 @@ export default function UserOnboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-12">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="text-center mb-6">
           <button onClick={() => navigate("/")} className="transition-transform hover:scale-105 active:scale-95 mb-1">
             <DynamicLogo className="justify-center" />
           </button>
-          <p className="text-sm text-muted-foreground">User Onboarding</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">User Onboarding</p>
         </div>
 
-        <StepIndicator currentStep={step} totalSteps={5} />
+        <StepIndicator currentStep={step} totalSteps={6} />
 
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
+            exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
             {/* Step 0 — Welcome */}
@@ -459,7 +620,7 @@ export default function UserOnboarding() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-foreground mb-2">Hey {firstName}! 👋</h2>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Before you start exploring, we need to verify your identity. This helps keep our community safe and builds trust.
                     </p>
                   </div>
@@ -469,25 +630,25 @@ export default function UserOnboarding() {
                       <ShieldCheck className="h-5 w-5 text-accent" />
                       <div>
                         <span className="text-sm font-medium text-foreground">Aadhaar Card</span>
-                        <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive">Required</span>
+                        <span className="text-[10px] ml-2 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive uppercase">Required</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <FileText className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <span className="text-sm font-medium text-foreground">PAN Card</span>
-                        <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Optional</span>
+                        <span className="text-[10px] ml-2 px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase">Optional</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <FileText className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <span className="text-sm font-medium text-foreground">Driving License</span>
-                        <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Optional</span>
+                        <span className="text-[10px] ml-2 px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase">Optional</span>
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-3 pt-4">
                     <Button
                       onClick={() => setStep(1)}
                       className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-base font-semibold"
@@ -500,7 +661,7 @@ export default function UserOnboarding() {
                         navigate("/");
                         toast.info("You can complete KYC anytime from Profile → KYC Verification");
                       }}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Skip for now
                     </button>
@@ -509,58 +670,87 @@ export default function UserOnboarding() {
               </Card>
             )}
 
-            {/* Step 1 — Aadhaar */}
+            {/* Step 1 — Basic Profile Info */}
             {step === 1 && (
               <Card>
-                <CardContent className="p-6">
-                  <DocVerificationStep
-                    docName="Aadhaar Card"
-                    docDescription="Government-issued ID for identity verification"
-                    docIcon={<ShieldCheck className="h-5 w-5 text-primary" />}
-                    docState={aadhaar}
-                    setDocState={setAadhaar}
-                    isRequired={true}
-                    onVerified={() => setTimeout(() => setStep(2), 500)}
-                  />
+                <CardContent className="p-6 space-y-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                      <FileText className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">Basic Profile</h3>
+                      <p className="text-xs text-muted-foreground uppercase">Step 1 of 5</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                       <label className="text-sm font-medium">Full Name</label>
+                       <input value={basicInfo.full_name} onChange={(e)=>setBasicInfo({...basicInfo, full_name: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-sm" placeholder="Your full name" required />
+                    </div>
+                    <div className="space-y-1.5">
+                       <label className="text-sm font-medium">Phone Number</label>
+                       <input type="tel" value={basicInfo.phone} onChange={(e)=>setBasicInfo({...basicInfo, phone: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-sm" placeholder="Your WhatsApp or mobile number" required />
+                    </div>
+                    <div className="space-y-1.5">
+                       <label className="text-sm font-medium">Mailing Address</label>
+                       <textarea value={basicInfo.address} onChange={(e)=>setBasicInfo({...basicInfo, address: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-input bg-background min-h-[80px] text-sm" placeholder="Full residential address" required />
+                    </div>
+                    <div className="space-y-1.5">
+                       <label className="text-sm font-medium text-foreground">Travel Styles (comma separated)</label>
+                       <input value={basicInfo.travel_styles.join(", ")} onChange={(e)=>setBasicInfo({...basicInfo, travel_styles: e.target.value.split(",").map(s => s.trim())})} placeholder="Backpacker, Luxury, solo..." className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm" />
+                    </div>
+                    <div className="space-y-1.5">
+                       <label className="text-sm font-medium text-foreground">Dietary Requirements</label>
+                       <input value={basicInfo.dietary_requirements} onChange={(e)=>setBasicInfo({...basicInfo, dietary_requirements: e.target.value})} placeholder="Vegan, Gluten-Free..." className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm" />
+                    </div>
+                  </div>
+                  
+                  <Button
+                    onClick={() => setStep(2)}
+                    disabled={!basicInfo.full_name || !basicInfo.phone || !basicInfo.address}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-base font-semibold mt-4"
+                  >
+                    Next: Verification <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
                 </CardContent>
               </Card>
             )}
 
-            {/* Step 2 — PAN */}
+            {/* Step 2 — Aadhaar */}
             {step === 2 && (
               <Card>
                 <CardContent className="p-6">
                   <DocVerificationStep
-                    docName="PAN Card"
-                    docDescription="Permanent Account Number for tax compliance"
-                    docIcon={<FileText className="h-5 w-5 text-primary" />}
-                    docState={pan}
-                    setDocState={setPan}
-                    isRequired={false}
+                    docName="Aadhaar Card"
+                    docDescription="Identity verification via Aadhaar"
+                    docIcon={<ShieldCheck className="h-5 w-5 text-primary" />}
+                    docState={aadhaar}
+                    setDocState={setAadhaar}
+                    isRequired={true}
+                    userId={user?.id || ""}
                     onVerified={() => setTimeout(() => setStep(3), 500)}
-                    onSkip={() => {
-                      setPan({ ...pan, status: "skipped" });
-                      setStep(3);
-                    }}
                   />
                 </CardContent>
               </Card>
             )}
 
-            {/* Step 3 — Driving License */}
+            {/* Step 3 — PAN */}
             {step === 3 && (
               <Card>
                 <CardContent className="p-6">
                   <DocVerificationStep
-                    docName="Driving License"
-                    docDescription="Required for vehicle rental bookings"
+                    docName="PAN Card"
+                    docDescription="Tax compliance ID"
                     docIcon={<FileText className="h-5 w-5 text-primary" />}
-                    docState={dl}
-                    setDocState={setDl}
+                    docState={pan}
+                    setDocState={setPan}
                     isRequired={false}
+                    userId={user?.id || ""}
                     onVerified={() => setTimeout(() => setStep(4), 500)}
                     onSkip={() => {
-                      setDl({ ...dl, status: "skipped" });
+                      setPan({ ...pan, status: "skipped" });
                       setStep(4);
                     }}
                   />
@@ -568,19 +758,41 @@ export default function UserOnboarding() {
               </Card>
             )}
 
-            {/* Step 4 — Completion */}
+            {/* Step 4 — Driving License */}
             {step === 4 && (
+              <Card>
+                <CardContent className="p-6">
+                  <DocVerificationStep
+                    docName="Driving License"
+                    docDescription="Rental booking compliance"
+                    docIcon={<FileText className="h-5 w-5 text-primary" />}
+                    docState={dl}
+                    setDocState={setDl}
+                    isRequired={false}
+                    userId={user?.id || ""}
+                    onVerified={() => setTimeout(() => setStep(5), 500)}
+                    onSkip={() => {
+                      setDl({ ...dl, status: "skipped" });
+                      setStep(5);
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Step 5 — Completion */}
+            {step === 5 && (
               <Card>
                 <CardContent className="p-8 text-center space-y-6">
                   <div className="h-16 w-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto">
                     <ShieldCheck className="h-8 w-8 text-accent" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-foreground mb-2">Verification Complete!</h2>
-                    <p className="text-muted-foreground">Here's a summary of your documents</p>
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Verification Done!</h2>
+                    <p className="text-muted-foreground text-sm">Your profile and identity documents are securely saved.</p>
                   </div>
 
-                  <div className="space-y-3 text-left">
+                  <div className="space-y-3 text-left max-w-sm mx-auto">
                     {[
                       { name: "Aadhaar Card", status: aadhaar.status },
                       { name: "PAN Card", status: pan.status },
@@ -591,10 +803,6 @@ export default function UserOnboarding() {
                           <div className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center">
                             <ShieldCheck className="h-4 w-4 text-accent" />
                           </div>
-                        ) : doc.status === "skipped" ? (
-                          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                          </div>
                         ) : (
                           <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
                             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -604,7 +812,7 @@ export default function UserOnboarding() {
                           <p className="text-sm font-medium text-foreground">{doc.name}</p>
                         </div>
                         <span
-                          className={`text-xs font-medium px-2 py-1 rounded-full ${
+                          className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
                             doc.status === "verified"
                               ? "bg-accent/10 text-accent"
                               : "bg-muted text-muted-foreground"
@@ -616,17 +824,11 @@ export default function UserOnboarding() {
                     ))}
                   </div>
 
-                  {(pan.status === "skipped" || dl.status === "skipped") && (
-                    <div className="bg-primary/10 rounded-xl p-4 text-sm text-foreground">
-                      💡 Complete your KYC anytime from <strong>Profile → KYC Verification</strong>
-                    </div>
-                  )}
-
                   <Button
                     onClick={handleComplete}
-                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-6 text-base font-semibold"
+                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground py-6 text-base font-semibold mt-4"
                   >
-                    Go to Dashboard <ArrowRight className="h-4 w-4 ml-2" />
+                    Finish Setup <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </CardContent>
               </Card>
@@ -634,15 +836,15 @@ export default function UserOnboarding() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Back button for steps 1-3 */}
-        {step > 0 && step < 4 && (
-          <div className="mt-4 text-center">
+        {/* Back button */}
+        {step > 0 && step < 5 && (
+          <div className="mt-6 text-center">
             <button
               type="button"
               onClick={() => setStep(step - 1)}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center justify-center mx-auto gap-1"
             >
-              <ChevronLeft className="h-4 w-4" /> Go back
+              <ChevronLeft className="h-3 w-3" /> Go back
             </button>
           </div>
         )}

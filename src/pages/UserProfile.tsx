@@ -23,6 +23,8 @@ import { useTheme } from "@/components/ThemeProvider";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DynamicLogo } from "@/components/DynamicLogo";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 // ======================== Types ========================
 
@@ -30,8 +32,9 @@ type Section = "profile" | "bookings" | "kyc" | "security" | "notifications" | "
 
 interface KYCDoc {
   name: string;
-  type: "aadhaar" | "pan" | "license";
-  status: "verified" | "under_review" | "not_submitted" | "skipped";
+  type: "aadhaar" | "pan" | "driving_license";
+  status: string;
+  doc_number?: string | null;
 }
 
 // ======================== Sidebar Nav ========================
@@ -39,7 +42,7 @@ interface KYCDoc {
 const navItems: { icon: typeof User; label: string; section: Section }[] = [
   { icon: User, label: "My Profile", section: "profile" },
   { icon: Calendar, label: "Booking History", section: "bookings" },
-  { icon: ShieldCheck, label: "KYC Verification", section: "kyc" },
+  { icon: ShieldCheck, label: "KYC Details", section: "kyc" },
   { icon: Lock, label: "Security & Password", section: "security" },
   { icon: Bell, label: "Notifications", section: "notifications" },
   { icon: HelpCircle, label: "Help & Support", section: "help" },
@@ -151,23 +154,101 @@ export default function UserProfile() {
     pushSecurity: true,
   });
 
-  // Mock KYC
-  const [kycDocs] = useState<KYCDoc[]>([
-    { name: "Aadhaar Card", type: "aadhaar", status: "verified" },
-    { name: "PAN Card", type: "pan", status: "skipped" },
-    { name: "Driving License", type: "license", status: "not_submitted" },
-  ]);
+  // Real KYC State fetching using useQuery
+  const { data: kycData, isLoading: kycLoading, error: kycError } = useQuery({
+    queryKey: ["user-kyc-docs", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      console.log("Fetching KYC for:", user.id);
+      
+      const { data: docs, error: dErr } = await (supabase as any).from("user_documents").select("*").eq("user_id", user.id);
+      if (dErr) {
+        console.error("KYC Docs Fetch Error:", dErr);
+        throw dErr;
+      }
 
-  // Mock bookings
-  const mockBookings = [
-    { id: "BK-2024-001", property: "Treehouse Retreat, Munnar", image: "/placeholder.svg", dates: "Jan 15–18, 2025", amount: "₹8,500", status: "completed" as const },
-    { id: "BK-2024-002", property: "Beachside Villa, Goa", image: "/placeholder.svg", dates: "Feb 5–8, 2025", amount: "₹12,000", status: "active" as const },
-    { id: "BK-2024-003", property: "Mountain Cabin, Shimla", image: "/placeholder.svg", dates: "Mar 1–3, 2025", amount: "₹6,200", status: "cancelled" as const },
-  ];
+      const { data: profile, error: pErr } = await supabase.from("profiles").select("kyc_status").eq("id", user.id).maybeSingle();
+      if (pErr) console.error("Profile KYC Status Error:", pErr);
+
+      return {
+        documents: docs || [],
+        overallStatus: profile?.kyc_status || "not_started"
+      };
+    },
+    enabled: !!user,
+    staleTime: 0,
+    refetchInterval: 5000, // Poll every 5s while page is open for real-time updates
+  });
+
+  useEffect(() => {
+    if (kycError) {
+      toast.error("Failed to load KYC documents. Please refresh.");
+    }
+  }, [kycError]);
+
+  const kycDocs = [
+    { name: "Aadhaar Card", type: "aadhaar" as const },
+    { name: "PAN Card", type: "pan" as const },
+    { name: "Driving License", type: "driving_license" as const },
+  ].map(doc => {
+    const match = kycData?.documents.find((d: any) => d.document_type === doc.type);
+    return {
+      ...doc,
+      status: match?.verification_status || "not_submitted",
+      doc_number: match?.document_number || null,
+    };
+  });
+
+  const maskDocNumber = (num?: string | null) => {
+    if (!num) return "";
+    if (num.length <= 4) return num;
+    return `•••• ${num.slice(-4)}`;
+  };
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
+
+  // Dynamic bookings fetching
+  const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
+    queryKey: ["user-bookings", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data: bookingsData, error: bErr } = await supabase
+        .from("bookings")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (bErr) throw bErr;
+      if (!bookingsData) return [];
+
+      // Fetch details in parallel groups for efficiency
+      const results = await Promise.all(bookingsData.map(async (b) => {
+        let table = "";
+        if (b.listing_type === "stay") table = "stays";
+        else if (b.listing_type === "car") table = "cars";
+        else if (b.listing_type === "bike") table = "bikes";
+        else if (b.listing_type === "experience") table = "experiences";
+        else if (b.listing_type === "hotel") table = "hotels";
+        else if (b.listing_type === "resort") table = "resorts";
+
+        if (!table) return { ...b, listing_title: "Deleted Listing", listing_image: null };
+
+        // Cast to any to bypass table strictness in this polymorphic scenario
+        const { data } = await (supabase as any).from(table).select("title, images, location").eq("id", b.listing_id).maybeSingle();
+        return {
+          ...b,
+          listing_title: (data as any)?.title || "Deleted Listing",
+          listing_image: (data as any)?.images?.[0] || null,
+          listing_location: (data as any)?.location || "N/A"
+        };
+      }));
+
+      return results;
+    },
+    enabled: !!user
+  });
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -214,10 +295,12 @@ export default function UserProfile() {
 
   const kycVerifiedCount = kycDocs.filter((d) => d.status === "verified").length;
   const kycProgress = (kycVerifiedCount / kycDocs.length) * 100;
+  const overallKycStatus = kycData?.overallStatus || "not_started";
 
-  const statusColor = {
-    active: "bg-accent/10 text-accent border-accent/20",
-    completed: "bg-primary/10 text-primary-foreground border-primary/20",
+  const statusColor: Record<string, string> = {
+    confirmed: "bg-accent/10 text-accent border-accent/20", // using active style
+    pending: "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-950/40 dark:text-yellow-400 dark:border-yellow-800",
+    completed: "bg-primary/10 text-primary border-primary/20",
     cancelled: "bg-destructive/10 text-destructive border-destructive/20",
   };
 
@@ -405,45 +488,62 @@ export default function UserProfile() {
                     <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
                   </TabsList>
 
-                  {["all", "active", "completed", "cancelled"].map((tab) => (
-                    <TabsContent key={tab} value={tab} className="space-y-4 mt-4">
-                      {mockBookings
-                        .filter((b) => tab === "all" || b.status === tab)
-                        .map((booking) => (
-                          <Card key={booking.id} className="overflow-hidden">
-                            <CardContent className="p-0 flex flex-col sm:flex-row">
-                              <div className="sm:w-32 h-24 sm:h-auto bg-muted flex items-center justify-center">
-                                <Calendar className="h-8 w-8 text-muted-foreground" />
-                              </div>
-                              <div className="flex-1 p-4">
-                                <div className="flex items-start justify-between gap-2">
-                                  <div>
-                                    <p className="font-semibold text-foreground text-sm">{booking.property}</p>
-                                    <p className="text-xs text-muted-foreground mt-0.5">{booking.id}</p>
+                  {["all", "confirmed", "completed", "cancelled", "pending"].map((tab) => (
+                    <TabsContent key={tab} value={tab === "all" ? "all" : tab} className="space-y-4 mt-4">
+                      {bookingsLoading ? (
+                         <div className="space-y-4">
+                            {[1, 2].map(i => (
+                              <div key={i} className="h-28 w-full bg-muted animate-pulse rounded-xl" />
+                            ))}
+                         </div>
+                      ) : (
+                        <>
+                          {bookings
+                            .filter((b) => tab === "all" || b.booking_status === tab)
+                            .map((booking) => (
+                              <Card key={booking.id} className="overflow-hidden">
+                                <CardContent className="p-0 flex flex-col sm:flex-row">
+                                  <div className="sm:w-32 h-24 sm:h-auto bg-muted flex items-center justify-center overflow-hidden">
+                                    {booking.listing_image ? (
+                                      <img src={booking.listing_image} alt={booking.listing_title} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <Calendar className="h-8 w-8 text-muted-foreground" />
+                                    )}
                                   </div>
-                                  <Badge variant="outline" className={cn("text-[10px] capitalize", statusColor[booking.status])}>
-                                    {booking.status}
-                                  </Badge>
-                                </div>
-                                <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                                  <span>{booking.dates}</span>
-                                  <span className="font-semibold text-foreground">{booking.amount}</span>
-                                </div>
-                                <Button variant="ghost" size="sm" className="mt-2 text-xs h-8">
-                                  View Details <ChevronRight className="h-3 w-3 ml-1" />
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      {mockBookings.filter((b) => tab === "all" || b.status === tab).length === 0 && (
-                        <Card>
-                          <CardContent className="p-12 text-center">
-                            <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                            <p className="text-muted-foreground mb-4">No bookings found</p>
-                            <Button onClick={() => navigate("/stays")}>Start Exploring</Button>
-                          </CardContent>
-                        </Card>
+                                  <div className="flex-1 p-4">
+                                    <div className="flex items-start justify-between gap-2">
+                                      <div>
+                                        <p className="font-semibold text-foreground text-sm line-clamp-1">{booking.listing_title}</p>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5 font-mono">{booking.id}</p>
+                                      </div>
+                                      <Badge variant="outline" className={cn("text-[10px] capitalize", statusColor[booking.booking_status] || "bg-muted text-muted-foreground")}>
+                                        {booking.booking_status}
+                                      </Badge>
+                                    </div>
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-xs text-muted-foreground">
+                                      <span className="flex items-center gap-1">
+                                        <Calendar className="h-3 w-3" />
+                                        {format(new Date(booking.start_date), "MMM d")} – {format(new Date(booking.end_date), "MMM d, yyyy")}
+                                      </span>
+                                      <span className="font-semibold text-foreground">₹{booking.total_price.toLocaleString()}</span>
+                                    </div>
+                                    <Button variant="ghost" size="sm" className="mt-2 text-xs h-8">
+                                      View Details <ChevronRight className="h-3 w-3 ml-1" />
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          {bookings.filter((b) => tab === "all" || b.booking_status === tab).length === 0 && (
+                            <Card>
+                              <CardContent className="p-12 text-center">
+                                <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                                <p className="text-muted-foreground mb-4">No {tab !== "all" ? tab : ""} bookings found</p>
+                                <Button onClick={() => navigate("/stays")}>Start Exploring</Button>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </>
                       )}
                     </TabsContent>
                   ))}
@@ -451,62 +551,107 @@ export default function UserProfile() {
               </div>
             )}
 
-            {/* ====== KYC Verification ====== */}
+            {/* ====== KYC Details ====== */}
             {activeSection === "kyc" && (
               <div className="space-y-6">
-                <h1 className="text-2xl font-bold text-foreground">KYC Verification</h1>
+                <h1 className="text-2xl font-bold text-foreground">KYC Details</h1>
 
                 {/* Overall status */}
                 <Card>
                   <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium text-foreground">
-                        {kycVerifiedCount === kycDocs.length ? "Fully Verified" : "Partially Verified"}
-                      </p>
-                      <span className="text-sm text-muted-foreground">{kycVerifiedCount}/{kycDocs.length} docs</span>
-                    </div>
-                    <Progress value={kycProgress} className="h-2" />
+                    {kycLoading ? (
+                      <div className="space-y-3">
+                         <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
+                         <div className="h-2 w-full bg-muted animate-pulse rounded" />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {overallKycStatus === "verified" ? "Fully Verified" : 
+                               overallKycStatus === "submitted" ? "Under Review" : 
+                               "Identity Verification"}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {kycVerifiedCount} of {kycDocs.length} documents verified
+                            </p>
+                          </div>
+                          <div className="text-right">
+                             <span className="text-sm font-bold text-primary">{Math.round(kycProgress)}%</span>
+                          </div>
+                        </div>
+                        <Progress value={kycProgress} className="h-2" />
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
                 {/* Document rows */}
                 <div className="space-y-3">
-                  {kycDocs.map((doc) => (
-                    <Card key={doc.type}>
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                          doc.status === "verified" ? "bg-accent/20" : "bg-muted"
-                        }`}>
+                  {kycLoading ? (
+                    [1, 2, 3].map(i => (
+                      <Card key={i} className="animate-pulse">
+                        <CardContent className="p-4 h-20 bg-muted/50" />
+                      </Card>
+                    ))
+                  ) : (
+                    kycDocs.map((doc) => (
+                      <Card key={doc.type}>
+                        <CardContent className="p-4 flex items-center gap-4">
+                          <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                            doc.status === "verified" ? "bg-primary/20" : "bg-muted"
+                          }`}>
+                            {doc.status === "verified" ? (
+                              <ShieldCheck className="h-5 w-5 text-primary" />
+                            ) : doc.status === "under_review" || doc.status === "pending" || doc.status === "uploading" ? (
+                              <Clock className="h-5 w-5 text-muted-foreground" />
+                            ) : (
+                              <FileText className="h-5 w-5 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-foreground text-sm flex items-center gap-2">
+                              {doc.name}
+                              {doc.doc_number && (
+                                <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                                  {maskDocNumber(doc.doc_number)}
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs text-muted-foreground capitalize mt-0.5">
+                              {doc.status.replace("_", " ")}
+                            </p>
+                          </div>
                           {doc.status === "verified" ? (
-                            <ShieldCheck className="h-5 w-5 text-accent" />
-                          ) : doc.status === "under_review" ? (
-                            <Clock className="h-5 w-5 text-muted-foreground" />
+                            <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 text-[10px]">
+                              <Check className="h-3 w-3 mr-1" /> Verified
+                            </Badge>
+                          ) : doc.status === "pending" || doc.status === "under_review" || doc.status === "uploading" ? (
+                            <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30 dark:border-yellow-800 text-[10px]">
+                              <Clock className="h-3 w-3 mr-1" /> {doc.status === "pending" ? "Pending" : "Under Review"}
+                            </Badge>
+                          ) : doc.status === "skipped" ? (
+                            <Badge variant="outline" className="text-muted-foreground border-border text-[10px]">
+                              Skipped
+                            </Badge>
                           ) : (
-                            <FileText className="h-5 w-5 text-muted-foreground" />
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => {
+                                const step = doc.type === 'aadhaar' ? 2 : doc.type === 'pan' ? 3 : 4;
+                                navigate(`/onboarding/user?step=${step}`);
+                              }} 
+                              className="text-xs h-8"
+                            >
+                              <Upload className="h-3 w-3 mr-1" /> Upload
+                            </Button>
                           )}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground text-sm">{doc.name}</p>
-                          <p className="text-xs text-muted-foreground capitalize">
-                            {doc.status.replace("_", " ")}
-                          </p>
-                        </div>
-                        {doc.status === "verified" ? (
-                          <Badge variant="outline" className="text-accent border-accent/30 text-[10px]">
-                            <Check className="h-3 w-3 mr-1" /> Verified
-                          </Badge>
-                        ) : doc.status === "under_review" ? (
-                          <Badge variant="outline" className="text-muted-foreground border-border text-[10px]">
-                            <Clock className="h-3 w-3 mr-1" /> Under Review
-                          </Badge>
-                        ) : (
-                          <Button size="sm" variant="outline" onClick={() => navigate("/onboarding/user")} className="text-xs h-8">
-                            <Upload className="h-3 w-3 mr-1" /> Upload Now
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
                 </div>
               </div>
             )}

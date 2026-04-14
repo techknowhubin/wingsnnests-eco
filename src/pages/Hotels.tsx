@@ -20,7 +20,6 @@ interface Hotel {
   slug?: string;
   property_type?: string;
   host_id?: string;
-  user_id?: string;
   host_name?: string;
 }
 
@@ -35,7 +34,7 @@ const Hotels = () => {
         // Using "as any" because hotels/resorts are not in the generated Supabase types
         const { data, error } = await (supabase as any)
           .from("hotels")
-          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type, host_id, user_id")
+          .select("id, title, location, price_per_night, currency, rating, images, slug, property_type, host_id")
           .eq("availability_status", true)
           .eq("marketplace_visible", true)
           .order("featured", { ascending: false })
@@ -46,9 +45,9 @@ const Hotels = () => {
 
         const rows: any[] = data || [];
 
-        // Collect host IDs — hotels may use host_id or user_id
+        // Collect host IDs
         const hostIds = Array.from(
-          new Set(rows.map((s) => s.host_id || s.user_id).filter(Boolean))
+          new Set(rows.map((s) => s.host_id).filter(Boolean))
         ) as string[];
 
         if (hostIds.length > 0) {
@@ -61,7 +60,7 @@ const Hotels = () => {
             const nameMap = new Map(profiles.map((p) => [p.id, p.full_name]));
             const withNames: Hotel[] = rows.map((s) => ({
               ...s,
-              host_name: nameMap.get(s.host_id || s.user_id) || undefined,
+              host_name: nameMap.get(s.host_id) || undefined,
             }));
             setHotels(withNames);
             return;

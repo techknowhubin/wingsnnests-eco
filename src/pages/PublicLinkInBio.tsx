@@ -493,7 +493,7 @@ export default function PublicLinkInBio() {
 
   const settings = useMemo(() => {
     if (!page?.settings || typeof page.settings !== "object" || Array.isArray(page.settings)) return null;
-    return page.settings as LinkInBioSettings;
+    return page.settings as unknown as LinkInBioSettings;
   }, [page]);
 
   const featuredIds = settings?.featuredListings ?? [];
@@ -506,7 +506,7 @@ export default function PublicLinkInBio() {
       const carsCols    = "id,title,location,price_per_day,images,availability_status,discounts,description,rating,total_reviews,amenities,currency,host_id,seating_capacity,brand,model";
       const bikesCols   = "id,title,location,price_per_day,images,availability_status,discounts,description,rating,total_reviews,currency,host_id,brand,model";
       const expCols     = "id,title,location,price_per_person,images,availability_status,discounts,description,rating,total_reviews,currency,host_id,group_size";
-      const hotelCols   = "id,title,location,price_per_night,images,availability_status,discounts,description,rating,total_reviews,currency";
+      const hotelCols   = "id,title,location,price_per_night,images,availability_status,discounts,description,rating,total_reviews,currency,host_id";
 
       const byId = featuredIds.length > 0;
 
@@ -514,9 +514,9 @@ export default function PublicLinkInBio() {
         byId ? supabase.from("stays").select(staysCols).in("id", featuredIds)
               : supabase.from("stays").select(staysCols).eq("host_id", hostUserId!).eq("availability_status", true),
         byId ? (supabase as any).from("hotels").select(hotelCols).in("id", featuredIds)
-              : (supabase as any).from("hotels").select(hotelCols),
+              : (supabase as any).from("hotels").select(hotelCols).eq("host_id", hostUserId!).eq("availability_status", true),
         byId ? (supabase as any).from("resorts").select(hotelCols).in("id", featuredIds)
-              : (supabase as any).from("resorts").select(hotelCols),
+              : (supabase as any).from("resorts").select(hotelCols).eq("host_id", hostUserId!).eq("availability_status", true),
         byId ? supabase.from("cars").select(carsCols).in("id", featuredIds)
               : supabase.from("cars").select(carsCols).eq("host_id", hostUserId!).eq("availability_status", true),
         byId ? supabase.from("bikes").select(bikesCols).in("id", featuredIds)

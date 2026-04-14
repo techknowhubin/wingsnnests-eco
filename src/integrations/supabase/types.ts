@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       bikes: {
@@ -34,6 +59,8 @@ export type Database = {
           latitude: number | null
           location: string
           longitude: number | null
+          marketplace_requested: boolean
+          marketplace_visible: boolean
           mileage_limit: number | null
           model: string | null
           price_per_day: number
@@ -67,6 +94,8 @@ export type Database = {
           latitude?: number | null
           location: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           mileage_limit?: number | null
           model?: string | null
           price_per_day: number
@@ -100,6 +129,8 @@ export type Database = {
           latitude?: number | null
           location?: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           mileage_limit?: number | null
           model?: string | null
           price_per_day?: number
@@ -291,6 +322,8 @@ export type Database = {
           latitude: number | null
           location: string
           longitude: number | null
+          marketplace_requested: boolean
+          marketplace_visible: boolean
           mileage_limit: number | null
           model: string | null
           price_per_day: number
@@ -326,6 +359,8 @@ export type Database = {
           latitude?: number | null
           location: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           mileage_limit?: number | null
           model?: string | null
           price_per_day: number
@@ -361,6 +396,8 @@ export type Database = {
           latitude?: number | null
           location?: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           mileage_limit?: number | null
           model?: string | null
           price_per_day?: number
@@ -402,6 +439,8 @@ export type Database = {
           latitude: number | null
           location: string
           longitude: number | null
+          marketplace_requested: boolean
+          marketplace_visible: boolean
           price_per_person: number
           rating: number | null
           slug: string | null
@@ -434,6 +473,8 @@ export type Database = {
           latitude?: number | null
           location: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           price_per_person: number
           rating?: number | null
           slug?: string | null
@@ -466,6 +507,8 @@ export type Database = {
           latitude?: number | null
           location?: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           price_per_person?: number
           rating?: number | null
           slug?: string | null
@@ -478,33 +521,223 @@ export type Database = {
         }
         Relationships: []
       }
-      listing_questions: {
+      host_coupon_redemptions: {
         Row: {
+          booking_context: Json | null
+          coupon_id: string
           created_at: string
+          host_id: string
           id: string
-          is_answered: boolean | null
-          listing_id: string
-          listing_type: Database["public"]["Enums"]["listing_type"]
-          question: string
           user_id: string
         }
         Insert: {
+          booking_context?: Json | null
+          coupon_id: string
           created_at?: string
+          host_id: string
           id?: string
-          is_answered?: boolean | null
-          listing_id: string
-          listing_type: Database["public"]["Enums"]["listing_type"]
-          question: string
           user_id: string
         }
         Update: {
+          booking_context?: Json | null
+          coupon_id?: string
           created_at?: string
+          host_id?: string
           id?: string
-          is_answered?: boolean | null
-          listing_id?: string
-          listing_type?: Database["public"]["Enums"]["listing_type"]
-          question?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "host_coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "host_coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      host_coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_percent: number
+          ends_at: string | null
+          host_id: string
+          id: string
+          is_active: boolean
+          listing_types: string[]
+          one_time_per_user: boolean
+          starts_at: string | null
+          updated_at: string
+          usage_limit: number | null
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_percent: number
+          ends_at?: string | null
+          host_id: string
+          id?: string
+          is_active?: boolean
+          listing_types?: string[]
+          one_time_per_user?: boolean
+          starts_at?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_percent?: number
+          ends_at?: string | null
+          host_id?: string
+          id?: string
+          is_active?: boolean
+          listing_types?: string[]
+          one_time_per_user?: boolean
+          starts_at?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
+      host_profiles: {
+        Row: {
+          aadhaar_last_four: string | null
+          address: string | null
+          bank_account_holder: string | null
+          bank_account_number: string | null
+          bank_ifsc: string | null
+          business_name: string | null
+          business_type: string | null
+          created_at: string
+          gst_number: string | null
+          id: string
+          pan_number: string | null
+          service_types: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          aadhaar_last_four?: string | null
+          address?: string | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
+          business_name?: string | null
+          business_type?: string | null
+          created_at?: string
+          gst_number?: string | null
+          id: string
+          pan_number?: string | null
+          service_types?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          aadhaar_last_four?: string | null
+          address?: string | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
+          business_name?: string | null
+          business_type?: string | null
+          created_at?: string
+          gst_number?: string | null
+          id?: string
+          pan_number?: string | null
+          service_types?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "host_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hotels: {
+        Row: {
+          amenities: Json | null
+          availability_status: boolean | null
+          bathrooms: number | null
+          bedrooms: number | null
+          cancellation_policy: string | null
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          featured: boolean | null
+          host_id: string
+          id: string
+          images: string[] | null
+          location: string | null
+          marketplace_requested: boolean
+          marketplace_visible: boolean
+          max_guests: number | null
+          price_per_night: number | null
+          property_type: string | null
+          rating: number | null
+          slug: string | null
+          title: string | null
+          total_reviews: number | null
+        }
+        Insert: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          cancellation_policy?: string | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          featured?: boolean | null
+          host_id: string
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
+          max_guests?: number | null
+          price_per_night?: number | null
+          property_type?: string | null
+          rating?: number | null
+          slug?: string | null
+          title?: string | null
+          total_reviews?: number | null
+        }
+        Update: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          cancellation_policy?: string | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          featured?: boolean | null
+          host_id?: string
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
+          max_guests?: number | null
+          price_per_night?: number | null
+          property_type?: string | null
+          rating?: number | null
+          slug?: string | null
+          title?: string | null
+          total_reviews?: number | null
         }
         Relationships: []
       }
@@ -534,6 +767,36 @@ export type Database = {
           settings?: Json
           slug?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      listing_questions: {
+        Row: {
+          created_at: string
+          id: string
+          is_answered: boolean | null
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          question: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_answered?: boolean | null
+          listing_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          question: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_answered?: boolean | null
+          listing_id?: string
+          listing_type?: Database["public"]["Enums"]["listing_type"]
+          question?: string
           user_id?: string
         }
         Relationships: []
@@ -582,15 +845,23 @@ export type Database = {
           country: string | null
           created_at: string
           date_of_birth: string | null
+          dietary_requirements: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
           full_name: string | null
           gender: string | null
           id: string
+          id_document_number: string | null
+          id_document_type: string | null
+          kyc_status: string | null
           last_login: string | null
           phone: string | null
           postal_code: string | null
+          preferences: Json | null
           profile_image: string | null
           state: string | null
           total_bookings: number | null
+          travel_styles: string[] | null
           updated_at: string
           wallet_balance: number | null
         }
@@ -601,15 +872,23 @@ export type Database = {
           country?: string | null
           created_at?: string
           date_of_birth?: string | null
+          dietary_requirements?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           full_name?: string | null
           gender?: string | null
           id: string
+          id_document_number?: string | null
+          id_document_type?: string | null
+          kyc_status?: string | null
           last_login?: string | null
           phone?: string | null
           postal_code?: string | null
+          preferences?: Json | null
           profile_image?: string | null
           state?: string | null
           total_bookings?: number | null
+          travel_styles?: string[] | null
           updated_at?: string
           wallet_balance?: number | null
         }
@@ -620,15 +899,23 @@ export type Database = {
           country?: string | null
           created_at?: string
           date_of_birth?: string | null
+          dietary_requirements?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           full_name?: string | null
           gender?: string | null
           id?: string
+          id_document_number?: string | null
+          id_document_type?: string | null
+          kyc_status?: string | null
           last_login?: string | null
           phone?: string | null
           postal_code?: string | null
+          preferences?: Json | null
           profile_image?: string | null
           state?: string | null
           total_bookings?: number | null
+          travel_styles?: string[] | null
           updated_at?: string
           wallet_balance?: number | null
         }
@@ -668,6 +955,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      resorts: {
+        Row: {
+          amenities: Json | null
+          availability_status: boolean | null
+          bathrooms: number | null
+          bedrooms: number | null
+          cancellation_policy: string | null
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          featured: boolean | null
+          host_id: string
+          id: string
+          images: string[] | null
+          location: string | null
+          marketplace_requested: boolean
+          marketplace_visible: boolean
+          max_guests: number | null
+          price_per_night: number | null
+          property_type: string | null
+          rating: number | null
+          slug: string | null
+          title: string | null
+          total_reviews: number | null
+        }
+        Insert: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          cancellation_policy?: string | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          featured?: boolean | null
+          host_id: string
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
+          max_guests?: number | null
+          price_per_night?: number | null
+          property_type?: string | null
+          rating?: number | null
+          slug?: string | null
+          title?: string | null
+          total_reviews?: number | null
+        }
+        Update: {
+          amenities?: Json | null
+          availability_status?: boolean | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          cancellation_policy?: string | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          featured?: boolean | null
+          host_id?: string
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
+          max_guests?: number | null
+          price_per_night?: number | null
+          property_type?: string | null
+          rating?: number | null
+          slug?: string | null
+          title?: string | null
+          total_reviews?: number | null
+        }
+        Relationships: []
       }
       reviews: {
         Row: {
@@ -723,7 +1091,7 @@ export type Database = {
           description: string | null
           discounts: Json | null
           featured: boolean | null
-          host_id: string | null
+          host_id: string
           id: string
           images: string[] | null
           is_verified: boolean | null
@@ -731,6 +1099,8 @@ export type Database = {
           latitude: number | null
           location: string
           longitude: number | null
+          marketplace_requested: boolean
+          marketplace_visible: boolean
           max_guests: number
           price_per_night: number
           property_type: string | null
@@ -757,7 +1127,7 @@ export type Database = {
           description?: string | null
           discounts?: Json | null
           featured?: boolean | null
-          host_id?: string | null
+          host_id: string
           id?: string
           images?: string[] | null
           is_verified?: boolean | null
@@ -765,6 +1135,8 @@ export type Database = {
           latitude?: number | null
           location: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           max_guests: number
           price_per_night: number
           property_type?: string | null
@@ -791,7 +1163,7 @@ export type Database = {
           description?: string | null
           discounts?: Json | null
           featured?: boolean | null
-          host_id?: string | null
+          host_id?: string
           id?: string
           images?: string[] | null
           is_verified?: boolean | null
@@ -799,6 +1171,8 @@ export type Database = {
           latitude?: number | null
           location?: string
           longitude?: number | null
+          marketplace_requested?: boolean
+          marketplace_visible?: boolean
           max_guests?: number
           price_per_night?: number
           property_type?: string | null
@@ -812,6 +1186,50 @@ export type Database = {
           views_count?: number | null
         }
         Relationships: []
+      }
+      user_documents: {
+        Row: {
+          back_file_url: string | null
+          document_number: string | null
+          document_type: string
+          front_file_url: string | null
+          id: string
+          uploaded_at: string
+          user_id: string
+          verification_status: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          back_file_url?: string | null
+          document_number?: string | null
+          document_type: string
+          front_file_url?: string | null
+          id?: string
+          uploaded_at?: string
+          user_id: string
+          verification_status?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          back_file_url?: string | null
+          document_number?: string | null
+          document_type?: string
+          front_file_url?: string | null
+          id?: string
+          uploaded_at?: string
+          user_id?: string
+          verification_status?: string | null
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -874,7 +1292,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "moderator" | "user" | "host"
       booking_status: "pending" | "confirmed" | "cancelled" | "completed"
-      listing_type: "stay" | "car" | "bike" | "experience"
+      listing_type: "stay" | "car" | "bike" | "experience" | "hotel" | "resort"
       payment_status: "pending" | "completed" | "failed" | "refunded"
     }
     CompositeTypes: {
@@ -1001,11 +1419,14 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "host"],
       booking_status: ["pending", "confirmed", "cancelled", "completed"],
-      listing_type: ["stay", "car", "bike", "experience"],
+      listing_type: ["stay", "car", "bike", "experience", "hotel", "resort"],
       payment_status: ["pending", "completed", "failed", "refunded"],
     },
   },
