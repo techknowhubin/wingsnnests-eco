@@ -34,6 +34,7 @@ import ConfirmAndPay from "./pages/ConfirmAndPay";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import TransactionFailed from "./pages/TransactionFailed";
 import PublicLinkInBio from "./pages/PublicLinkInBio";
+import Terms from "./pages/Terms";
 
 // Host Dashboard
 import HostLayout from "./pages/HostLayout";
@@ -84,6 +85,7 @@ const App = () => (
             <Route path="/confirm-and-pay" element={<ConfirmAndPay />} />
             <Route path="/booking-confirmation" element={<BookingConfirmation />} />
             <Route path="/transaction-failed" element={<TransactionFailed />} />
+            <Route path="/terms" element={<Terms />} />
             
             {/* Host Dashboard — shared layout, only content transitions */}
             <Route path="/host" element={<HostLayout />}>
