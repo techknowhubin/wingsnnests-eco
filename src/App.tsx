@@ -6,8 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Stays from "./pages/Stays";
@@ -52,8 +51,9 @@ const App = () => (
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/login" element={<Navigate to="/auth" replace />} />
+            <Route path="/signup" element={<Navigate to="/auth" replace />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/stays" element={<Stays />} />
@@ -76,6 +76,7 @@ const App = () => (
             <Route path="/p/:slug" element={<PublicLinkInBio />} />
             <Route path="/destinations" element={<Destinations />} />
             <Route path="/destinations/:name" element={<DestinationDetail />} />
+            <Route path="/onboarding" element={<Navigate to="/onboarding/user" replace />} />
             <Route path="/onboarding/user" element={<UserOnboarding />} />
             <Route path="/onboarding/host" element={<HostOnboarding />} />
             <Route path="/profile" element={<UserProfile />} />

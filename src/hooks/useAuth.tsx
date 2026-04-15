@@ -97,6 +97,43 @@ export const useAuth = () => {
     return { error };
   };
 
+  const signInWithPopup = async (provider: 'google' | 'apple' | 'facebook' | 'linkedin_oidc', role: 'user' | 'host' = 'user') => {
+    localStorage.setItem('pending_role', role);
+
+    // Get the OAuth URL without browser redirect
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/`,
+        skipBrowserRedirect: true,
+        queryParams: {
+          prompt: 'select_account'
+        }
+      }
+    });
+
+    if (error || !data.url) return { error: error || new Error('No OAuth URL returned') };
+
+    // Open a centered popup
+    const w = 500, h = 600;
+    const left = window.screenX + (window.outerWidth - w) / 2;
+    const top = window.screenY + (window.outerHeight - h) / 2;
+    const popup = window.open(
+      data.url,
+      'oauth-popup',
+      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no,resizable=yes,scrollbars=yes`
+    );
+
+    // Poll for popup close — the onAuthStateChange listener handles the session
+    if (popup) {
+      const interval = setInterval(() => {
+        if (popup.closed) clearInterval(interval);
+      }, 500);
+    }
+
+    return { error: null };
+  };
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     return { error };
@@ -112,6 +149,25 @@ export const useAuth = () => {
     return data?.role ?? null;
   };
 
+  const signInWithOtp = async (phone: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      phone,
+      options: {
+        channel: 'whatsapp', // Suggesting to Supabase to try WA first if configured
+      }
+    });
+    return { error };
+  };
+
+  const verifyOtp = async (phone: string, token: string) => {
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone,
+      token,
+      type: 'sms', // Supabase treats wa as sms type for verification
+    });
+    return { data, error };
+  };
+
   return {
     user,
     session,
@@ -119,7 +175,10 @@ export const useAuth = () => {
     signUp,
     signIn,
     signInWithProvider,
+    signInWithPopup,
     signOut,
     getUserRole,
+    signInWithOtp,
+    verifyOtp,
   };
 };

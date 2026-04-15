@@ -24,7 +24,11 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DynamicLogo } from "@/components/DynamicLogo";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, parseISO, isValid } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
 
 // ======================== Types ========================
 
@@ -129,7 +133,7 @@ export default function UserProfile() {
         full_name: profile.full_name || "",
         display_name: (profile as any).display_name || "",
         phone: profile.phone || "",
-        dob: (profile as any).dob || "",
+        dob: (profile as any).date_of_birth || "",
         gender: (profile as any).gender || "prefer_not_to_say",
         city: (profile as any).city || "",
         state: (profile as any).state || "",
@@ -194,7 +198,7 @@ export default function UserProfile() {
     const match = kycData?.documents.find((d: any) => d.document_type === doc.type);
     return {
       ...doc,
-      status: match?.verification_status || "not_submitted",
+      status: match?.status || "not_submitted",
       doc_number: match?.document_number || null,
     };
   });
@@ -253,11 +257,23 @@ export default function UserProfile() {
   const handleSaveProfile = async () => {
     if (!user) return;
     try {
-      await updateProfile.mutateAsync({ userId: user.id, updates: { full_name: form.full_name, phone: form.phone } });
+      await updateProfile.mutateAsync({ 
+        userId: user.id, 
+        updates: { 
+          full_name: form.full_name, 
+          display_name: form.display_name,
+          phone: form.phone,
+          date_of_birth: form.dob,
+          gender: form.gender,
+          city: form.city,
+          state: form.state
+        } as any
+      });
       setEditing(false);
       toast.success("Profile updated successfully!");
-    } catch {
-      toast.error("Failed to update profile");
+    } catch (err: any) {
+      console.error("Profile Update Error:", err);
+      toast.error(err.message || "Failed to update profile");
     }
   };
 
@@ -328,12 +344,14 @@ export default function UserProfile() {
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={profile?.profile_image || ""} />
                   <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
-                    {form.full_name?.charAt(0) || "U"}
+                    {(form.display_name || form.full_name)?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold text-foreground text-sm">{form.full_name || "User"}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  <p className="font-semibold text-foreground text-sm truncate">
+                    {profile?.display_name || profile?.full_name || "Guest User"}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
               </div>
 
@@ -414,7 +432,7 @@ export default function UserProfile() {
                         <Avatar className="h-20 w-20">
                           <AvatarImage src={profile?.profile_image || ""} />
                           <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
-                            {form.full_name?.charAt(0) || "U"}
+                            {(form.display_name || form.full_name)?.charAt(0) || "U"}
                           </AvatarFallback>
                         </Avatar>
                         {editing && (
@@ -424,7 +442,9 @@ export default function UserProfile() {
                         )}
                       </div>
                       <div>
-                        <h2 className="text-lg font-semibold text-foreground">{form.full_name || "User"}</h2>
+                        <h2 className="text-lg font-semibold text-foreground">
+                          {profile?.display_name || profile?.full_name || "Guest User"}
+                        </h2>
                         <p className="text-sm text-muted-foreground">{user?.email}</p>
                       </div>
                     </div>
@@ -447,9 +467,40 @@ export default function UserProfile() {
                         <Label>Phone</Label>
                         <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })} disabled={!editing} maxLength={10} />
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-2 flex flex-col">
                         <Label>Date of Birth</Label>
-                        <Input type="date" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} disabled={!editing} />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              disabled={!editing}
+                              className={cn(
+                                "justify-start text-left font-normal h-10 px-3",
+                                !form.dob && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
+                              {form.dob && isValid(parseISO(form.dob)) ? (
+                                format(parseISO(form.dob), "PPP")
+                              ) : (
+                                <span>Select your birth date</span>
+                              )}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <CalendarPicker
+                              mode="single"
+                              selected={form.dob && isValid(parseISO(form.dob)) ? parseISO(form.dob) : undefined}
+                              onSelect={(date) => {
+                                if (date) {
+                                  setForm({ ...form, dob: format(date, "yyyy-MM-dd") });
+                                }
+                              }}
+                              disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
                       <div className="space-y-2">
                         <Label>Gender</Label>
@@ -613,7 +664,7 @@ export default function UserProfile() {
                           <div className="flex-1">
                             <p className="font-medium text-foreground text-sm flex items-center gap-2">
                               {doc.name}
-                              {doc.doc_number && (
+                              {doc.status === "verified" && doc.doc_number && (
                                 <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                                   {maskDocNumber(doc.doc_number)}
                                 </span>
