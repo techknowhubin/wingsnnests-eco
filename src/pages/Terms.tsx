@@ -133,7 +133,7 @@ export default function Terms() {
         </aside>
 
         {/* Legal Content */}
-        <main className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <main className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 [--primary:157_25%_35%] [--primary-foreground:0_0%_100%]">
 
           {/* Mobile TOC */}
           <div className="lg:hidden">
@@ -170,8 +170,8 @@ export default function Terms() {
               </div>
               <h1 className="text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">Terms of <span className="text-primary">Service</span></h1>
               <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                <span className="flex items-center gap-1.5"><RefreshCw className="h-3 w-3" /> Effective: June 1, 2026</span>
-                <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> Hyderabad, India</span>
+                <span className="flex items-center gap-1.5"><RefreshCw className="h-3 w-3" /> Effective: Nov 17, 2023</span>
+                <span className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> Bangalore, India</span>
               </div>
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function Terms() {
                   <p className="text-muted-foreground leading-relaxed italic">In these Terms of Service, the following terms shall have the meanings ascribed to them below:</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      { t: "Xplorwing", m: "Refers to Xplorwing Technologies Private Limited, a company incorporated under the Companies Act, 2013, having its registered office in Hyderabad, India, and its affiliates, directors, and employees." },
+                      { t: "Xplorwing", m: "Refers to WINGSNNESTS ECO SOLUTIONS PVT LTD, a company incorporated under the Companies Act, 2013, having its registered office at #161, 1st Floor, 9th Cross, Somasandrapalya, Sector 2 HSR Layout, Bangalore - 560102, Karnataka, India, and its affiliates, directors, and employees." },
                       { t: "Platform", m: "Refers to the Xplorwing website, mobile-optimised web application, QR-based infrastructure, API services, and all associated digital tools provided by Xplorwing." },
                       { t: "Traveler", m: "A registered user who accesses the Platform to discover, search, and book travel-related services including but not limited to transportation, accommodation, and curated experiences." },
                       { t: "Service Provider", m: "Any third-party individual, licensed operator, or business entity that lists and provides services (such as cabs, bike rentals, hotels, or tours) on the Platform." },
@@ -544,7 +544,7 @@ export default function Terms() {
                     <h2 className="text-2xl font-bold tracking-tight">Governance & Resolution</h2>
                   </div>
                   <div className="space-y-5 text-muted-foreground leading-relaxed text-sm font-medium">
-                    <p><strong className="text-foreground">Governing Law:</strong> These Terms are governed by the laws of India. Exclusive jurisdiction lies with the courts of Hyderabad, Telangana.</p>
+                    <p><strong className="text-foreground">Governing Law:</strong> These Terms are governed by the laws of India. Exclusive jurisdiction lies with the courts of Bangalore, Karnataka.</p>
                     <p><strong className="text-foreground">Dispute Resolution:</strong> Disputes will first be attempted for informal resolution. Failing this, disputes will be resolved via Arbitration in Hyderabad in accordance with the Arbitration and Conciliation Act, 1996.</p>
                     <p><strong className="text-foreground">Modifications:</strong> Xplorwing reserves the right to modify these Terms. Material changes will be communicated via email/notification 15 days in advance.</p>
                     <p><strong className="text-foreground">Termination:</strong> You may terminate your account at any time. Xplorwing may suspend or terminate accounts for violations of conduct, fraud, or legal requirements.</p>
@@ -574,12 +574,12 @@ export default function Terms() {
                     </div>
 
                     <div className="p-6 rounded-2xl border border-border bg-card shadow-sm hover:border-primary/50 transition-all flex flex-col gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-[#D4E034]/10 flex items-center justify-center text-[#D4E034]">
+                      <div className="h-12 w-12 rounded-2xl bg-[#43705f]/10 flex items-center justify-center text-[#43705f]">
                         <Building2 className="h-6 w-6" />
                       </div>
                       <div>
                         <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1">Corporate Office</p>
-                        <p className="text-sm font-bold">Hyderabad, Telangana</p>
+                        <p className="text-sm font-bold">Bangalore, Karnataka</p>
                         <p className="text-[11px] text-muted-foreground mt-2 font-medium">Headquarters</p>
                       </div>
                     </div>

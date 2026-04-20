@@ -15,21 +15,20 @@ export const useAuth = () => {
         setUser(session?.user ?? null);
         
         if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
-          const storedRole = localStorage.getItem('pending_role') as 'user' | 'host' | null;
-          if (storedRole) {
-            // Check if role already exists
-            const { data: existingRole } = await supabase
-              .from('user_roles')
-              .select('role')
-              .eq('user_id', session.user.id)
-              .maybeSingle();
+          // Check if user already has a role
+          const { data: existingRole } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
 
-            if (!existingRole) {
-              await supabase.from('user_roles').insert({
-                user_id: session.user.id,
-                role: storedRole,
-              });
-            }
+          if (!existingRole) {
+            // Default to stored role or 'user' (covers WhatsApp users who never set pending_role)
+            const role = (localStorage.getItem('pending_role') as 'user' | 'host') || 'user';
+            await supabase.from('user_roles').insert({
+              user_id: session.user.id,
+              role,
+            });
             localStorage.removeItem('pending_role');
           }
         }
@@ -149,23 +148,52 @@ export const useAuth = () => {
     return data?.role ?? null;
   };
 
+  // ── WhatsApp OTP via custom Edge Function (bypasses Supabase Auth hooks) ──
+  const WA_OTP_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-whatsapp-otp`;
+  const WA_OTP_HEADERS = {
+    'Content-Type': 'application/json',
+    'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+  };
+
   const signInWithOtp = async (phone: string) => {
-    const { error } = await supabase.auth.signInWithOtp({
-      phone,
-      options: {
-        channel: 'whatsapp', // Suggesting to Supabase to try WA first if configured
-      }
-    });
-    return { error };
+    try {
+      const res = await fetch(WA_OTP_URL, {
+        method: 'POST',
+        headers: WA_OTP_HEADERS,
+        body: JSON.stringify({ action: 'send', phone }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: new Error(data.error || 'Failed to send OTP') };
+      return { error: null };
+    } catch (err: unknown) {
+      return { error: err instanceof Error ? err : new Error(String(err)) };
+    }
   };
 
   const verifyOtp = async (phone: string, token: string) => {
-    const { data, error } = await supabase.auth.verifyOtp({
-      phone,
-      token,
-      type: 'sms', // Supabase treats wa as sms type for verification
-    });
-    return { data, error };
+    try {
+      const res = await fetch(WA_OTP_URL, {
+        method: 'POST',
+        headers: WA_OTP_HEADERS,
+        body: JSON.stringify({ action: 'verify', phone, otp: token }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { data: null, error: new Error(data.error || 'Verification failed') };
+
+      // Edge Function returns a hashed_token from generateLink.
+      // token_type is 'magiclink' for returning users, 'signup' for new users.
+      if (data.hashed_token) {
+        const tokenType = data.token_type ?? 'magiclink';
+        const { data: sessionData, error } = await supabase.auth.verifyOtp({
+          token_hash: data.hashed_token,
+          type: tokenType as any,
+        });
+        return { data: { ...sessionData, is_new_user: data.is_new_user }, error };
+      }
+      return { data: null, error: new Error('No token returned from server') };
+    } catch (err: unknown) {
+      return { data: null, error: err instanceof Error ? err : new Error(String(err)) };
+    }
   };
 
   return {

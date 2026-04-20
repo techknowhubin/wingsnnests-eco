@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import MegaMenu from "./MegaMenu";
 import { DynamicLogo } from "./DynamicLogo";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useListings";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+
 
 const mobileNavLinks = [
   { label: "Stays", icon: Home, to: "/stays" },
@@ -32,8 +35,21 @@ const Header = () => {
   const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut, getUserRole } = useAuth();
+  const { data: profile } = useProfile(user?.id);
   const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Derive display name — prefer profile display_name/full_name, fall back to phone, never show derived email
+  const isWhatsAppUser = user?.user_metadata?.phone_provider === "whatsapp";
+  const displayName = profile?.display_name
+    || profile?.full_name
+    || user?.user_metadata?.full_name
+    || (isWhatsAppUser ? user?.user_metadata?.phone : user?.email?.split("@")[0])
+    || "My Account";
+  const displaySubtitle = isWhatsAppUser
+    ? (user?.user_metadata?.phone || "")
+    : (user?.email || "");
+  const avatarLetter = (profile?.display_name || profile?.full_name || user?.user_metadata?.full_name || "").charAt(0).toUpperCase() || null;
 
   useEffect(() => {
     if (user) {
@@ -140,13 +156,13 @@ const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="gap-2 rounded-full p-1 pr-1 md:pr-3 hover:bg-muted/60 transition-all">
                       <Avatar className="h-8 w-8 border border-border">
-                        <AvatarImage src={user.user_metadata?.avatar_url || ""} />
+                        <AvatarImage src={profile?.profile_image || user?.user_metadata?.avatar_url || ""} />
                         <AvatarFallback className="bg-primary/10 text-primary-text text-xs">
-                          {user.email?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
+                          {avatarLetter || <User className="h-4 w-4" />}
                         </AvatarFallback>
                       </Avatar>
                       <span className="hidden md:inline text-sm font-medium text-foreground max-w-[100px] truncate">
-                        {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                        {displayName}
                       </span>
                     </Button>
                   </DropdownMenuTrigger>
@@ -154,10 +170,10 @@ const Header = () => {
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-semibold leading-none text-foreground">
-                          {user.user_metadata?.full_name || "My Account"}
+                          {displayName}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground truncate">
-                          {user.email}
+                          {displaySubtitle}
                         </p>
                       </div>
                     </DropdownMenuLabel>
@@ -284,17 +300,17 @@ const Header = () => {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
                       <Avatar className="h-10 w-10 border border-border">
-                        <AvatarImage src={user.user_metadata?.avatar_url || ""} />
+                        <AvatarImage src={profile?.profile_image || user.user_metadata?.avatar_url || ""} />
                         <AvatarFallback className="bg-primary/10 text-primary-text">
-                          {user.email?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
+                          {avatarLetter || <User className="h-4 w-4" />}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col overflow-hidden">
                         <p className="text-sm font-semibold text-foreground truncate">
-                          {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                          {displayName}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {user.email}
+                          {displaySubtitle}
                         </p>
                       </div>
                     </div>

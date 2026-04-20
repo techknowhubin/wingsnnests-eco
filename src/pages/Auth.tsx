@@ -179,7 +179,7 @@ const Auth = () => {
   const [showWaModal, setShowWaModal] = useState(false);
 
   /* ─── routing ─── */
-  const handleSuccessRoleRouting = async () => {
+  const handleSuccessRoleRouting = async (currentUser = user) => {
     setLoading(true);
     const r = await getUserRole();
     setLoading(false);
@@ -192,7 +192,7 @@ const Auth = () => {
       if (!user.phone && !isOtpSent && user.app_metadata?.provider === "google") {
         setShowWaModal(true);
       } else if (!showWaModal) {
-        handleSuccessRoleRouting();
+        handleSuccessRoleRouting(user);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -228,13 +228,20 @@ const Auth = () => {
   const handleVerifyWaOtp = async (value: string) => {
     if (value.length !== 6) return;
     setLoading(true);
-    const { error } = await verifyOtp(`+91${waNumber}`, value);
+    const { data, error } = await verifyOtp(`+91${waNumber}`, value);
     if (error) {
       setLoading(false);
       toast({ variant: "destructive", title: "Verification Failed", description: error.message });
     } else {
       toast({ title: "Success!", description: "WhatsApp number verified." });
-      if (showWaModal) setShowWaModal(false);
+      if (showWaModal) {
+        setShowWaModal(false);
+      }
+      // Route immediately based on server-provided flag — don't wait for useEffect
+      if ((data as any)?.is_new_user) {
+        navigate("/onboarding/user");
+      }
+      // Returning users are routed by the useEffect watching `user` state
     }
   };
 
@@ -244,7 +251,20 @@ const Auth = () => {
     const { error } = await signInWithPopup("google");
     setLoading(false);
     if (error) {
-      toast({ variant: "destructive", title: "Google Auth Failed", description: error.message });
+      // If the email is already registered via email/password, guide user
+      const isConflict = error.message?.toLowerCase().includes("already registered") ||
+                         error.message?.toLowerCase().includes("already exists");
+      if (isConflict) {
+        toast({
+          variant: "destructive",
+          title: "Account exists with this email",
+          description: "You already have an account with this email. Sign in with email & password instead, then link Google from Settings.",
+        });
+        setAuthMethod("email");
+        setIsLoginMode(true);
+      } else {
+        toast({ variant: "destructive", title: "Google Auth Failed", description: error.message });
+      }
     }
   };
 
@@ -275,7 +295,21 @@ const Auth = () => {
         }
       } catch (err: any) {
         setLoading(false);
-        toast({ variant: "destructive", title: "Signup Failed", description: err instanceof z.ZodError ? err.errors[0].message : err.message });
+        const msg: string = err instanceof z.ZodError ? err.errors[0].message : err.message;
+        // Detect "email already registered" — guide user to sign in instead
+        const isConflict = msg?.toLowerCase().includes("already registered") ||
+                           msg?.toLowerCase().includes("already exists") ||
+                           msg?.toLowerCase().includes("user already");
+        if (isConflict) {
+          toast({
+            variant: "destructive",
+            title: "Account already exists",
+            description: "An account with this email already exists. Sign in instead, or use Google if you registered with Google.",
+          });
+          setIsLoginMode(true);
+        } else {
+          toast({ variant: "destructive", title: "Signup Failed", description: msg });
+        }
       }
     }
   };
