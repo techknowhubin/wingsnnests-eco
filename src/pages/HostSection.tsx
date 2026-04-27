@@ -11,7 +11,6 @@ import HostEarnings from "./HostEarnings";
 import HostLinkInBio from "./HostLinkInBio";
 import HostSettings from "./HostSettings";
 import HostCoupons from "./HostCoupons";
-import HostBlogPosts from "./HostBlogPosts";
 import HostAddStay from "./HostAddStay";
 import HostAddHotel from "./HostAddHotel";
 import HostAddResort from "./HostAddResort";
@@ -52,8 +51,9 @@ export default function HostSection() {
       return <HostCoupons />;
     case "settings":
       return <HostSettings />;
+    // Blog Posts moved to Admin Dashboard — redirect if someone hits old URL
     case "blog":
-      return <HostBlogPosts />;
+      return <Navigate to="/admin/blog-posts" replace />;
     default:
       return <Navigate to="/host/dashboard" replace />;
   }

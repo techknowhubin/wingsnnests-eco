@@ -8,6 +8,7 @@ import { z } from "zod";
 import heroXplorwing from "@/assets/hero-xplorwing.jpg";
 import { DynamicLogo } from "@/components/DynamicLogo";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -35,10 +36,10 @@ const styles = `
     will-change: transform;
   }
   .auth-card {
-    background: rgba(255,255,255,0.55);
-    backdrop-filter: blur(32px) saturate(1.6);
-    -webkit-backdrop-filter: blur(32px) saturate(1.6);
-    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.27);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.25);
     border-radius: 2rem;
     box-shadow:
       0 0 0 1px rgba(255,255,255,0.1),
@@ -96,13 +97,13 @@ const styles = `
     justify-content: center;
     height: 2.75rem;
     border-radius: 0.75rem;
-    border: 1.5px solid rgba(0,0,0,0.06);
-    background: rgba(255,255,255,0.5);
+    border: 1.5px solid rgba(0,0,0,0.08);
+    background: #ffffff;
     cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
     will-change: transform;
   }
-  .social-btn:hover { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.1); }
+  .social-btn:hover { background: #f5f5f5; border-color: rgba(0,0,0,0.14); }
   .social-btn:active { transform: scale(0.96); }
   .social-btn.active {
     background: #111;
@@ -157,6 +158,8 @@ const Auth = () => {
   const { signUp, signIn, signInWithProvider, signInWithPopup, signInWithOtp, verifyOtp, user, getUserRole } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  // Guard: only route once per login event, ignore subsequent flickers
+  const hasRoutedRef = useRef(false);
 
   // View state
   const [authMethod, setAuthMethod] = useState<"whatsapp" | "email">("whatsapp");
@@ -182,18 +185,40 @@ const Auth = () => {
   const handleSuccessRoleRouting = async (currentUser = user) => {
     setLoading(true);
     const r = await getUserRole();
+    if (r === "admin") {
+      navigate("/admin");
+    } else if (r === "host") {
+      navigate("/host");
+    } else {
+      // Regular user — check if onboarding is done
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', currentUser?.id)
+        .maybeSingle();
+      if (!profile?.onboarding_completed) {
+        navigate("/onboarding/user");
+      } else {
+        navigate("/");
+      }
+    }
     setLoading(false);
-    if (r === "host" || r === "admin") navigate("/host");
-    else navigate("/");
   };
 
   useEffect(() => {
-    if (user && !verificationPending) {
-      if (!user.phone && !isOtpSent && user.app_metadata?.provider === "google") {
-        setShowWaModal(true);
-      } else if (!showWaModal) {
-        handleSuccessRoleRouting(user);
-      }
+    // Reset the guard whenever the user logs out
+    if (!user) {
+      hasRoutedRef.current = false;
+      return;
+    }
+    // Only route once — ignore subsequent re-renders during auth initialization
+    if (hasRoutedRef.current || verificationPending) return;
+    hasRoutedRef.current = true;
+
+    if (!user.phone && !isOtpSent && user.app_metadata?.provider === "google") {
+      setShowWaModal(true);
+    } else if (!showWaModal) {
+      handleSuccessRoleRouting(user);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, verificationPending]);

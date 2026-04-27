@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { AuthProvider } from "./contexts/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -40,10 +41,26 @@ import Terms from "./pages/Terms";
 import HostLayout from "./pages/HostLayout";
 import HostSection from "./pages/HostSection";
 
+// Admin Dashboard
+import AdminLayout from "./components/admin/AdminLayout";
+import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
+import AdminOverview from "./pages/Admin/AdminOverview";
+import KYCReview from "./pages/Admin/KYCReview";
+import ListingApprovals from "./pages/Admin/ListingApprovals";
+import AdminProviders from "./pages/Admin/AdminProviders";
+import AdminUsers from "./pages/Admin/AdminUsers";
+import AdminBookings from "./pages/Admin/AdminBookings";
+import AdminHubs from "./pages/Admin/AdminHubs";
+import AdminPayouts from "./pages/Admin/AdminPayouts";
+import AdminAnalytics from "./pages/Admin/AdminAnalytics";
+import AdminSettings from "./pages/Admin/AdminSettings";
+import AdminBlogPosts from "./pages/Admin/AdminBlogPosts";
+
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <AuthProvider>
     <ThemeProvider defaultTheme="light">
       <TooltipProvider>
         <Toaster />
@@ -98,13 +115,36 @@ const App = () => (
               <Route path="experiences/add" element={<Navigate to="/host/experiences?mode=add" replace />} />
               <Route path=":section" element={<HostSection />} />
             </Route>
-            
+
+            {/* Admin Dashboard — completely separate from host dashboard */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminLayout />
+                </ProtectedAdminRoute>
+              }
+            >
+              <Route index element={<AdminOverview />} />
+              <Route path="kyc" element={<KYCReview />} />
+              <Route path="listings" element={<ListingApprovals />} />
+              <Route path="providers" element={<AdminProviders />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="bookings" element={<AdminBookings />} />
+              <Route path="hubs" element={<AdminHubs />} />
+              <Route path="payouts" element={<AdminPayouts />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="blog-posts" element={<AdminBlogPosts />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

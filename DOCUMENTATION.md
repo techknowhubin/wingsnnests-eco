@@ -88,7 +88,7 @@ This architecture allows service providers to either list on the main marketplac
 
 ```sql
 -- Type of listing
-create type public.listing_type as enum ('stay', 'car', 'bike', 'experience');
+create type public.listing_type as enum ('stay', 'car', 'bike', 'experience', 'hotel', 'resort');
 
 -- Booking lifecycle states
 create type public.booking_status as enum ('pending', 'confirmed', 'cancelled', 'completed');
@@ -102,21 +102,33 @@ create type public.app_role as enum ('admin', 'moderator', 'host', 'user');
 
 ### Core Tables
 
-#### User Management
+#### User Management & Identity
 
 | Table | Purpose | Key Fields |
 |-------|---------|------------|
-| `profiles` | Extended user info | `id`, `full_name`, `avatar_url`, `phone`, `bio`, `created_at` |
+| `profiles` | Primary single source of truth for user info | `id`, `full_name`, `avatar_url`, `phone`, `kyc_status` |
 | `user_roles` | Role assignments (separate for security) | `user_id`, `role` (app_role enum) |
+| `phone_auth_users`| Phone-to-user mappings (WhatsApp auth) | `phone`, `user_id`, `last_login_at` |
+| `phone_otp_sessions`| Temporary OTP state & rate-limiting | `phone`, `otp_hash`, `expires_at`, `attempts` |
+| `user_documents` | KYC documents & identity verification | `user_id`, `document_type`, `status` |
 
 #### Listings
 
 | Table | Purpose | Key Fields |
 |-------|---------|------------|
-| `stays` | Homestay/property listings | `host_id`, `title`, `slug`, `description`, `location`, `price_per_night`, `max_guests`, `bedrooms`, `bathrooms`, `amenities[]`, `images[]`, `is_active` |
-| `cars` | Car rental listings | `host_id`, `make`, `model`, `year`, `price_per_day`, `fuel_type`, `transmission`, `seats`, `images[]`, `is_active` |
-| `bikes` | Bike/motorcycle rentals | `host_id`, `make`, `model`, `price_per_day`, `engine_cc`, `bike_type`, `images[]`, `is_active` |
-| `experiences` | Tours and activities | `host_id`, `title`, `slug`, `description`, `price_per_person`, `duration`, `max_guests`, `location`, `includes[]`, `images[]`, `is_active` |
+| `stays` | Homestay/property listings | `host_id`, `title`, `slug`, `location`, `price_per_night`, `max_guests`, `bedrooms`, `bathrooms`, `is_active` |
+| `hotels` | Hotel property listings | `host_id`, `title`, `slug`, `location`, `price_per_night`, `max_guests`, `bedrooms`, `bathrooms`, `is_active` |
+| `resorts` | Resort property listings | `host_id`, `title`, `slug`, `location`, `price_per_night`, `max_guests`, `bedrooms`, `bathrooms`, `is_active` |
+| `cars` | Car rental listings | `host_id`, `make`, `model`, `price_per_day`, `fuel_type`, `transmission`, `seats`, `is_active` |
+| `bikes` | Bike/motorcycle rentals | `host_id`, `make`, `model`, `price_per_day`, `engine_cc`, `bike_type`, `is_active` |
+| `experiences` | Tours and activities | `host_id`, `title`, `slug`, `location`, `price_per_person`, `duration`, `max_guests`, `is_active` |
+
+#### Marketing & Promotions
+
+| Table | Purpose | Key Fields |
+|-------|---------|------------|
+| `host_coupons` | Discount campaigns | `host_id`, `code`, `discount_type`, `discount_value`, `is_active` |
+| `coupon_rules` | Coupon constraints | `coupon_id`, `min_booking_amount`, `valid_from`, `valid_until` |
 
 #### Transactions
 
@@ -150,15 +162,21 @@ create type public.app_role as enum ('admin', 'moderator', 'host', 'user');
 | `/` | `Index` | Homepage with hero, categories, featured listings |
 | `/stays` | `Stays` | Browse all homestay listings |
 | `/stays/:id` | `StayDetail` | Individual stay details & booking |
+| `/hotels` | `Hotels` | Browse all hotel listings |
+| `/hotels/:id` | `StayDetail` | Individual hotel details & booking |
+| `/resorts` | `Resorts` | Browse all resort listings |
+| `/resorts/:id` | `StayDetail` | Individual resort details & booking |
 | `/cars` | `Cars` | Browse all car rentals |
 | `/cars/:id` | `CarDetail` | Individual car details & booking |
 | `/bikes` | `Bikes` | Browse all bike rentals |
 | `/bikes/:id` | `BikeDetail` | Individual bike details & booking |
 | `/experiences` | `Experiences` | Browse all tours/activities |
 | `/experiences/:id` | `ExperienceDetail` | Individual experience details & booking |
-| `/login` | `Login` | User authentication |
-| `/signup` | `Signup` | New user registration |
+| `/destinations` | `Destinations` | Browse popular travel destinations |
+| `/destinations/:name` | `DestinationDetail` | Destination-specific services |
+| `/auth` | `Auth` | Unified login & registration |
 | `/about` | `AboutUs` | Company information |
+| `/terms` | `Terms` | Terms of Service and legal compliance |
 | `/careers` | `Careers` | Job opportunities |
 | `/blog` | `Blog` | Content articles |
 | `/help` | `HelpCenter` | FAQs and customer support |
@@ -169,12 +187,16 @@ create type public.app_role as enum ('admin', 'moderator', 'host', 'user');
 |------|-----------|-------------|
 | `/host` | `HostDashboard` | Overview with key metrics |
 | `/host/stays` | `HostStays` | Manage stay listings |
+| `/host/hotels` | `HostHotels` | Manage hotel listings |
+| `/host/resorts` | `HostResorts` | Manage resort listings |
 | `/host/cars` | `HostCars` | Manage car listings |
 | `/host/bikes` | `HostBikes` | Manage bike listings |
 | `/host/experiences` | `HostExperiences` | Manage experience listings |
 | `/host/bookings` | `HostBookings` | View and manage bookings |
 | `/host/earnings` | `HostEarnings` | Revenue analytics & reports |
+| `/host/coupons` | `HostCoupons` | Coupon generation and rules setup |
 | `/host/link` | `HostLinkInBio` | Link-in-Bio page generator |
+| `/host/blog-posts` | `HostBlogPosts` | Content management system |
 | `/host/settings` | `HostSettings` | Profile & account preferences |
 
 ### Future Routes (Planned)
@@ -259,12 +281,12 @@ const total = basePrice + serviceFee + taxes;
 ### 5. Authentication
 
 **Methods:**
-- Email/Password with email verification
-- OAuth Providers:
-  - Google
-  - Apple
-  - Facebook
-  - LinkedIn
+- **Primary:** WhatsApp OTP-based Authentication (Mobile Number)
+  - Uses `send-whatsapp-otp` Supabase Edge Function for token creation and delivery.
+  - Implements format-agnostic phone mapping logic to prevent duplicate accounts via `phone_auth_users`.
+- Email/Password with dynamic signup vs sign-in conflict resolution.
+- OAuth Providers (Google Active, unified account linking supported).
+- **Identity Linking:** Deep Supabase integration allowing manual user identity linking (e.g. associating Google with an existing WhatsApp-created profile) under a unified `public.profiles` source of truth.
 
 **Security:**
 - JWT-based sessions
@@ -571,14 +593,16 @@ xplorwing/
 - [x] Basic listing pages
 - [x] Host dashboard structure
 
-### Phase 2: Core Features (In Progress)
-- [ ] Public Link-in-Bio page renderer (`/p/:slug`)
+### Phase 2: Core Features (In Progress & Iterating)
+- [x] Public Link-in-Bio page renderer (`/p/:slug`) with Themes & robust QR Code Generator.
+- [x] Unified Authentication UI / WhatsApp OTP integration.
+- [x] User KYC Onboarding & real-time caching synchronization with Profile Dashboard.
 - [ ] Listing creation forms with image upload
 - [ ] Complete booking flow
 - [ ] Review & rating system
 
 ### Phase 3: Payments
-- [ ] Razorpay integration for bookings
+- [x] Razorpay environment setup (secured and rotated keys)
 - [ ] Host payout system
 - [ ] Invoice generation
 - [ ] Refund handling
@@ -644,4 +668,4 @@ Proprietary - All rights reserved.
 
 ---
 
-*Last Updated: January 2026*
+*Last Updated: April 2026*
