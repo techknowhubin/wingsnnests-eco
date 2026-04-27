@@ -59,7 +59,7 @@ export default function AdminProviders() {
                         </div>
                         <div>
                           <p className="text-sm font-semibold">{p.full_name ?? '—'}</p>
-                          <p className="text-xs text-muted-foreground">{p.email ?? '—'}</p>
+                          <p className="text-xs text-muted-foreground">{p.phone ?? '—'}</p>
                         </div>
                       </div>
                     </TableCell>

@@ -57,7 +57,7 @@ async function getSignedUrl(path: string) {
   if (!path) return null;
   // If already a full URL, return as-is (external URLs)
   if (path.startsWith('http')) return path;
-  const { data } = await supabase.storage.from('kyc-documents').createSignedUrl(path, 900);
+  const { data } = await supabase.storage.from('user-documents').createSignedUrl(path, 900);
   return data?.signedUrl ?? null;
 }
 

@@ -19,7 +19,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const PAYMENT_COLORS: Record<string, string> = {
   pending: 'bg-gray-100 text-gray-600',
-  paid: 'bg-green-100 text-green-700',
+  completed: 'bg-green-100 text-green-700',
   refunded: 'bg-purple-100 text-purple-700',
   failed: 'bg-red-100 text-red-700',
 };
@@ -31,9 +31,9 @@ export default function AdminBookings() {
   const [selected, setSelected] = useState<any>(null);
 
   const { data: bookings, isLoading } = useAdminBookings({
-    status: statusFilter || undefined,
-    paymentStatus: paymentFilter || undefined,
-    listingType: typeFilter || undefined,
+    status: statusFilter && statusFilter !== 'all' ? statusFilter : undefined,
+    paymentStatus: paymentFilter && paymentFilter !== 'all' ? paymentFilter : undefined,
+    listingType: typeFilter && typeFilter !== 'all' ? typeFilter : undefined,
   });
 
   return (
@@ -48,7 +48,7 @@ export default function AdminBookings() {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-40"><SelectValue placeholder="Booking status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="confirmed">Confirmed</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
@@ -59,9 +59,9 @@ export default function AdminBookings() {
         <Select value={paymentFilter} onValueChange={setPaymentFilter}>
           <SelectTrigger className="w-40"><SelectValue placeholder="Payment status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Payments</SelectItem>
+            <SelectItem value="all">All Payments</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="paid">Paid</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
             <SelectItem value="refunded">Refunded</SelectItem>
             <SelectItem value="failed">Failed</SelectItem>
           </SelectContent>
@@ -70,7 +70,7 @@ export default function AdminBookings() {
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-40"><SelectValue placeholder="Service type" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
             <SelectItem value="stay">Stays</SelectItem>
             <SelectItem value="hotel">Hotels</SelectItem>
             <SelectItem value="resort">Resorts</SelectItem>
@@ -80,7 +80,7 @@ export default function AdminBookings() {
           </SelectContent>
         </Select>
 
-        {(statusFilter || paymentFilter || typeFilter) && (
+        {(statusFilter && statusFilter !== 'all' || paymentFilter && paymentFilter !== 'all' || typeFilter && typeFilter !== 'all') && (
           <Button variant="ghost" size="sm" onClick={() => { setStatusFilter(''); setPaymentFilter(''); setTypeFilter(''); }}>
             Clear filters
           </Button>

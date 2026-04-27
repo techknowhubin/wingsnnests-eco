@@ -350,17 +350,12 @@ export function useManagedListings(
 // ============ Role Hooks ============
 
 export function useIsAdmin(userId: string | undefined) {
-  console.log('[useIsAdmin hook] evaluating with userId:', userId);
   return useQuery({
     queryKey: ['role', 'admin', userId],
     queryFn: async () => {
-      console.log('[useIsAdmin queryFn] Starting fetch for', userId);
       try {
-        const result = await isAdmin(userId!);
-        console.log('[useIsAdmin queryFn] Result received:', result);
-        return result;
-      } catch (err) {
-        console.error('[useIsAdmin queryFn] Error:', err);
+        return await isAdmin(userId!);
+      } catch {
         return false;
       }
     },

@@ -344,49 +344,22 @@ export async function isInWishlist(userId: string, listingId: string): Promise<b
 // ============ Role Helpers ============
 
 export async function checkUserRole(userId: string, role: AppRole): Promise<boolean> {
-  console.log('[checkUserRole] calling rpc has_role for', userId, role);
-  
   try {
-    const SUPABASE_URL = "https://uhtwkajqpuazxpnbaojx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVodHdrYWpxcHVhenhwbmJhb2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE2NzY1NTcsImV4cCI6MjA3NzI1MjU1N30.RPdeJk13uqnFssQXUyA0acsf53xgceR-59VLzoB7Wfg";
-    // Read directly from localStorage to completely avoid the Supabase Auth Lock API 
-    // which is getting stuck in your browser (likely due to a stranded navigator.lock)
-    const storageKey = 'sb-uhtwkajqpuazxpnbaojx-auth-token';
-    const authDataString = localStorage.getItem(storageKey);
-    
-    if (!authDataString) {
-      console.log('[checkUserRole] No auth token found in localStorage');
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', role)
+      .maybeSingle();
+
+    if (error) {
+      console.error('[checkUserRole] Error:', error.message);
       return false;
     }
 
-    const authData = JSON.parse(authDataString);
-    const accessToken = authData.access_token;
-    
-    if (!accessToken) {
-       return false;
-    }
-
-    console.log('[checkUserRole] Executing direct fetch to avoid lock...');
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/has_role`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({ _user_id: userId, _role: role })
-    });
-
-    if (!response.ok) {
-      console.error('[checkUserRole] Fetch failed:', response.status);
-      return false;
-    }
-
-    const data = await response.json();
-    console.log('[checkUserRole] direct fetch returned:', data);
-    return data === true;
+    return !!data;
   } catch (err) {
-    console.error('[checkUserRole] direct fetch error:', err);
+    console.error('[checkUserRole] Unexpected error:', err);
     return false;
   }
 }

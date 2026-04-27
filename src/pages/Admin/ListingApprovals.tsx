@@ -102,6 +102,7 @@ export default function ListingApprovals() {
           <TabsTrigger value="all">All ({listings?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="stays">Stays ({typeCount('stays')})</TabsTrigger>
           <TabsTrigger value="hotels">Hotels ({typeCount('hotels')})</TabsTrigger>
+          <TabsTrigger value="resorts">Resorts ({typeCount('resorts')})</TabsTrigger>
           <TabsTrigger value="cars">Cars ({typeCount('cars')})</TabsTrigger>
           <TabsTrigger value="bikes">Bikes ({typeCount('bikes')})</TabsTrigger>
           <TabsTrigger value="experiences">Experiences ({typeCount('experiences')})</TabsTrigger>

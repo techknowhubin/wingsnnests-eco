@@ -44,15 +44,15 @@ export default function AdminSettings() {
     if (!newAdminEmail.trim()) return;
     setAddingAdmin(true);
     try {
-      // Find the user by email via profiles
+      // Find the user by phone via profiles
       const { data: profile, error: profileErr } = await supabase
         .from('profiles')
         .select('id')
-        .eq('email', newAdminEmail.trim())
+        .eq('phone', newAdminEmail.trim())
         .maybeSingle();
 
       if (profileErr || !profile) {
-        toast({ variant: 'destructive', title: 'User not found', description: 'No account exists with this email address.' });
+        toast({ variant: 'destructive', title: 'User not found', description: 'No account exists with this phone number.' });
         return;
       }
 
@@ -157,7 +157,7 @@ export default function AdminSettings() {
           {/* Add Admin */}
           <div className="flex gap-3">
             <Input
-              placeholder="Enter email to grant admin access…"
+              placeholder="Enter phone number to grant admin access…"
               value={newAdminEmail}
               onChange={(e) => setNewAdminEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddAdmin()}
@@ -177,7 +177,7 @@ export default function AdminSettings() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Admin</TableHead>
-                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -198,7 +198,7 @@ export default function AdminSettings() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{a.email ?? '—'}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{a.phone ?? '—'}</TableCell>
                     <TableCell>
                       <Button
                         size="sm"

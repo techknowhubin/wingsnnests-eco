@@ -63,12 +63,11 @@ export default function AdminUsers() {
                       <TableHead>Contact</TableHead>
                       <TableHead>Joined</TableHead>
                       <TableHead>KYC Status</TableHead>
-                      <TableHead>WingID</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {(users ?? []).length === 0 && (
-                      <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">No travelers found.</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={4} className="text-center py-10 text-muted-foreground">No travelers found.</TableCell></TableRow>
                     )}
                     {(users ?? []).map((u: any) => {
                       const badgeInfo = KYC_BADGE[u.kyc_status] ?? KYC_BADGE.not_started;
@@ -84,23 +83,12 @@ export default function AdminUsers() {
                           </TableCell>
                           <TableCell>
                             <p className="text-xs">{u.phone ?? '—'}</p>
-                            <p className="text-xs text-muted-foreground">{u.email ?? '—'}</p>
                           </TableCell>
                           <TableCell className="text-xs text-muted-foreground">
                             {u.created_at ? formatDistanceToNow(new Date(u.created_at), { addSuffix: true }) : '—'}
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className={`text-[10px] ${badgeInfo.className}`}>{badgeInfo.label}</Badge>
-                          </TableCell>
-                          <TableCell>
-                            {u.wing_id ? (
-                              <div className="flex items-center gap-1.5">
-                                <Award className="h-3.5 w-3.5 text-[#013220]" />
-                                <code className="text-xs font-mono font-bold text-[#013220]">{u.wing_id}</code>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground text-xs">—</span>
-                            )}
                           </TableCell>
                         </TableRow>
                       );
