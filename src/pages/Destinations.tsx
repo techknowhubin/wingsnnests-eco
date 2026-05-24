@@ -54,6 +54,14 @@ import visakhapatnamImg from "@/assets/destinations/visakhapatnam.jpg";
 import tirupatiImg from "@/assets/destinations/tirupati.jpg";
 import arakuImg from "@/assets/destinations/araku.jpg";
 import nagarjunasagarImg from "@/assets/destinations/nagarjunasagar.jpg";
+import ramojiImg from "@/assets/destinations/ramoji.jpg";
+import bhadrachalamImg from "@/assets/destinations/bhadrachalam.jpg";
+import medakImg from "@/assets/destinations/medak.jpg";
+import vijayawadaImg from "@/assets/destinations/vijayawada.jpg";
+import gandikotaImg from "@/assets/destinations/gandikota.jpg";
+import srisailamImg from "@/assets/destinations/srisailam.jpg";
+import lepakshiImg from "@/assets/destinations/lepakshi.jpg";
+import horsleyhillsImg from "@/assets/destinations/horsleyhills.jpg";
 
 const allDestinations = [
   // Goa
@@ -108,11 +116,19 @@ const allDestinations = [
   // Telangana
   { image: hyderabadImg, title: "Hyderabad", subtitle: "City of Pearls & Biryani", rating: 4.8, priceRange: "Starting ₹1,200/night", state: "Telangana", link: "/stays" },
   { image: warangalImg, title: "Warangal", subtitle: "Kakatiya heritage city", rating: 4.4, priceRange: "Starting ₹800/night", state: "Telangana", link: "/stays" },
+  { image: ramojiImg, title: "Ramoji Film City", subtitle: "World's largest film studio", rating: 4.7, priceRange: "Starting ₹1,500/night", state: "Telangana", link: "/stays" },
+  { image: bhadrachalamImg, title: "Bhadrachalam", subtitle: "Sacred Rama temple on Godavari", rating: 4.6, priceRange: "Starting ₹700/night", state: "Telangana", link: "/stays" },
+  { image: medakImg, title: "Medak", subtitle: "Gothic cathedral & fort", rating: 4.5, priceRange: "Starting ₹600/night", state: "Telangana", link: "/stays" },
   // Andhra Pradesh
   { image: visakhapatnamImg, title: "Visakhapatnam", subtitle: "City of Destiny", rating: 4.6, priceRange: "Starting ₹1,100/night", state: "Andhra Pradesh", link: "/stays" },
   { image: tirupatiImg, title: "Tirupati", subtitle: "Sacred temple town", rating: 4.7, priceRange: "Starting ₹900/night", state: "Andhra Pradesh", link: "/stays" },
   { image: arakuImg, title: "Araku Valley", subtitle: "Coffee plantations & tribal culture", rating: 4.5, priceRange: "Starting ₹1,000/night", state: "Andhra Pradesh", link: "/stays" },
   { image: nagarjunasagarImg, title: "Nagarjuna Sagar", subtitle: "Massive dam & Buddhist ruins", rating: 4.3, priceRange: "Starting ₹700/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: vijayawadaImg, title: "Vijayawada", subtitle: "Kanaka Durga & Krishna river", rating: 4.5, priceRange: "Starting ₹900/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: gandikotaImg, title: "Gandikota", subtitle: "Grand Canyon of India", rating: 4.6, priceRange: "Starting ₹800/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: srisailamImg, title: "Srisailam", subtitle: "Jyotirlinga temple & forests", rating: 4.7, priceRange: "Starting ₹850/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: lepakshiImg, title: "Lepakshi", subtitle: "Giant Nandi & hanging pillar", rating: 4.5, priceRange: "Starting ₹650/night", state: "Andhra Pradesh", link: "/stays" },
+  { image: horsleyhillsImg, title: "Horsley Hills", subtitle: "Serene Andhra hill station", rating: 4.4, priceRange: "Starting ₹950/night", state: "Andhra Pradesh", link: "/stays" },
 ];
 
 const states = [...new Set(allDestinations.map((d) => d.state))].sort();
